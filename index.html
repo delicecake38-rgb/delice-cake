@@ -5,43 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Délices de Tiramisu - Boutique en ligne</title>
     <style>
-    /* Ajoutez ce style pour le header */
-    header {
-        background-color: #8b5a2b;
-        padding: 15px 0;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .nav-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-    
-    .logo {
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-    }
-    
-    .nav-links {
-        display: flex;
-        gap: 30px;
-    }
-    
-    .nav-links a {
-        color: white;
-        text-decoration: none;
-        transition: opacity 0.3s;
-    }
-    
-    .nav-links a:hover {
-        opacity: 0.8;
-    }
-</style>
         /* Styles généraux */
         * {
             margin: 0;
@@ -51,13 +14,6 @@
         }
         
         body {
-</header>
-            <div class="logo">Délices de Tiramisu</div>
-        <nav class="nav-links">
-            <a href="index.html">Accueil</a>
-            <a href="panier.html">Panier (<span id="nb-articles">0</span>)</a>
-        </nav>
-    </div>
             background-color: #f9f5f0;
             color: #5c3d2e;
             line-height: 1.6;
@@ -76,6 +32,43 @@
         h1, h2, h3 {
             color: #8b5a2b;
             margin-bottom: 20px;
+        }
+        
+        /* Header */
+        header {
+            background-color: #8b5a2b;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo-header {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
         }
         
         /* Partie 1 - En-tête avec logo et vidéo */
@@ -299,6 +292,17 @@
     </style>
 </head>
 <body>
+    <!-- Header avec navigation -->
+    <header>
+        <div class="nav-container">
+            <div class="logo-header">Délices de Tiramisu</div>
+            <nav class="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="panier.html">Panier (<span id="nb-articles">0</span>)</a>
+            </nav>
+        </div>
+    </header>
+
     <!-- Partie 1 - Logo et vidéo publicitaire -->
     <section id="partie1">
         <div class="container">
@@ -345,7 +349,7 @@
                             <p><strong>Goût:</strong> Fruité, légèrement acidulé, doux et crémeux</p>
                             <p><strong>Ingrédients:</strong> Mascarpone, fruits rouges, sucre, biscuits, crème</p>
                         </div>
-                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Classique', 5.50)">Ajouter au panier</button>
+                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Fruits Rouges', 6.50)">Ajouter au panier</button>
                     </div>
                 </div>
                 
@@ -360,7 +364,7 @@
                             <p><strong>Goût:</strong> Intense en chocolat, croquant des noisettes, riche et crémeux</p>
                             <p><strong>Ingrédients:</strong> Mascarpone, chocolat noir, noisettes, café, biscuits</p>
                         </div>
-                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Classique', 5.50)">Ajouter au panier</button>
+                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Chocolat-Noisette', 6.00)">Ajouter au panier</button>
                     </div>
                 </div>
                 
@@ -375,7 +379,7 @@
                             <p><strong>Goût:</strong> Doux, épicé, caramel avec une texture croquante</p>
                             <p><strong>Ingrédients:</strong> Mascarpone, spéculoos, caramel, crème, sucre</p>
                         </div>
-                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Classique', 5.50)">Ajouter au panier</button>
+                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Spéculoos', 5.80)">Ajouter au panier</button>
                     </div>
                 </div>
             </div>
@@ -496,45 +500,36 @@
             this.reset();
         });
         
-        // Script pour les boutons "Ajouter au panier"
-        document.querySelectorAll('.btn-ajouter').forEach(button => {
-            button.addEventListener('click', function() {
-                const produit = this.closest('.produit');
-                const nom = produit.querySelector('.produit-nom').textContent;
-                alert(nom + ' a été ajouté à votre panier !');
-            });
-        });
-    </script>
-    <script>
-    function ajouterAuPanier(nom, prix) {
-        let panier = JSON.parse(localStorage.getItem('panier')) || [];
-        
-        // Vérifier si l'article est déjà dans le panier
-        const articleExistant = panier.find(article => article.nom === nom);
-        
-        if (articleExistant) {
-            articleExistant.quantite += 1;
-        } else {
-            panier.push({
-                nom: nom,
-                prix: prix,
-                quantite: 1
-            });
+        // Fonctions pour le panier
+        function ajouterAuPanier(nom, prix) {
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            
+            // Vérifier si l'article est déjà dans le panier
+            const articleExistant = panier.find(article => article.nom === nom);
+            
+            if (articleExistant) {
+                articleExistant.quantite += 1;
+            } else {
+                panier.push({
+                    nom: nom,
+                    prix: prix,
+                    quantite: 1
+                });
+            }
+            
+            localStorage.setItem('panier', JSON.stringify(panier));
+            mettreAJourCompteurPanier();
+            alert(nom + ' a été ajouté à votre panier !');
         }
         
-        localStorage.setItem('panier', JSON.stringify(panier));
-        mettreAJourCompteurPanier();
-        alert(nom + ' a été ajouté à votre panier !');
-    }
-    
-    function mettreAJourCompteurPanier() {
-        const panier = JSON.parse(localStorage.getItem('panier')) || [];
-        const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
-        document.getElementById('nb-articles').textContent = totalArticles;
-    }
-    
-    // Initialiser le compteur au chargement
-    document.addEventListener('DOMContentLoaded', mettreAJourCompteurPanier);
-</script>
+        function mettreAJourCompteurPanier() {
+            const panier = JSON.parse(localStorage.getItem('panier')) || [];
+            const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
+            document.getElementById('nb-articles').textContent = totalArticles;
+        }
+        
+        // Initialiser le compteur au chargement
+        document.addEventListener('DOMContentLoaded', mettreAJourCompteurPanier);
+    </script>
 </body>
 </html>
