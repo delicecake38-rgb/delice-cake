@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panier - Délices de Tiramisu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f5f0;
+            color: #5c3d2e;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background-color: #8b5a2b;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        /* Panier */
+        .panier-section {
+            padding: 60px 0;
+        }
+        
+        .panier-titre {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #8b5a2b;
+        }
+        
+        .panier-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .articles-panier {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .article-panier {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .article-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .article-img {
+            width: 80px;
+            height: 80px;
+            background-color: #e6d7c3;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5a2b;
+            font-weight: bold;
+        }
+        
+        .article-nom {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .article-prix {
+            color: #8b5a2b;
+            font-weight: bold;
+        }
+        
+        .quantite-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-quantite {
+            background: #f1e6d2;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-quantite:hover {
+            background: #e6d7c3;
+        }
+        
+        .btn-supprimer {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .btn-supprimer:hover {
+            background: #ff5252;
+        }
+        
+        /* Résumé commande */
+        .resume-commande {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        
+        .resume-titre {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1e6d2;
+        }
+        
+        .ligne-resume {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8b5a2b;
+            margin: 20px 0;
+            padding-top: 20px;
+            border-top: 2px solid #f1e6d2;
+        }
+        
+        .btn-commander {
+            background: #8b5a2b;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        
+        .btn-commander:hover {
+            background: #6d4621;
+        }
+        
+        .panier-vide {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .panier-vide p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .btn-retour {
+            background: #8b5a2b;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        footer {
+            background-color: #5c3d2e;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 60px;
+        }
+        
+        @media (max-width: 768px) {
+            .panier-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .article-panier {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .article-actions {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header avec navigation -->
+    <header>
+        <div class="container nav-container">
+            <div class="logo">Délices de Tiramisu</div>
+            <nav class="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="panier.html">Panier (<span id="nb-articles">0</span>)</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Section Panier -->
+    <section class="panier-section">
+        <div class="container">
+            <h1 class="panier-titre">Votre Panier</h1>
+            
+            <div id="panier-container">
+                <!-- Le contenu du panier sera généré par JavaScript -->
+                <div class="panier-vide" id="panier-vide">
+                    <p>Votre panier est vide</p>
+                    <a href="index.html" class="btn-retour">Retour à la boutique</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Délices de Tiramisu - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script>
+        // Fonctions pour gérer le panier
+        function getPanier() {
+            return JSON.parse(localStorage.getItem('panier')) || [];
+        }
+
+        function sauvegarderPanier(panier) {
+            localStorage.setItem('panier', JSON.stringify(panier));
+            mettreAJourCompteur();
+        }
+
+        function mettreAJourCompteur() {
+            const panier = getPanier();
+            const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
+            document.getElementById('nb-articles').textContent = totalArticles;
+        }
+
+        function afficherPanier() {
+            const panier = getPanier();
+            const container = document.getElementById('panier-container');
+            const panierVide = document.getElementById('panier-vide');
+            
+            if (panier.length === 0) {
+                panierVide.style.display = 'block';
+                container.innerHTML = '';
+                container.appendChild(panierVide);
+                return;
+            }
+            
+            panierVide.style.display = 'none';
+            
+            let html = `
+                <div class="panier-container">
+                    <div class="articles-panier">
+            `;
+            
+            let sousTotal = 0;
+            
+            panier.forEach((article, index) => {
+                const prixTotal = article.prix * article.quantite;
+                sousTotal += prixTotal;
+                
+                html += `
+                    <div class="article-panier">
+                        <div class="article-info">
+                            <div class="article-img">[IMG]</div>
+                            <div>
+                                <div class="article-nom">${article.nom}</div>
+                                <div class="article-prix">${article.prix.toFixed(2)} €</div>
+                            </div>
+                        </div>
+                        <div class="article-actions">
+                            <div class="quantite-controls">
+                                <button class="btn-quantite" onclick="changerQuantite(${index}, -1)">-</button>
+                                <span>${article.quantite}</span>
+                                <button class="btn-quantite" onclick="changerQuantite(${index}, 1)">+</button>
+                            </div>
+                            <div class="prix-total">${prixTotal.toFixed(2)} €</div>
+                            <button class="btn-supprimer" onclick="supprimerArticle(${index})">Supprimer</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            const fraisLivraison = sousTotal > 0 ? 2.50 : 0;
+            const total = sousTotal + fraisLivraison;
+            
+            html += `
+                    </div>
+                    <div class="resume-commande">
+                        <h3 class="resume-titre">Résumé de la commande</h3>
+                        <div class="ligne-resume">
+                            <span>Sous-total:</span>
+                            <span>${sousTotal.toFixed(2)} €</span>
+                        </div>
+                        <div class="ligne-resume">
+                            <span>Frais de livraison:</span>
+                            <span>${fraisLivraison.toFixed(2)} €</span>
+                        </div>
+                        <div class="ligne-resume total">
+                            <span>Total:</span>
+                            <span>${total.toFixed(2)} €</span>
+                        </div>
+                        <button class="btn-commander" onclick="passerCommande()">Passer la commande</button>
+                        
+                        <div style="margin-top: 20px; font-size: 14px; color: #666;">
+                            <p>💡 Livraison gratuite à partir de 8 pièces</p>
+                            <p>🎁 Box surprise offerte à partir de 10 pièces</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function changerQuantite(index, changement) {
+            const panier = getPanier();
+            panier[index].quantite += changement;
+            
+            if (panier[index].quantite <= 0) {
+                panier.splice(index, 1);
+            }
+            
+            sauvegarderPanier(panier);
+            afficherPanier();
+        }
+
+        function supprimerArticle(index) {
+            const panier = getPanier();
+            panier.splice(index, 1);
+            sauvegarderPanier(panier);
+            afficherPanier();
+        }
+
+        function passerCommande() {
+            const panier = getPanier();
+            if (panier.length === 0) {
+                alert('Votre panier est vide !');
+                return;
+            }
+            
+            alert('Merci pour votre commande ! Nous vous contacterons rapidement pour finaliser celle-ci.');
+            localStorage.removeItem('panier');
+            afficherPanier();
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            mettreAJourCompteur();
+            afficherPanier();
+        });
+    </script>
+</body>
+</html>
