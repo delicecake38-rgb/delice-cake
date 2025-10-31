@@ -5,6 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Délices de Tiramisu - Boutique en ligne</title>
     <style>
+    /* Ajoutez ce style pour le header */
+    header {
+        background-color: #8b5a2b;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .logo {
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .nav-links {
+        display: flex;
+        gap: 30px;
+    }
+    
+    .nav-links a {
+        color: white;
+        text-decoration: none;
+        transition: opacity 0.3s;
+    }
+    
+    .nav-links a:hover {
+        opacity: 0.8;
+    }
+</style>
         /* Styles généraux */
         * {
             margin: 0;
@@ -14,6 +51,13 @@
         }
         
         body {
+</header>
+            <div class="logo">Délices de Tiramisu</div>
+        <nav class="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="panier.html">Panier (<span id="nb-articles">0</span>)</a>
+        </nav>
+    </div>
             background-color: #f9f5f0;
             color: #5c3d2e;
             line-height: 1.6;
@@ -286,7 +330,7 @@
                             <p><strong>Goût:</strong> Équilibré, crémeux avec une touche d'amertume du café</p>
                             <p><strong>Ingrédients:</strong> Mascarpone, œufs, sucre, café, cacao, biscuits à la cuiller</p>
                         </div>
-                        <button class="btn-ajouter">Ajouter au panier</button>
+                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Classique', 5.50)">Ajouter au panier</button>
                     </div>
                 </div>
                 
@@ -301,7 +345,7 @@
                             <p><strong>Goût:</strong> Fruité, légèrement acidulé, doux et crémeux</p>
                             <p><strong>Ingrédients:</strong> Mascarpone, fruits rouges, sucre, biscuits, crème</p>
                         </div>
-                        <button class="btn-ajouter">Ajouter au panier</button>
+                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Classique', 5.50)">Ajouter au panier</button>
                     </div>
                 </div>
                 
@@ -316,7 +360,7 @@
                             <p><strong>Goût:</strong> Intense en chocolat, croquant des noisettes, riche et crémeux</p>
                             <p><strong>Ingrédients:</strong> Mascarpone, chocolat noir, noisettes, café, biscuits</p>
                         </div>
-                        <button class="btn-ajouter">Ajouter au panier</button>
+                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Classique', 5.50)">Ajouter au panier</button>
                     </div>
                 </div>
                 
@@ -331,7 +375,7 @@
                             <p><strong>Goût:</strong> Doux, épicé, caramel avec une texture croquante</p>
                             <p><strong>Ingrédients:</strong> Mascarpone, spéculoos, caramel, crème, sucre</p>
                         </div>
-                        <button class="btn-ajouter">Ajouter au panier</button>
+                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Classique', 5.50)">Ajouter au panier</button>
                     </div>
                 </div>
             </div>
@@ -461,5 +505,36 @@
             });
         });
     </script>
+    <script>
+    function ajouterAuPanier(nom, prix) {
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
+        
+        // Vérifier si l'article est déjà dans le panier
+        const articleExistant = panier.find(article => article.nom === nom);
+        
+        if (articleExistant) {
+            articleExistant.quantite += 1;
+        } else {
+            panier.push({
+                nom: nom,
+                prix: prix,
+                quantite: 1
+            });
+        }
+        
+        localStorage.setItem('panier', JSON.stringify(panier));
+        mettreAJourCompteurPanier();
+        alert(nom + ' a été ajouté à votre panier !');
+    }
+    
+    function mettreAJourCompteurPanier() {
+        const panier = JSON.parse(localStorage.getItem('panier')) || [];
+        const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
+        document.getElementById('nb-articles').textContent = totalArticles;
+    }
+    
+    // Initialiser le compteur au chargement
+    document.addEventListener('DOMContentLoaded', mettreAJourCompteurPanier);
+</script>
 </body>
 </html>
