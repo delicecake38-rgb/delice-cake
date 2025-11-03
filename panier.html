@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panier - Délices de Tiramisu</title>
+    <title>Délices de Tiramisu - Boutique en ligne</title>
     <style>
+        /* Styles généraux */
         * {
             margin: 0;
             padding: 0;
@@ -15,12 +16,22 @@
         body {
             background-color: #f9f5f0;
             color: #5c3d2e;
+            line-height: 1.6;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+        }
+        
+        section {
+            padding: 60px 0;
+        }
+        
+        h1, h2, h3 {
+            color: #8b5a2b;
+            margin-bottom: 20px;
         }
         
         /* Header */
@@ -34,9 +45,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
         
-        .logo {
+        .logo-header {
             color: white;
             font-size: 24px;
             font-weight: bold;
@@ -57,49 +71,59 @@
             opacity: 0.8;
         }
         
-        /* Panier */
-        .panier-section {
-            padding: 60px 0;
-        }
-        
-        .panier-titre {
+        /* Partie 1 - En-tête avec logo et vidéo */
+        #partie1 {
+            background-color: #f1e6d2;
             text-align: center;
-            margin-bottom: 40px;
-            color: #8b5a2b;
+            padding: 40px 0;
         }
         
-        .panier-container {
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+        
+        .video-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .video-placeholder {
+            background-color: #8b5a2b;
+            color: white;
+            padding: 100px 20px;
+            font-size: 18px;
+        }
+        
+        /* Partie 2 - Produits */
+        #partie2 {
+            background-color: white;
+        }
+        
+        .produits-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
         }
         
-        .articles-panier {
-            background: white;
+        .produit {
+            background-color: #f9f5f0;
             border-radius: 10px;
-            padding: 30px;
+            overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
         }
         
-        .article-panier {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #eee;
+        .produit:hover {
+            transform: translateY(-5px);
         }
         
-        .article-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .article-img {
-            width: 80px;
-            height: 80px;
+        .produit-img {
+            height: 200px;
             background-color: #e6d7c3;
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -107,137 +131,162 @@
             font-weight: bold;
         }
         
-        .article-nom {
-            font-weight: bold;
-            margin-bottom: 5px;
+        .produit-info {
+            padding: 20px;
         }
         
-        .article-prix {
+        .produit-nom {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .produit-prix {
+            font-size: 18px;
+            font-weight: bold;
             color: #8b5a2b;
-            font-weight: bold;
-        }
-        
-        .quantite-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .btn-quantite {
-            background: #f1e6d2;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .btn-quantite:hover {
-            background: #e6d7c3;
-        }
-        
-        .btn-supprimer {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .btn-supprimer:hover {
-            background: #ff5252;
-        }
-        
-        /* Résumé commande */
-        .resume-commande {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            height: fit-content;
-        }
-        
-        .resume-titre {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f1e6d2;
-        }
-        
-        .ligne-resume {
-            display: flex;
-            justify-content: space-between;
             margin-bottom: 15px;
         }
         
-        .total {
-            font-size: 20px;
-            font-weight: bold;
-            color: #8b5a2b;
-            margin: 20px 0;
-            padding-top: 20px;
-            border-top: 2px solid #f1e6d2;
+        .produit-description {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
         }
         
-        .btn-commander {
-            background: #8b5a2b;
+        .btn-ajouter {
+            background-color: #8b5a2b;
             color: white;
             border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 18px;
+            padding: 10px 15px;
+            border-radius: 5px;
             cursor: pointer;
             width: 100%;
-            transition: background 0.3s;
+            font-size: 16px;
+            transition: background-color 0.3s;
         }
         
-        .btn-commander:hover {
-            background: #6d4621;
+        .btn-ajouter:hover {
+            background-color: #6d4621;
         }
         
-        .panier-vide {
-            text-align: center;
-            padding: 60px 20px;
+        /* Partie 3 - Remarques */
+        #partie3 {
+            background-color: #f1e6d2;
         }
         
-        .panier-vide p {
+        .remarques {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .remarque {
+            flex: 0 0 48%;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
             margin-bottom: 20px;
-            font-size: 18px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
         }
         
-        .btn-retour {
-            background: #8b5a2b;
+        .remarque h3 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .remarque h3 i {
+            margin-right: 10px;
+            color: #8b5a2b;
+        }
+        
+        /* Partie 4 - Contact */
+        #partie4 {
+            background-color: white;
+        }
+        
+        .contact-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .coordonnees {
+            flex: 0 0 45%;
+            margin-bottom: 30px;
+        }
+        
+        .coordonnee-item {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .coordonnee-item i {
+            margin-right: 10px;
+            color: #8b5a2b;
+            margin-top: 5px;
+        }
+        
+        .formulaire-contact {
+            flex: 0 0 45%;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn-envoyer {
+            background-color: #8b5a2b;
             color: white;
-            text-decoration: none;
+            border: none;
             padding: 12px 25px;
             border-radius: 5px;
-            display: inline-block;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
         }
         
+        .btn-envoyer:hover {
+            background-color: #6d4621;
+        }
+        
+        /* Pied de page */
         footer {
             background-color: #5c3d2e;
             color: white;
             text-align: center;
             padding: 20px 0;
-            margin-top: 60px;
+            margin-top: 40px;
         }
         
+        /* Responsive */
         @media (max-width: 768px) {
-            .panier-container {
-                grid-template-columns: 1fr;
+            .remarque {
+                flex: 0 0 100%;
             }
             
-            .article-panier {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .article-actions {
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
+            .coordonnees, .formulaire-contact {
+                flex: 0 0 100%;
             }
         }
     </style>
@@ -245,8 +294,8 @@
 <body>
     <!-- Header avec navigation -->
     <header>
-        <div class="container nav-container">
-            <div class="logo">Délices de Tiramisu</div>
+        <div class="nav-container">
+            <div class="logo-header">Délices de Tiramisu</div>
             <nav class="nav-links">
                 <a href="index.html">Accueil</a>
                 <a href="panier.html">Panier (<span id="nb-articles">0</span>)</a>
@@ -254,16 +303,184 @@
         </div>
     </header>
 
-    <!-- Section Panier -->
-    <section class="panier-section">
+    <!-- Partie 1 - Logo et vidéo publicitaire -->
+    <section id="partie1">
         <div class="container">
-            <h1 class="panier-titre">Votre Panier</h1>
-            
-            <div id="panier-container">
-                <!-- Le contenu du panier sera généré par JavaScript -->
-                <div class="panier-vide" id="panier-vide">
-                    <p>Votre panier est vide</p>
-                    <a href="index.html" class="btn-retour">Retour à la boutique</a>
+            <div class="logo-container">
+                <div class="logo">[VOTRE LOGO ICI]</div>
+                <h1>Délices de Tiramisu</h1>
+            </div>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    [VIDÉO PUBLICITAIRE À INTÉGRER]
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partie 2 - Produits -->
+    <section id="partie2">
+        <div class="container">
+            <h2>Nos Délicieux Tiramisus</h2>
+            <div class="produits-grid">
+                <!-- Produit 1 -->
+                <div class="produit">
+                    <div class="produit-img">[IMAGE DU PRODUIT]</div>
+                    <div class="produit-info">
+                        <h3 class="produit-nom">Tiramisu Classique</h3>
+                        <div class="produit-prix">5,50 €</div>
+                        <div class="produit-description">
+                            <p>Notre recette traditionnelle italienne avec mascarpone, café et cacao.</p>
+                            <p><strong>Goût:</strong> Équilibré, crémeux avec une touche d'amertume du café</p>
+                            <p><strong>Ingrédients:</strong> Mascarpone, œufs, sucre, café, cacao, biscuits à la cuiller</p>
+                        </div>
+                        <button class="btn-ajouter" data-nom="Tiramisu Classique" data-prix="5.50">Ajouter au panier</button>
+                    </div>
+                </div>
+                
+                <!-- Produit 2 -->
+                <div class="produit">
+                    <div class="produit-img">[IMAGE DU PRODUIT]</div>
+                    <div class="produit-info">
+                        <h3 class="produit-nom">Tiramisu Fruits Rouges</h3>
+                        <div class="produit-prix">6,50 €</div>
+                        <div class="produit-description">
+                            <p>Une variation fruitée avec des framboises, fraises et myrtilles.</p>
+                            <p><strong>Goût:</strong> Fruité, légèrement acidulé, doux et crémeux</p>
+                            <p><strong>Ingrédients:</strong> Mascarpone, fruits rouges, sucre, biscuits, crème</p>
+                        </div>
+                        <button class="btn-ajouter" data-nom="Tiramisu Fruits Rouges" data-prix="6.50">Ajouter au panier</button>
+                    </div>
+                </div>
+                
+                <!-- Produit 3 -->
+                <div class="produit">
+                    <div class="produit-img">[IMAGE DU PRODUIT]</div>
+                    <div class="produit-info">
+                        <h3 class="produit-nom">Tiramisu Chocolat-Noisette</h3>
+                        <div class="produit-prix">6,00 €</div>
+                        <div class="produit-description">
+                            <p>Pour les amateurs de chocolat, avec du chocolat noir et des noisettes torréfiées.</p>
+                            <p><strong>Goût:</strong> Intense en chocolat, croquant des noisettes, riche et crémeux</p>
+                            <p><strong>Ingrédients:</strong> Mascarpone, chocolat noir, noisettes, café, biscuits</p>
+                        </div>
+                        <button class="btn-ajouter" data-nom="Tiramisu Chocolat-Noisette" data-prix="6.00">Ajouter au panier</button>
+                    </div>
+                </div>
+                
+                <!-- Produit 4 -->
+                <div class="produit">
+                    <div class="produit-img">[IMAGE DU PRODUIT]</div>
+                    <div class="produit-info">
+                        <h3 class="produit-nom">Tiramisu Spéculoos</h3>
+                        <div class="produit-prix">5,80 €</div>
+                        <div class="produit-description">
+                            <p>Une création originale avec des biscuits spéculoos et une touche de caramel.</p>
+                            <p><strong>Goût:</strong> Doux, épicé, caramel avec une texture croquante</p>
+                            <p><strong>Ingrédients:</strong> Mascarpone, spéculoos, caramel, crème, sucre</p>
+                        </div>
+                        <button class="btn-ajouter" data-nom="Tiramisu Spéculoos" data-prix="5.80">Ajouter au panier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partie 3 - Remarques -->
+    <section id="partie3">
+        <div class="container">
+            <h2>Informations Importantes</h2>
+            <div class="remarques">
+                <div class="remarque">
+                    <h3>📞 Commandes en Gros</h3>
+                    <p>Pour toute commande importante (plus de 20 pièces), veuillez nous contacter directement pour discuter de vos besoins et obtenir un tarif préférentiel.</p>
+                </div>
+                
+                <div class="remarque">
+                    <h3>🚚 Livraison Gratuite</h3>
+                    <p>Nous offrons la livraison gratuite à partir de 8 pièces commandées dans un rayon de 15km autour de notre boutique.</p>
+                </div>
+                
+                <div class="remarque">
+                    <h3>🎁 Box Surprise Offerte</h3>
+                    <p>Pour toute commande de 10 pièces ou plus, recevez gratuitement notre box surprise contenant deux de nos créations spéciales.</p>
+                </div>
+                
+                <div class="remarque">
+                    <h3>⏱️ Préparation Fraîche</h3>
+                    <p>Tous nos tiramisus sont préparés le jour même de la livraison/retrait pour garantir une fraîcheur et un goût optimaux.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partie 4 - Contact -->
+    <section id="partie4">
+        <div class="container">
+            <h2>Contactez-nous</h2>
+            <div class="contact-container">
+                <div class="coordonnees">
+                    <h3>Nos Coordonnées</h3>
+                    <div class="coordonnee-item">
+                        <i>📞</i>
+                        <div>
+                            <strong>Téléphone:</strong><br>
+                            [VOTRE NUMÉRO DE TÉLÉPHONE]
+                        </div>
+                    </div>
+                    
+                    <div class="coordonnee-item">
+                        <i>✉️</i>
+                        <div>
+                            <strong>Email:</strong><br>
+                            [VOTRE ADRESSE EMAIL]
+                        </div>
+                    </div>
+                    
+                    <div class="coordonnee-item">
+                        <i>📍</i>
+                        <div>
+                            <strong>Adresse:</strong><br>
+                            [VOTRE ADRESSE COMPLÈTE]
+                        </div>
+                    </div>
+                    
+                    <div class="coordonnee-item">
+                        <i>🕒</i>
+                        <div>
+                            <strong>Horaires d'ouverture:</strong><br>
+                            Lundi - Vendredi: 9h-19h<br>
+                            Samedi: 9h-18h<br>
+                            Dimanche: 10h-16h
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formulaire-contact">
+                    <h3>Formulaire de Contact</h3>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="nom">Nom et Prénom</label>
+                            <input type="text" id="nom" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sujet">Sujet</label>
+                            <input type="text" id="sujet" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" class="form-control" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-envoyer">Envoyer le message</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -276,181 +493,55 @@
     </footer>
 
     <script>
-        // Fonctions pour gérer le panier
-        function getPanier() {
-            return JSON.parse(localStorage.getItem('panier')) || [];
-        }
-
-        function sauvegarderPanier(panier) {
+        // Script pour le formulaire de contact
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
+            this.reset();
+        });
+        
+        // Fonctions pour le panier
+        function ajouterAuPanier(nom, prix) {
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            
+            // Vérifier si l'article est déjà dans le panier
+            const articleExistant = panier.find(article => article.nom === nom);
+            
+            if (articleExistant) {
+                articleExistant.quantite += 1;
+            } else {
+                panier.push({
+                    nom: nom,
+                    prix: parseFloat(prix),
+                    quantite: 1
+                });
+            }
+            
             localStorage.setItem('panier', JSON.stringify(panier));
-            mettreAJourCompteur();
+            mettreAJourCompteurPanier();
+            alert(nom + ' a été ajouté à votre panier !');
         }
-
-        function mettreAJourCompteur() {
-            const panier = getPanier();
+        
+        function mettreAJourCompteurPanier() {
+            const panier = JSON.parse(localStorage.getItem('panier')) || [];
             const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
-            document.getElementById('nb-articles').textContent = totalArticles;
-        }
-
-        function afficherPanier() {
-            const panier = getPanier();
-            const container = document.getElementById('panier-container');
-            const panierVide = document.getElementById('panier-vide');
-            
-            if (panier.length === 0) {
-                panierVide.style.display = 'block';
-                container.innerHTML = '';
-                container.appendChild(panierVide);
-                return;
+            const compteurElement = document.getElementById('nb-articles');
+            if (compteurElement) {
+                compteurElement.textContent = totalArticles;
             }
-            
-            panierVide.style.display = 'none';
-            
-            let html = `
-                <div class="panier-container">
-                    <div class="articles-panier">
-            `;
-            
-            let sousTotal = 0;
-            
-            panier.forEach((article, index) => {
-                const prixTotal = article.prix * article.quantite;
-                sousTotal += prixTotal;
-                
-                html += `
-                    <div class="article-panier">
-                        <div class="article-info">
-                            <div class="article-img">[IMG]</div>
-                            <div>
-                                <div class="article-nom">${article.nom}</div>
-                                <div class="article-prix">${article.prix.toFixed(2)} €</div>
-                            </div>
-                        </div>
-                        <div class="article-actions">
-                            <div class="quantite-controls">
-                                <button class="btn-quantite" data-index="${index}" data-action="decrease">-</button>
-                                <span>${article.quantite}</span>
-                                <button class="btn-quantite" data-index="${index}" data-action="increase">+</button>
-                            </div>
-                            <div class="prix-total">${prixTotal.toFixed(2)} €</div>
-                            <button class="btn-supprimer" data-index="${index}">Supprimer</button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            // Calcul des frais de livraison (gratuits à partir de 8 pièces)
-            const totalPieces = panier.reduce((total, article) => total + article.quantite, 0);
-            const fraisLivraison = totalPieces >= 8 ? 0 : 2.50;
-            const total = sousTotal + fraisLivraison;
-            
-            html += `
-                    </div>
-                    <div class="resume-commande">
-                        <h3 class="resume-titre">Résumé de la commande</h3>
-                        <div class="ligne-resume">
-                            <span>Sous-total:</span>
-                            <span>${sousTotal.toFixed(2)} €</span>
-                        </div>
-                        <div class="ligne-resume">
-                            <span>Frais de livraison:</span>
-                            <span>${fraisLivraison.toFixed(2)} €</span>
-                        </div>
-                        ${totalPieces >= 8 ? '<div style="color: green; font-size: 14px; margin-bottom: 10px;">✓ Livraison gratuite (8+ pièces)</div>' : ''}
-                        <div class="ligne-resume total">
-                            <span>Total:</span>
-                            <span>${total.toFixed(2)} €</span>
-                        </div>
-                        <button class="btn-commander" onclick="passerCommande()">Passer la commande</button>
-                        
-                        <div style="margin-top: 20px; font-size: 14px; color: #666;">
-                            <p>💡 Livraison gratuite à partir de 8 pièces</p>
-                            <p>🎁 Box surprise offerte à partir de 10 pièces</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-            
-            // Ajouter les écouteurs d'événements après le rendu
-            ajouterEcouteursEvenements();
         }
-
-        function ajouterEcouteursEvenements() {
-            // Boutons de quantité
-            document.querySelectorAll('.btn-quantite').forEach(button => {
-                button.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    const action = this.getAttribute('data-action');
-                    changerQuantite(index, action);
-                });
-            });
-            
-            // Boutons de suppression
-            document.querySelectorAll('.btn-supprimer').forEach(button => {
-                button.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    supprimerArticle(index);
-                });
-            });
-        }
-
-        function changerQuantite(index, action) {
-            const panier = getPanier();
-            
-            if (action === 'increase') {
-                panier[index].quantite += 1;
-            } else if (action === 'decrease') {
-                panier[index].quantite -= 1;
-                
-                if (panier[index].quantite <= 0) {
-                    panier.splice(index, 1);
-                }
+        
+        // Gestion des boutons "Ajouter au panier" avec délégation d'événements
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('btn-ajouter')) {
+                const nom = e.target.getAttribute('data-nom');
+                const prix = e.target.getAttribute('data-prix');
+                ajouterAuPanier(nom, prix);
             }
-            
-            sauvegarderPanier(panier);
-            afficherPanier();
-        }
-
-        function supprimerArticle(index) {
-            const panier = getPanier();
-            panier.splice(index, 1);
-            sauvegarderPanier(panier);
-            afficherPanier();
-        }
-
-        function passerCommande() {
-            const panier = getPanier();
-            if (panier.length === 0) {
-                alert('Votre panier est vide !');
-                return;
-            }
-            
-            const totalPieces = panier.reduce((total, article) => total + article.quantite, 0);
-            let message = 'Merci pour votre commande ! Nous vous contacterons rapidement pour finaliser celle-ci.';
-            
-            if (totalPieces >= 10) {
-                message += '\n\n🎁 Félicitations ! Vous recevrez une box surprise gratuite avec votre commande !';
-            } else if (totalPieces >= 8) {
-                message += '\n\n🚚 Félicitations ! Vous bénéficiez de la livraison gratuite !';
-            }
-            
-            alert(message);
-            localStorage.removeItem('panier');
-            afficherPanier();
-        }
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            mettreAJourCompteur();
-            afficherPanier();
         });
-    </script>
-</body>
-</html>
-            afficherPanier();
-        });
+        
+        // Initialiser le compteur au chargement
+        document.addEventListener('DOMContentLoaded', mettreAJourCompteurPanier);
     </script>
 </body>
 </html>
