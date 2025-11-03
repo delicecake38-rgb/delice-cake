@@ -137,12 +137,6 @@
             background: #e6d7c3;
         }
         
-        .quantite-value {
-            min-width: 30px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
         .btn-supprimer {
             background: #ff6b6b;
             color: white;
@@ -284,13 +278,22 @@
     <script>
         // Fonctions pour gérer le panier
         function getPanier() {
-            const panier = localStorage.getItem('panier');
-            return panier ? JSON.parse(panier) : [];
+            try {
+                const panier = localStorage.getItem('panier');
+                return panier ? JSON.parse(panier) : [];
+            } catch (e) {
+                console.error("Erreur lecture panier:", e);
+                return [];
+            }
         }
 
         function sauvegarderPanier(panier) {
-            localStorage.setItem('panier', JSON.stringify(panier));
-            mettreAJourCompteur();
+            try {
+                localStorage.setItem('panier', JSON.stringify(panier));
+                mettreAJourCompteur();
+            } catch (e) {
+                console.error("Erreur sauvegarde panier:", e);
+            }
         }
 
         function mettreAJourCompteur() {
@@ -319,15 +322,17 @@
             `;
             
             let sousTotal = 0;
+            let totalPieces = 0;
             
             panier.forEach((article, index) => {
                 const prixTotal = article.prix * article.quantite;
                 sousTotal += prixTotal;
+                totalPieces += article.quantite;
                 
                 html += `
-                    <div class="article-panier" data-index="${index}">
+                    <div class="article-panier">
                         <div class="article-info">
-                            <div class="article-img">[IMG]</div>
+                            <div class="article-img">🍰</div>
                             <div>
                                 <div class="article-nom">${article.nom}</div>
                                 <div class="article-prix">${article.prix.toFixed(2)} €</div>
@@ -347,7 +352,6 @@
             });
             
             // Calcul des frais de livraison (gratuits à partir de 8 pièces)
-            const totalPieces = panier.reduce((total, article) => total + article.quantite, 0);
             const fraisLivraison = totalPieces >= 8 ? 0 : 2.50;
             const total = sousTotal + fraisLivraison;
             
@@ -398,7 +402,7 @@
             }
             
             sauvegarderPanier(panier);
-            afficherPanier();
+            afficherPanier(); // Cette ligne recalcule TOUT le panier
         }
 
         function supprimerArticle(index) {
@@ -412,7 +416,7 @@
             
             panier.splice(index, 1);
             sauvegarderPanier(panier);
-            afficherPanier();
+            afficherPanier(); // Cette ligne recalcule TOUT le panier
         }
 
         function passerCommande() {
@@ -434,11 +438,6 @@
             alert(message);
             localStorage.removeItem('panier');
             afficherPanier();
-            
-            // Rediriger vers l'accueil après 2 secondes
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 2000);
         }
 
         // Initialisation
