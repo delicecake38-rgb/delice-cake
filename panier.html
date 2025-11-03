@@ -328,18 +328,20 @@
                         </div>
                         <div class="article-actions">
                             <div class="quantite-controls">
-                                <button class="btn-quantite" onclick="changerQuantite(${index}, -1)">-</button>
+                                <button class="btn-quantite" data-index="${index}" data-action="decrease">-</button>
                                 <span>${article.quantite}</span>
-                                <button class="btn-quantite" onclick="changerQuantite(${index}, 1)">+</button>
+                                <button class="btn-quantite" data-index="${index}" data-action="increase">+</button>
                             </div>
                             <div class="prix-total">${prixTotal.toFixed(2)} €</div>
-                            <button class="btn-supprimer" onclick="supprimerArticle(${index})">Supprimer</button>
+                            <button class="btn-supprimer" data-index="${index}">Supprimer</button>
                         </div>
                     </div>
                 `;
             });
             
-            const fraisLivraison = sousTotal > 0 ? 2.50 : 0;
+            // Calcul des frais de livraison (gratuits à partir de 8 pièces)
+            const totalPieces = panier.reduce((total, article) => total + article.quantite, 0);
+            const fraisLivraison = totalPieces >= 8 ? 0 : 2.50;
             const total = sousTotal + fraisLivraison;
             
             html += `
@@ -354,6 +356,7 @@
                             <span>Frais de livraison:</span>
                             <span>${fraisLivraison.toFixed(2)} €</span>
                         </div>
+                        ${totalPieces >= 8 ? '<div style="color: green; font-size: 14px; margin-bottom: 10px;">✓ Livraison gratuite (8+ pièces)</div>' : ''}
                         <div class="ligne-resume total">
                             <span>Total:</span>
                             <span>${total.toFixed(2)} €</span>
@@ -369,14 +372,41 @@
             `;
             
             container.innerHTML = html;
+            
+            // Ajouter les écouteurs d'événements après le rendu
+            ajouterEcouteursEvenements();
         }
 
-        function changerQuantite(index, changement) {
-            const panier = getPanier();
-            panier[index].quantite += changement;
+        function ajouterEcouteursEvenements() {
+            // Boutons de quantité
+            document.querySelectorAll('.btn-quantite').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    const action = this.getAttribute('data-action');
+                    changerQuantite(index, action);
+                });
+            });
             
-            if (panier[index].quantite <= 0) {
-                panier.splice(index, 1);
+            // Boutons de suppression
+            document.querySelectorAll('.btn-supprimer').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    supprimerArticle(index);
+                });
+            });
+        }
+
+        function changerQuantite(index, action) {
+            const panier = getPanier();
+            
+            if (action === 'increase') {
+                panier[index].quantite += 1;
+            } else if (action === 'decrease') {
+                panier[index].quantite -= 1;
+                
+                if (panier[index].quantite <= 0) {
+                    panier.splice(index, 1);
+                }
             }
             
             sauvegarderPanier(panier);
@@ -397,7 +427,16 @@
                 return;
             }
             
-            alert('Merci pour votre commande ! Nous vous contacterons rapidement pour finaliser celle-ci.');
+            const totalPieces = panier.reduce((total, article) => total + article.quantite, 0);
+            let message = 'Merci pour votre commande ! Nous vous contacterons rapidement pour finaliser celle-ci.';
+            
+            if (totalPieces >= 10) {
+                message += '\n\n🎁 Félicitations ! Vous recevrez une box surprise gratuite avec votre commande !';
+            } else if (totalPieces >= 8) {
+                message += '\n\n🚚 Félicitations ! Vous bénéficiez de la livraison gratuite !';
+            }
+            
+            alert(message);
             localStorage.removeItem('panier');
             afficherPanier();
         }
@@ -405,6 +444,11 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             mettreAJourCompteur();
+            afficherPanier();
+        });
+    </script>
+</body>
+</html>
             afficherPanier();
         });
     </script>
