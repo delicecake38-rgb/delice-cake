@@ -222,24 +222,6 @@
             padding: 20px 0;
             margin-top: 60px;
         }
-        
-        @media (max-width: 768px) {
-            .panier-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .article-panier {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .article-actions {
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
@@ -277,17 +259,20 @@
 
     <script>
         // Fonctions pour gérer le panier
-        function getPanier() {
+        let panier = [];
+
+        function chargerPanier() {
             try {
-                const panier = localStorage.getItem('panier');
-                return panier ? JSON.parse(panier) : [];
+                const panierStorage = localStorage.getItem('panier');
+                panier = panierStorage ? JSON.parse(panierStorage) : [];
             } catch (e) {
                 console.error("Erreur lecture panier:", e);
-                return [];
+                panier = [];
             }
+            return panier;
         }
 
-        function sauvegarderPanier(panier) {
+        function sauvegarderPanier() {
             try {
                 localStorage.setItem('panier', JSON.stringify(panier));
                 mettreAJourCompteur();
@@ -297,13 +282,11 @@
         }
 
         function mettreAJourCompteur() {
-            const panier = getPanier();
             const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
             document.getElementById('nb-articles').textContent = totalArticles;
         }
 
         function afficherPanier() {
-            const panier = getPanier();
             const container = document.getElementById('panier-container');
             const panierVide = document.getElementById('panier-vide');
             
@@ -338,13 +321,13 @@
                                 <div class="article-prix">${article.prix.toFixed(2)} €</div>
                             </div>
                         </div>
-                        <div class="article-actions">
+                        <div style="display: flex; align-items: center; gap: 15px;">
                             <div class="quantite-controls">
                                 <button class="btn-quantite" onclick="changerQuantite(${index}, -1)">-</button>
-                                <span class="quantite-value">${article.quantite}</span>
+                                <span style="margin: 0 10px; font-weight: bold;">${article.quantite}</span>
                                 <button class="btn-quantite" onclick="changerQuantite(${index}, 1)">+</button>
                             </div>
-                            <div style="font-weight: bold; margin: 0 15px;">${prixTotal.toFixed(2)} €</div>
+                            <div style="font-weight: bold;">${prixTotal.toFixed(2)} €</div>
                             <button class="btn-supprimer" onclick="supprimerArticle(${index})">Supprimer</button>
                         </div>
                     </div>
@@ -361,17 +344,19 @@
                         <h3 class="resume-titre">Résumé de la commande</h3>
                         <div class="ligne-resume">
                             <span>Sous-total:</span>
-                            <span>${sousTotal.toFixed(2)} €</span>
+                            <span id="sous-total">${sousTotal.toFixed(2)} €</span>
                         </div>
                         <div class="ligne-resume">
                             <span>Frais de livraison:</span>
-                            <span>${fraisLivraison.toFixed(2)} €</span>
+                            <span id="frais-livraison">${fraisLivraison.toFixed(2)} €</span>
                         </div>
-                        ${totalPieces >= 8 ? '<div style="color: green; font-size: 14px; margin-bottom: 10px;">✓ Livraison gratuite (8+ pièces)</div>' : ''}
-                        ${totalPieces >= 10 ? '<div style="color: #8b5a2b; font-size: 14px; margin-bottom: 10px;">🎁 Box surprise offerte !</div>' : ''}
+                        <div id="promotions">
+                            ${totalPieces >= 8 ? '<div style="color: green; margin: 10px 0;">✓ Livraison gratuite (8+ pièces)</div>' : ''}
+                            ${totalPieces >= 10 ? '<div style="color: #8b5a2b; margin: 10px 0;">🎁 Box surprise offerte !</div>' : ''}
+                        </div>
                         <div class="ligne-resume total">
                             <span>Total:</span>
-                            <span>${total.toFixed(2)} €</span>
+                            <span id="total-commande">${total.toFixed(2)} €</span>
                         </div>
                         <button class="btn-commander" onclick="passerCommande()">Passer la commande</button>
                         
@@ -386,41 +371,77 @@
             container.innerHTML = html;
         }
 
-        function changerQuantite(index, changement) {
-            const panier = getPanier();
+        function mettreAJourResume() {
+            // Recalculer les totaux
+            let sousTotal = 0;
+            let totalPieces = 0;
             
-            // Vérifier si l'index est valide
-            if (index < 0 || index >= panier.length) {
-                console.error("Index invalide:", index);
-                return;
+            panier.forEach(article => {
+                sousTotal += article.prix * article.quantite;
+                totalPieces += article.quantite;
+            });
+            
+            const fraisLivraison = totalPieces >= 8 ? 0 : 2.50;
+            const total = sousTotal + fraisLivraison;
+            
+            // Mettre à jour l'affichage
+            const sousTotalElement = document.getElementById('sous-total');
+            const fraisLivraisonElement = document.getElementById('frais-livraison');
+            const totalElement = document.getElementById('total-commande');
+            const promotionsElement = document.getElementById('promotions');
+            
+            if (sousTotalElement) sousTotalElement.textContent = `${sousTotal.toFixed(2)} €`;
+            if (fraisLivraisonElement) fraisLivraisonElement.textContent = `${fraisLivraison.toFixed(2)} €`;
+            if (totalElement) totalElement.textContent = `${total.toFixed(2)} €`;
+            
+            // Mettre à jour les promotions
+            if (promotionsElement) {
+                let promotionsHTML = '';
+                if (totalPieces >= 8) {
+                    promotionsHTML += '<div style="color: green; margin: 10px 0;">✓ Livraison gratuite (8+ pièces)</div>';
+                }
+                if (totalPieces >= 10) {
+                    promotionsHTML += '<div style="color: #8b5a2b; margin: 10px 0;">🎁 Box surprise offerte !</div>';
+                }
+                promotionsElement.innerHTML = promotionsHTML;
             }
-            
+        }
+
+        function changerQuantite(index, changement) {
             panier[index].quantite += changement;
             
             if (panier[index].quantite <= 0) {
                 panier.splice(index, 1);
+                // Si on supprime un article, il faut réafficher tout le panier
+                sauvegarderPanier();
+                afficherPanier();
+            } else {
+                // Si on change juste la quantité, on met à jour seulement le résumé
+                sauvegarderPanier();
+                mettreAJourResume();
+                
+                // Mettre à jour l'affichage de la quantité pour cet article
+                const quantiteElements = document.querySelectorAll('.quantite-controls span');
+                if (quantiteElements[index]) {
+                    quantiteElements[index].textContent = panier[index].quantite;
+                }
+                
+                // Mettre à jour le prix total pour cet article
+                const prixTotalElements = document.querySelectorAll('.article-actions div');
+                if (prixTotalElements[index]) {
+                    const prixTotal = (panier[index].prix * panier[index].quantite).toFixed(2);
+                    prixTotalElements[index].textContent = `${prixTotal} €`;
+                }
             }
-            
-            sauvegarderPanier(panier);
-            afficherPanier(); // Cette ligne recalcule TOUT le panier
         }
 
         function supprimerArticle(index) {
-            const panier = getPanier();
-            
-            // Vérifier si l'index est valide
-            if (index < 0 || index >= panier.length) {
-                console.error("Index invalide:", index);
-                return;
-            }
-            
             panier.splice(index, 1);
-            sauvegarderPanier(panier);
-            afficherPanier(); // Cette ligne recalcule TOUT le panier
+            sauvegarderPanier();
+            afficherPanier(); // On réaffiche tout car la structure a changé
         }
 
         function passerCommande() {
-            const panier = getPanier();
             if (panier.length === 0) {
                 alert('Votre panier est vide !');
                 return;
@@ -436,12 +457,14 @@
             }
             
             alert(message);
+            panier = [];
             localStorage.removeItem('panier');
             afficherPanier();
         }
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
+            chargerPanier();
             mettreAJourCompteur();
             afficherPanier();
         });
