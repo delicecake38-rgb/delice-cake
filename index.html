@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Délices de Tiramisu - Boutique en ligne</title>
+    
+    <!-- Inclure Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    
     <style>
         /* Styles généraux */
         * {
@@ -527,7 +531,100 @@
             const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
             document.getElementById('nb-articles').textContent = totalArticles;
         }
-        
+           <script src="supabase-config.js"></script>
+    <script>
+        // Charger les produits depuis Supabase
+        async function chargerProduits() {
+            try {
+                const { data: produits, error } = await supabase
+                    .from('produits')
+                    .select('*')
+                    .eq('disponible', true)
+                    .order('categorie');
+
+                if (error) throw error;
+                
+                afficherProduits(produits);
+            } catch (error) {
+                console.error('Erreur chargement produits:', error);
+                document.getElementById('produits-grid').innerHTML = 
+                    '<p>Produits temporairement indisponibles</p>';
+            }
+        }
+
+        // Charger les coordonnées depuis Supabase
+        async function chargerCoordonnees() {
+            try {
+                const { data: coordonnees, error } = await supabase
+                    .from('coordonnees')
+                    .select('*')
+                    .limit(1)
+                    .single();
+
+                if (error) throw error;
+                
+                afficherCoordonnees(coordonnees);
+            } catch (error) {
+                console.error('Erreur chargement coordonnées:', error);
+                // Utiliser des valeurs par défaut
+                afficherCoordonnees({
+                    telephone: "01 23 45 67 89",
+                    email: "contact@delicecake.fr",
+                    adresse: "123 Rue du Dessert, 75000 Paris",
+                    horaires: "Lundi - Vendredi: 9h-19h\nSamedi: 9h-18h\nDimanche: 10h-16h"
+                });
+            }
+        }
+
+        // Afficher les produits
+        function afficherProduits(produits) {
+            const container = document.getElementById('produits-grid');
+            
+            container.innerHTML = produits.map(produit => `
+                <div class="produit">
+                    <div class="produit-img">
+                        ${produit.image_url ? 
+                            `<img src="${produit.image_url}" alt="${produit.nom}" 
+                                  style="width: 100%; height: 100%; object-fit: cover;">` : 
+                            '🍰'
+                        }
+                    </div>
+                    <div class="produit-info">
+                        <h3 class="produit-nom">${produit.nom}</h3>
+                        <div class="produit-prix">${produit.prix.toFixed(2)} €</div>
+                        <div class="produit-description">
+                            <p>${produit.description}</p>
+                            ${produit.gout ? `<p><strong>Goût:</strong> ${produit.gout}</p>` : ''}
+                            ${produit.ingredients ? `<p><strong>Ingrédients:</strong> ${produit.ingredients}</p>` : ''}
+                        </div>
+                        <button class="btn-ajouter" 
+                                data-nom="${produit.nom}" 
+                                data-prix="${produit.prix}"
+                                data-id="${produit.id}">
+                            Ajouter au panier
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Afficher les coordonnées
+        function afficherCoordonnees(coordonnees) {
+            document.getElementById('telephone').textContent = coordonnees.telephone;
+            document.getElementById('email').textContent = coordonnees.email;
+            document.getElementById('adresse').textContent = coordonnees.adresse;
+            document.getElementById('horaires').innerHTML = coordonnees.horaires.replace(/\n/g, '<br>');
+        }
+
+        // Au chargement
+        document.addEventListener('DOMContentLoaded', async function() {
+            await chargerProduits();
+            await chargerCoordonnees();
+            mettreAJourCompteurPanier();
+        });
+    </script>
+</body>
+</html> 
         // Initialiser le compteur au chargement
         document.addEventListener('DOMContentLoaded', mettreAJourCompteurPanier);
     </script>
