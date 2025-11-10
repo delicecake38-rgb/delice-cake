@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panier - Délices de Tiramisu</title>
+    
+    <!-- Inclure Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -137,6 +141,12 @@
             background: #e6d7c3;
         }
         
+        .quantite-value {
+            min-width: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
         .btn-supprimer {
             background: #ff6b6b;
             color: white;
@@ -222,6 +232,49 @@
             padding: 20px 0;
             margin-top: 60px;
         }
+        
+        .chargement {
+            text-align: center;
+            padding: 40px;
+            color: #8b5a2b;
+        }
+        
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .panier-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .article-panier {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .article-actions {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                align-items: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -241,11 +294,12 @@
         <div class="container">
             <h1 class="panier-titre">Votre Panier</h1>
             
+            <div id="messages-container"></div>
+            
             <div id="panier-container">
                 <!-- Le contenu du panier sera généré par JavaScript -->
-                <div class="panier-vide" id="panier-vide">
-                    <p>Votre panier est vide</p>
-                    <a href="index.html" class="btn-retour">Retour à la boutique</a>
+                <div class="chargement">
+                    <p>Chargement de votre panier...</p>
                 </div>
             </div>
         </div>
@@ -257,19 +311,21 @@
         </div>
     </footer>
 
+    <!-- Configuration Supabase -->
+    <script src="supabase-config.js"></script>
+    
     <script>
         // Fonctions pour gérer le panier
         let panier = [];
 
-        function chargerPanier() {
+        function getPanier() {
             try {
                 const panierStorage = localStorage.getItem('panier');
-                panier = panierStorage ? JSON.parse(panierStorage) : [];
+                return panierStorage ? JSON.parse(panierStorage) : [];
             } catch (e) {
                 console.error("Erreur lecture panier:", e);
-                panier = [];
+                return [];
             }
-            return panier;
         }
 
         function sauvegarderPanier() {
@@ -291,13 +347,14 @@
             const panierVide = document.getElementById('panier-vide');
             
             if (panier.length === 0) {
-                panierVide.style.display = 'block';
-                container.innerHTML = '';
-                container.appendChild(panierVide);
+                container.innerHTML = `
+                    <div class="panier-vide">
+                        <p>Votre panier est vide</p>
+                        <a href="index.html" class="btn-retour">Retour à la boutique</a>
+                    </div>
+                `;
                 return;
             }
-            
-            panierVide.style.display = 'none';
             
             let html = `
                 <div class="panier-container">
@@ -321,13 +378,13 @@
                                 <div class="article-prix">${article.prix.toFixed(2)} €</div>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="article-actions">
                             <div class="quantite-controls">
                                 <button class="btn-quantite" onclick="changerQuantite(${index}, -1)">-</button>
-                                <span style="margin: 0 10px; font-weight: bold;">${article.quantite}</span>
+                                <span class="quantite-value">${article.quantite}</span>
                                 <button class="btn-quantite" onclick="changerQuantite(${index}, 1)">+</button>
                             </div>
-                            <div style="font-weight: bold;">${prixTotal.toFixed(2)} €</div>
+                            <div style="font-weight: bold; margin: 0 15px;">${prixTotal.toFixed(2)} €</div>
                             <button class="btn-supprimer" onclick="supprimerArticle(${index})">Supprimer</button>
                         </div>
                     </div>
@@ -351,8 +408,8 @@
                             <span id="frais-livraison">${fraisLivraison.toFixed(2)} €</span>
                         </div>
                         <div id="promotions">
-                            ${totalPieces >= 8 ? '<div style="color: green; margin: 10px 0;">✓ Livraison gratuite (8+ pièces)</div>' : ''}
-                            ${totalPieces >= 10 ? '<div style="color: #8b5a2b; margin: 10px 0;">🎁 Box surprise offerte !</div>' : ''}
+                            ${totalPieces >= 8 ? '<div style="color: green; font-size: 14px; margin-bottom: 10px;">✓ Livraison gratuite (8+ pièces)</div>' : ''}
+                            ${totalPieces >= 10 ? '<div style="color: #8b5a2b; font-size: 14px; margin-bottom: 10px;">🎁 Box surprise offerte !</div>' : ''}
                         </div>
                         <div class="ligne-resume total">
                             <span>Total:</span>
@@ -369,6 +426,18 @@
             `;
             
             container.innerHTML = html;
+        }
+
+        function afficherMessage(message, type = 'success') {
+            const container = document.getElementById('messages-container');
+            const messageClass = type === 'success' ? 'message-success' : 'message-error';
+            
+            container.innerHTML = `<div class="${messageClass}">${message}</div>`;
+            
+            // Supprimer le message après 5 secondes
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
         }
 
         function mettreAJourResume() {
@@ -398,10 +467,10 @@
             if (promotionsElement) {
                 let promotionsHTML = '';
                 if (totalPieces >= 8) {
-                    promotionsHTML += '<div style="color: green; margin: 10px 0;">✓ Livraison gratuite (8+ pièces)</div>';
+                    promotionsHTML += '<div style="color: green; font-size: 14px; margin-bottom: 10px;">✓ Livraison gratuite (8+ pièces)</div>';
                 }
                 if (totalPieces >= 10) {
-                    promotionsHTML += '<div style="color: #8b5a2b; margin: 10px 0;">🎁 Box surprise offerte !</div>';
+                    promotionsHTML += '<div style="color: #8b5a2b; font-size: 14px; margin-bottom: 10px;">🎁 Box surprise offerte !</div>';
                 }
                 promotionsElement.innerHTML = promotionsHTML;
             }
@@ -421,16 +490,16 @@
                 mettreAJourResume();
                 
                 // Mettre à jour l'affichage de la quantité pour cet article
-                const quantiteElements = document.querySelectorAll('.quantite-controls span');
+                const quantiteElements = document.querySelectorAll('.quantite-value');
                 if (quantiteElements[index]) {
                     quantiteElements[index].textContent = panier[index].quantite;
                 }
                 
                 // Mettre à jour le prix total pour cet article
                 const prixTotalElements = document.querySelectorAll('.article-actions div');
-                if (prixTotalElements[index]) {
+                if (prixTotalElements[index * 2]) { // Index pair car il y a deux divs par article
                     const prixTotal = (panier[index].prix * panier[index].quantite).toFixed(2);
-                    prixTotalElements[index].textContent = `${prixTotal} €`;
+                    prixTotalElements[index * 2].textContent = `${prixTotal} €`;
                 }
             }
         }
@@ -441,30 +510,99 @@
             afficherPanier(); // On réaffiche tout car la structure a changé
         }
 
-        function passerCommande() {
-            if (panier.length === 0) {
-                alert('Votre panier est vide !');
+        async function passerCommande() {
+            const panierActuel = getPanier();
+            if (panierActuel.length === 0) {
+                afficherMessage('Votre panier est vide !', 'error');
                 return;
             }
             
-            const totalPieces = panier.reduce((total, article) => total + article.quantite, 0);
-            let message = 'Merci pour votre commande ! Nous vous contacterons rapidement pour finaliser celle-ci.';
+            const totalPieces = panierActuel.reduce((total, article) => total + article.quantite, 0);
+            const totalPrix = panierActuel.reduce((total, article) => total + (article.prix * article.quantite), 0);
+            const fraisLivraison = totalPieces >= 8 ? 0 : 2.50;
             
-            if (totalPieces >= 10) {
-                message += '\n\n🎁 Félicitations ! Vous recevrez une box surprise gratuite avec votre commande !';
-            } else if (totalPieces >= 8) {
-                message += '\n\n🚚 Félicitations ! Vous bénéficiez de la livraison gratuite !';
+            // Demander les informations du client
+            const nomClient = prompt("Votre nom et prénom :");
+            if (!nomClient) {
+                afficherMessage('Commande annulée. Le nom est obligatoire.', 'error');
+                return;
             }
             
-            alert(message);
-            panier = [];
-            localStorage.removeItem('panier');
-            afficherPanier();
+            const telephone = prompt("Votre numéro de téléphone :");
+            if (!telephone) {
+                afficherMessage('Commande annulée. Le téléphone est obligatoire.', 'error');
+                return;
+            }
+            
+            const adresse = prompt("Votre adresse de livraison :");
+            if (!adresse) {
+                afficherMessage('Commande annulée. L\'adresse est obligatoire.', 'error');
+                return;
+            }
+            
+            const emailClient = prompt("Votre email (facultatif) :") || '';
+            
+            try {
+                // Générer un numéro de commande unique
+                const numeroCommande = 'CMD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+                
+                // Préparer les données de la commande
+                const commandeData = {
+                    numero_commande: numeroCommande,
+                    client_nom: nomClient,
+                    client_telephone: telephone,
+                    client_adresse: adresse,
+                    client_email: emailClient,
+                    articles: panierActuel,
+                    total_pieces: totalPieces,
+                    total_prix: totalPrix,
+                    frais_livraison: fraisLivraison,
+                    statut: 'en_attente',
+                    promotions: {
+                        livraison_gratuite: totalPieces >= 8,
+                        box_surprise: totalPieces >= 10
+                    }
+                };
+                
+                console.log("Envoi de la commande à Supabase:", commandeData);
+                
+                // Envoyer la commande à Supabase
+                const { data, error } = await supabase
+                    .from('commandes')
+                    .insert([commandeData]);
+                
+                if (error) {
+                    console.error("Erreur Supabase:", error);
+                    throw error;
+                }
+                
+                let message = `Commande #${numeroCommande} passée avec succès !`;
+                message += `\nTotal: ${(totalPrix + fraisLivraison).toFixed(2)}€`;
+                message += `\nNous vous contacterons au ${telephone} pour confirmer.`;
+                
+                if (totalPieces >= 10) {
+                    message += '\n\n🎁 Félicitations ! Box surprise offerte !';
+                } else if (totalPieces >= 8) {
+                    message += '\n\n🚚 Félicitations ! Livraison gratuite !';
+                }
+                
+                afficherMessage(message);
+                
+                // Vider le panier
+                panier = [];
+                localStorage.removeItem('panier');
+                afficherPanier();
+                
+            } catch (error) {
+                console.error('Erreur enregistrement commande:', error);
+                afficherMessage('Erreur technique. Veuillez nous appeler directement.', 'error');
+            }
         }
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            chargerPanier();
+            // Charger le panier depuis le localStorage
+            panier = getPanier();
             mettreAJourCompteur();
             afficherPanier();
         });
