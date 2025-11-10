@@ -308,6 +308,13 @@
             border-radius: 5px;
             margin: 10px 0;
         }
+
+        .ingredients {
+            font-size: 13px;
+            color: #7d5d3f;
+            margin-top: 10px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -452,9 +459,9 @@
     </footer>
 
     <script>
-        // Configuration Supabase - AVEC VOS VRAIES VALEURS
-        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co'; // REMPLACEZ xxx par votre URL
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo'; // REMPLACEZ xxx par votre clé anon
+        // Configuration Supabase
+        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
         
         // Initialiser Supabase
         const supabase = window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -465,11 +472,11 @@
             try {
                 console.log("🔍 Tentative de chargement des produits depuis Supabase...");
                 
+                // Charger tous les produits sans filtre de disponibilité
                 const { data: produits, error } = await supabase
                     .from('produits')
                     .select('*')
-                    .eq('disponible', true)
-                    .order('nom');
+                    .order('id');
 
                 if (error) {
                     console.error('❌ Erreur Supabase:', error);
@@ -479,6 +486,13 @@
                 }
                 
                 console.log("✅ Produits chargés:", produits);
+                
+                if (!produits || produits.length === 0) {
+                    document.getElementById('produits-grid').innerHTML = 
+                        '<div class="error">Aucun produit disponible pour le moment.</div>';
+                    return;
+                }
+                
                 afficherProduits(produits);
                 
             } catch (error) {
@@ -506,13 +520,7 @@
                     console.log("✅ Coordonnées chargées:", coordonnees[0]);
                     afficherCoordonnees(coordonnees[0]);
                 } else {
-                    // Utiliser des valeurs par défaut si pas de données
-                    afficherCoordonnees({
-                        telephone: "07 84 96 45 71",
-                        email: "delicecake38@gmail.com",
-                        adresse: "Grenoble",
-                        horaires: "Lundi - Dimanche: 10h-19h"
-                    });
+                    throw new Error('Aucune coordonnée trouvée');
                 }
                 
             } catch (error) {
@@ -530,19 +538,10 @@
         function afficherProduits(produits) {
             const container = document.getElementById('produits-grid');
             
-            if (!produits || produits.length === 0) {
-                container.innerHTML = '<div class="error">Aucun produit disponible pour le moment.</div>';
-                return;
-            }
-            
             container.innerHTML = produits.map(produit => `
                 <div class="produit">
                     <div class="produit-img">
-                        ${produit.image_url ? 
-                            `<img src="${produit.image_url}" alt="${produit.nom}" 
-                                  style="width: 100%; height: 100%; object-fit: cover;">` : 
-                            '<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 48px;">🍰</div>'
-                        }
+                        <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 48px; background: #e6d7c3; color: #8b5a2b;">🍰</div>
                     </div>
                     <div class="produit-info">
                         <h3 class="produit-nom">${produit.nom}</h3>
@@ -550,7 +549,7 @@
                         <div class="produit-description">
                             <p>${produit.description || ''}</p>
                             ${produit.gout ? `<p><strong>Goût:</strong> ${produit.gout}</p>` : ''}
-                            ${produit.ingredients ? `<p><strong>Ingrédients:</strong> ${produit.ingredients}</p>` : ''}
+                            ${produit.ingredients ? `<div class="ingredients"><strong>Ingrédients:</strong> ${produit.ingredients}</div>` : ''}
                         </div>
                         <button class="btn-ajouter" 
                                 data-nom="${produit.nom}" 
