@@ -326,66 +326,9 @@
     <section id="partie2">
         <div class="container">
             <h2>Nos Délicieux Tiramisus</h2>
-            <div class="produits-grid">
-                <!-- Produit 1 -->
-                <div class="produit">
-                    <div class="produit-img">[IMAGE DU PRODUIT]</div>
-                    <div class="produit-info">
-                        <h3 class="produit-nom">Tiramisu Classique</h3>
-                        <div class="produit-prix">5,50 €</div>
-                        <div class="produit-description">
-                            <p>Notre recette traditionnelle italienne avec mascarpone, café et cacao.</p>
-                            <p><strong>Goût:</strong> Équilibré, crémeux avec une touche d'amertume du café</p>
-                            <p><strong>Ingrédients:</strong> Mascarpone, œufs, sucre, café, cacao, biscuits à la cuiller</p>
-                        </div>
-                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Classique', 5.50)">Ajouter au panier</button>
-                    </div>
-                </div>
-                
-                <!-- Produit 2 -->
-                <div class="produit">
-                    <div class="produit-img">[IMAGE DU PRODUIT]</div>
-                    <div class="produit-info">
-                        <h3 class="produit-nom">Tiramisu Fruits Rouges</h3>
-                        <div class="produit-prix">6,50 €</div>
-                        <div class="produit-description">
-                            <p>Une variation fruitée avec des framboises, fraises et myrtilles.</p>
-                            <p><strong>Goût:</strong> Fruité, légèrement acidulé, doux et crémeux</p>
-                            <p><strong>Ingrédients:</strong> Mascarpone, fruits rouges, sucre, biscuits, crème</p>
-                        </div>
-                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Fruits Rouges', 6.50)">Ajouter au panier</button>
-                    </div>
-                </div>
-                
-                <!-- Produit 3 -->
-                <div class="produit">
-                    <div class="produit-img">[IMAGE DU PRODUIT]</div>
-                    <div class="produit-info">
-                        <h3 class="produit-nom">Tiramisu Chocolat-Noisette</h3>
-                        <div class="produit-prix">6,00 €</div>
-                        <div class="produit-description">
-                            <p>Pour les amateurs de chocolat, avec du chocolat noir et des noisettes torréfiées.</p>
-                            <p><strong>Goût:</strong> Intense en chocolat, croquant des noisettes, riche et crémeux</p>
-                            <p><strong>Ingrédients:</strong> Mascarpone, chocolat noir, noisettes, café, biscuits</p>
-                        </div>
-                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Chocolat-Noisette', 6.00)">Ajouter au panier</button>
-                    </div>
-                </div>
-                
-                <!-- Produit 4 -->
-                <div class="produit">
-                    <div class="produit-img">[IMAGE DU PRODUIT]</div>
-                    <div class="produit-info">
-                        <h3 class="produit-nom">Tiramisu Spéculoos</h3>
-                        <div class="produit-prix">5,80 €</div>
-                        <div class="produit-description">
-                            <p>Une création originale avec des biscuits spéculoos et une touche de caramel.</p>
-                            <p><strong>Goût:</strong> Doux, épicé, caramel avec une texture croquante</p>
-                            <p><strong>Ingrédients:</strong> Mascarpone, spéculoos, caramel, crème, sucre</p>
-                        </div>
-                        <button class="btn-ajouter" onclick="ajouterAuPanier('Tiramisu Spéculoos', 5.80)">Ajouter au panier</button>
-                    </div>
-                </div>
+            <div id="produits-grid" class="produits-grid">
+                <!-- Les produits seront chargés dynamiquement par JavaScript -->
+                <p>Chargement des produits...</p>
             </div>
         </div>
     </section>
@@ -429,7 +372,7 @@
                         <i>📞</i>
                         <div>
                             <strong>Téléphone:</strong><br>
-                            [VOTRE NUMÉRO DE TÉLÉPHONE]
+                            <span id="telephone">Chargement...</span>
                         </div>
                     </div>
                     
@@ -437,7 +380,7 @@
                         <i>✉️</i>
                         <div>
                             <strong>Email:</strong><br>
-                            [VOTRE ADRESSE EMAIL]
+                            <span id="email">Chargement...</span>
                         </div>
                     </div>
                     
@@ -445,7 +388,7 @@
                         <i>📍</i>
                         <div>
                             <strong>Adresse:</strong><br>
-                            [VOTRE ADRESSE COMPLÈTE]
+                            <span id="adresse">Chargement...</span>
                         </div>
                     </div>
                     
@@ -453,9 +396,7 @@
                         <i>🕒</i>
                         <div>
                             <strong>Horaires d'ouverture:</strong><br>
-                            Lundi - Vendredi: 9h-19h<br>
-                            Samedi: 9h-18h<br>
-                            Dimanche: 10h-16h
+                            <span id="horaires">Chargement...</span>
                         </div>
                     </div>
                 </div>
@@ -469,8 +410,8 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" class="form-control" required>
+                            <label for="email-client">Email</label>
+                            <input type="email" id="email-client" class="form-control" required>
                         </div>
                         
                         <div class="form-group">
@@ -496,65 +437,40 @@
         </div>
     </footer>
 
+    <!-- Configuration Supabase -->
+    <script src="supabase-config.js"></script>
+    
     <script>
-        // Script pour le formulaire de contact
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
-            this.reset();
-        });
-        
-        // Fonctions pour le panier
-        function ajouterAuPanier(nom, prix) {
-            let panier = JSON.parse(localStorage.getItem('panier')) || [];
-            
-            // Vérifier si l'article est déjà dans le panier
-            const articleExistant = panier.find(article => article.nom === nom);
-            
-            if (articleExistant) {
-                articleExistant.quantite += 1;
-            } else {
-                panier.push({
-                    nom: nom,
-                    prix: prix,
-                    quantite: 1
-                });
-            }
-            
-            localStorage.setItem('panier', JSON.stringify(panier));
-            mettreAJourCompteurPanier();
-            alert(nom + ' a été ajouté à votre panier !');
-        }
-        
-        function mettreAJourCompteurPanier() {
-            const panier = JSON.parse(localStorage.getItem('panier')) || [];
-            const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
-            document.getElementById('nb-articles').textContent = totalArticles;
-        }
-           <script src="supabase-config.js"></script>
-    <script>
-        // Charger les produits depuis Supabase
+        // Fonctions pour Supabase
         async function chargerProduits() {
             try {
+                console.log("Tentative de chargement des produits depuis Supabase...");
+                
                 const { data: produits, error } = await supabase
                     .from('produits')
                     .select('*')
                     .eq('disponible', true)
-                    .order('categorie');
+                    .order('nom');
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Erreur Supabase:', error);
+                    throw error;
+                }
                 
+                console.log("Produits chargés:", produits);
                 afficherProduits(produits);
+                
             } catch (error) {
                 console.error('Erreur chargement produits:', error);
                 document.getElementById('produits-grid').innerHTML = 
-                    '<p>Produits temporairement indisponibles</p>';
+                    '<p>⚠️ Produits temporairement indisponibles. Veuillez nous contacter directement.</p>';
             }
         }
 
-        // Charger les coordonnées depuis Supabase
         async function chargerCoordonnees() {
             try {
+                console.log("Tentative de chargement des coordonnées...");
+                
                 const { data: coordonnees, error } = await supabase
                     .from('coordonnees')
                     .select('*')
@@ -563,7 +479,9 @@
 
                 if (error) throw error;
                 
+                console.log("Coordonnées chargées:", coordonnees);
                 afficherCoordonnees(coordonnees);
+                
             } catch (error) {
                 console.error('Erreur chargement coordonnées:', error);
                 // Utiliser des valeurs par défaut
@@ -576,9 +494,13 @@
             }
         }
 
-        // Afficher les produits
         function afficherProduits(produits) {
             const container = document.getElementById('produits-grid');
+            
+            if (!produits || produits.length === 0) {
+                container.innerHTML = '<p>Aucun produit disponible pour le moment.</p>';
+                return;
+            }
             
             container.innerHTML = produits.map(produit => `
                 <div class="produit">
@@ -591,7 +513,7 @@
                     </div>
                     <div class="produit-info">
                         <h3 class="produit-nom">${produit.nom}</h3>
-                        <div class="produit-prix">${produit.prix.toFixed(2)} €</div>
+                        <div class="produit-prix">${parseFloat(produit.prix).toFixed(2)} €</div>
                         <div class="produit-description">
                             <p>${produit.description}</p>
                             ${produit.gout ? `<p><strong>Goût:</strong> ${produit.gout}</p>` : ''}
@@ -608,25 +530,68 @@
             `).join('');
         }
 
-        // Afficher les coordonnées
         function afficherCoordonnees(coordonnees) {
-            document.getElementById('telephone').textContent = coordonnees.telephone;
-            document.getElementById('email').textContent = coordonnees.email;
-            document.getElementById('adresse').textContent = coordonnees.adresse;
-            document.getElementById('horaires').innerHTML = coordonnees.horaires.replace(/\n/g, '<br>');
+            if (coordonnees.telephone) document.getElementById('telephone').textContent = coordonnees.telephone;
+            if (coordonnees.email) document.getElementById('email').textContent = coordonnees.email;
+            if (coordonnees.adresse) document.getElementById('adresse').textContent = coordonnees.adresse;
+            if (coordonnees.horaires) {
+                document.getElementById('horaires').innerHTML = coordonnees.horaires.replace(/\n/g, '<br>');
+            }
         }
 
-        // Au chargement
+        // Fonctions pour le panier
+        function ajouterAuPanier(nom, prix) {
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            
+            const articleExistant = panier.find(article => article.nom === nom);
+            
+            if (articleExistant) {
+                articleExistant.quantite += 1;
+            } else {
+                panier.push({
+                    nom: nom,
+                    prix: parseFloat(prix),
+                    quantite: 1
+                });
+            }
+            
+            localStorage.setItem('panier', JSON.stringify(panier));
+            mettreAJourCompteurPanier();
+            alert(nom + ' a été ajouté à votre panier !');
+        }
+        
+        function mettreAJourCompteurPanier() {
+            const panier = JSON.parse(localStorage.getItem('panier')) || [];
+            const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
+            const compteurElement = document.getElementById('nb-articles');
+            if (compteurElement) {
+                compteurElement.textContent = totalArticles;
+            }
+        }
+
+        // Gestion des boutons "Ajouter au panier" avec délégation d'événements
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('btn-ajouter')) {
+                const nom = e.target.getAttribute('data-nom');
+                const prix = e.target.getAttribute('data-prix');
+                ajouterAuPanier(nom, prix);
+            }
+        });
+
+        // Script pour le formulaire de contact
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
+            this.reset();
+        });
+
+        // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log("Page chargée, initialisation...");
             await chargerProduits();
             await chargerCoordonnees();
             mettreAJourCompteurPanier();
         });
-    </script>
-</body>
-</html> 
-        // Initialiser le compteur au chargement
-        document.addEventListener('DOMContentLoaded', mettreAJourCompteurPanier);
     </script>
 </body>
 </html>
