@@ -6,7 +6,7 @@
     <title>Délices de Tiramisu - Boutique en ligne</title>
     
     <!-- Inclure Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         /* Styles généraux */
@@ -293,6 +293,21 @@
                 flex: 0 0 100%;
             }
         }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #8b5a2b;
+        }
+
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #d32f2f;
+            background-color: #ffebee;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -327,8 +342,7 @@
         <div class="container">
             <h2>Nos Délicieux Tiramisus</h2>
             <div id="produits-grid" class="produits-grid">
-                <!-- Les produits seront chargés dynamiquement par JavaScript -->
-                <p>Chargement des produits...</p>
+                <div class="loading">Chargement des produits...</div>
             </div>
         </div>
     </section>
@@ -437,14 +451,19 @@
         </div>
     </footer>
 
-    <!-- Configuration Supabase -->
-    <script src="supabase-config.js"></script>
-    
     <script>
+        // Configuration Supabase - REMPLACEZ CES VALEURS PAR LES VÔTRES
+        const supabaseUrl = 'https://votre-projet.supabase.co'; // À REMPLACER
+        const supabaseKey = 'votre-cle-anonyme'; // À REMPLACER
+        
+        // Initialiser Supabase
+        const supabase = window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        console.log("Supabase initialisé");
+
         // Fonctions pour Supabase
         async function chargerProduits() {
             try {
-                console.log("Tentative de chargement des produits depuis Supabase...");
+                console.log("🔍 Tentative de chargement des produits depuis Supabase...");
                 
                 const { data: produits, error } = await supabase
                     .from('produits')
@@ -453,43 +472,57 @@
                     .order('nom');
 
                 if (error) {
-                    console.error('Erreur Supabase:', error);
-                    throw error;
+                    console.error('❌ Erreur Supabase:', error);
+                    document.getElementById('produits-grid').innerHTML = 
+                        '<div class="error">Erreur de chargement des produits: ' + error.message + '</div>';
+                    return;
                 }
                 
-                console.log("Produits chargés:", produits);
+                console.log("✅ Produits chargés:", produits);
                 afficherProduits(produits);
                 
             } catch (error) {
-                console.error('Erreur chargement produits:', error);
+                console.error('❌ Erreur chargement produits:', error);
                 document.getElementById('produits-grid').innerHTML = 
-                    '<p>⚠️ Produits temporairement indisponibles. Veuillez nous contacter directement.</p>';
+                    '<div class="error">⚠️ Produits temporairement indisponibles. Veuillez nous contacter directement.</div>';
             }
         }
 
         async function chargerCoordonnees() {
             try {
-                console.log("Tentative de chargement des coordonnées...");
+                console.log("🔍 Tentative de chargement des coordonnées...");
                 
                 const { data: coordonnees, error } = await supabase
                     .from('coordonnees')
                     .select('*')
-                    .limit(1)
-                    .single();
+                    .limit(1);
 
-                if (error) throw error;
+                if (error) {
+                    console.error('❌ Erreur coordonnées:', error);
+                    throw error;
+                }
                 
-                console.log("Coordonnées chargées:", coordonnees);
-                afficherCoordonnees(coordonnees);
+                if (coordonnees && coordonnees.length > 0) {
+                    console.log("✅ Coordonnées chargées:", coordonnees[0]);
+                    afficherCoordonnees(coordonnees[0]);
+                } else {
+                    // Utiliser des valeurs par défaut si pas de données
+                    afficherCoordonnees({
+                        telephone: "07 84 96 45 71",
+                        email: "delicecake38@gmail.com",
+                        adresse: "Grenoble",
+                        horaires: "Lundi - Dimanche: 10h-19h"
+                    });
+                }
                 
             } catch (error) {
-                console.error('Erreur chargement coordonnées:', error);
+                console.error('❌ Erreur chargement coordonnées:', error);
                 // Utiliser des valeurs par défaut
                 afficherCoordonnees({
-                    telephone: "01 23 45 67 89",
-                    email: "contact@delicecake.fr",
-                    adresse: "123 Rue du Dessert, 75000 Paris",
-                    horaires: "Lundi - Vendredi: 9h-19h\nSamedi: 9h-18h\nDimanche: 10h-16h"
+                    telephone: "07 84 96 45 71",
+                    email: "delicecake38@gmail.com",
+                    adresse: "Grenoble",
+                    horaires: "Lundi - Dimanche: 10h-19h"
                 });
             }
         }
@@ -498,7 +531,7 @@
             const container = document.getElementById('produits-grid');
             
             if (!produits || produits.length === 0) {
-                container.innerHTML = '<p>Aucun produit disponible pour le moment.</p>';
+                container.innerHTML = '<div class="error">Aucun produit disponible pour le moment.</div>';
                 return;
             }
             
@@ -508,14 +541,14 @@
                         ${produit.image_url ? 
                             `<img src="${produit.image_url}" alt="${produit.nom}" 
                                   style="width: 100%; height: 100%; object-fit: cover;">` : 
-                            '🍰'
+                            '<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 48px;">🍰</div>'
                         }
                     </div>
                     <div class="produit-info">
                         <h3 class="produit-nom">${produit.nom}</h3>
                         <div class="produit-prix">${parseFloat(produit.prix).toFixed(2)} €</div>
                         <div class="produit-description">
-                            <p>${produit.description}</p>
+                            <p>${produit.description || ''}</p>
                             ${produit.gout ? `<p><strong>Goût:</strong> ${produit.gout}</p>` : ''}
                             ${produit.ingredients ? `<p><strong>Ingrédients:</strong> ${produit.ingredients}</p>` : ''}
                         </div>
@@ -540,15 +573,16 @@
         }
 
         // Fonctions pour le panier
-        function ajouterAuPanier(nom, prix) {
+        function ajouterAuPanier(nom, prix, id) {
             let panier = JSON.parse(localStorage.getItem('panier')) || [];
             
-            const articleExistant = panier.find(article => article.nom === nom);
+            const articleExistant = panier.find(article => article.id === id);
             
             if (articleExistant) {
                 articleExistant.quantite += 1;
             } else {
                 panier.push({
+                    id: id,
                     nom: nom,
                     prix: parseFloat(prix),
                     quantite: 1
@@ -557,7 +591,17 @@
             
             localStorage.setItem('panier', JSON.stringify(panier));
             mettreAJourCompteurPanier();
-            alert(nom + ' a été ajouté à votre panier !');
+            
+            // Animation de confirmation
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✓ Ajouté !';
+            button.style.backgroundColor = '#4CAF50';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '';
+            }, 2000);
         }
         
         function mettreAJourCompteurPanier() {
@@ -569,25 +613,25 @@
             }
         }
 
-        // Gestion des boutons "Ajouter au panier" avec délégation d'événements
+        // Gestion des événements
         document.addEventListener('click', function(e) {
             if (e.target && e.target.classList.contains('btn-ajouter')) {
                 const nom = e.target.getAttribute('data-nom');
                 const prix = e.target.getAttribute('data-prix');
-                ajouterAuPanier(nom, prix);
+                const id = e.target.getAttribute('data-id');
+                ajouterAuPanier(nom, prix, id);
             }
         });
 
-        // Script pour le formulaire de contact
         document.getElementById('contact-form').addEventListener('submit', function(e) {
             e.preventDefault();
             alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
             this.reset();
         });
 
-        // Initialisation au chargement de la page
+        // Initialisation
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log("Page chargée, initialisation...");
+            console.log("🚀 Page chargée, initialisation...");
             await chargerProduits();
             await chargerCoordonnees();
             mettreAJourCompteurPanier();
