@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Délices Cake - Boutique en ligne</title>
+    <title>Délices Cake - Boutique de Tiramisu</title>
     
     <!-- Inclure Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -107,7 +107,7 @@
             background-color: white;
         }
         
-        .produit-grid {
+        .produits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
@@ -144,14 +144,14 @@
             margin-bottom: 10px;
         }
         
-        .produits-prix {
+        .produit-prix {
             font-size: 18px;
             font-weight: bold;
             color: #8b5a2b;
             margin-bottom: 15px;
         }
         
-        .produits-description {
+        .produit-description {
             margin-bottom: 20px;
             font-size: 14px;
             color: #666;
@@ -315,6 +315,11 @@
             margin-top: 10px;
             font-style: italic;
         }
+
+        .success {
+            background-color: #4CAF50;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -343,6 +348,7 @@
             </div>
         </div>
     </section>
+
     <!-- Partie 2 - Produits -->
     <section id="partie2">
         <div class="container">
@@ -352,7 +358,6 @@
             </div>
         </div>
     </section>
-
 
     <!-- Partie 3 - Remarques -->
     <section id="partie3">
@@ -465,21 +470,20 @@
         
         // Initialiser Supabase
         const supabase = window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        console.log("Supabase initialisé");
+        console.log("✅ Supabase initialisé");
 
         // Fonctions pour Supabase
         async function chargerProduits() {
             try {
                 console.log("🔍 Tentative de chargement des produits depuis Supabase...");
                 
-                // Charger tous les produits sans filtre de disponibilité
                 const { data: produits, error } = await supabase
                     .from('produits')
                     .select('*')
                     .order('id');
 
                 if (error) {
-                    console.error('❌ Erreur Supabase:', error);
+                    console.error('❌ Erreur Supabase produits:', error);
                     document.getElementById('produits-grid').innerHTML = 
                         '<div class="error">Erreur de chargement des produits: ' + error.message + '</div>';
                     return;
@@ -489,7 +493,7 @@
                 
                 if (!produits || produits.length === 0) {
                     document.getElementById('produits-grid').innerHTML = 
-                        '<div class="error">Aucun produit disponible pour le moment.</div>';
+                        '<div class="error">Aucun produit trouvé dans la base de données.</div>';
                     return;
                 }
                 
@@ -498,7 +502,7 @@
             } catch (error) {
                 console.error('❌ Erreur chargement produits:', error);
                 document.getElementById('produits-grid').innerHTML = 
-                    '<div class="error">⚠️ Produits temporairement indisponibles. Veuillez nous contacter directement.</div>';
+                    '<div class="error">Erreur technique lors du chargement des produits.</div>';
             }
         }
 
@@ -506,13 +510,14 @@
             try {
                 console.log("🔍 Tentative de chargement des coordonnées...");
                 
+                // Essayer d'abord avec single() pour récupérer un seul enregistrement
                 const { data: coordonnees, error } = await supabase
                     .from('coordonnees')
                     .select('*')
                     .limit(1);
 
                 if (error) {
-                    console.error('❌ Erreur coordonnées:', error);
+                    console.error('❌ Erreur Supabase coordonnées:', error);
                     throw error;
                 }
                 
@@ -520,7 +525,7 @@
                     console.log("✅ Coordonnées chargées:", coordonnees[0]);
                     afficherCoordonnees(coordonnees[0]);
                 } else {
-                    throw new Error('Aucune coordonnée trouvée');
+                    throw new Error('Aucune coordonnée trouvée dans la base');
                 }
                 
             } catch (error) {
@@ -595,11 +600,11 @@
             const button = event.target;
             const originalText = button.textContent;
             button.textContent = '✓ Ajouté !';
-            button.style.backgroundColor = '#4CAF50';
+            button.classList.add('success');
             
             setTimeout(() => {
                 button.textContent = originalText;
-                button.style.backgroundColor = '';
+                button.classList.remove('success');
             }, 2000);
         }
         
@@ -634,7 +639,27 @@
             await chargerProduits();
             await chargerCoordonnees();
             mettreAJourCompteurPanier();
+            
+            // Test de débogage
+            console.log("=== DÉBOGAGE SUPABASE ===");
+            console.log("URL:", supabaseUrl);
+            console.log("Clé:", supabaseKey ? "***" + supabaseKey.slice(-4) : "MANQUANTE");
         });
+
+        // Fonction de débogage accessible depuis la console
+        window.debugSupabase = async function() {
+            console.log('=== DÉBOGAGE SUPABASE ===');
+            
+            // Test produits
+            const { data: produits, error: errProd } = await supabase.from('produits').select('*');
+            console.log('Produits:', produits, 'Erreur:', errProd);
+            
+            // Test coordonnées
+            const { data: coord, error: errCoord } = await supabase.from('coordonnees').select('*');
+            console.log('Coordonnées:', coord, 'Erreur:', errCoord);
+            
+            console.log('=== FIN DÉBOGAGE ===');
+        };
     </script>
 </body>
 </html>
