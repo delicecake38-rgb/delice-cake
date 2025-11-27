@@ -203,236 +203,136 @@
     margin: 0 auto;
 }
 
-.produits-grid { 
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 40px;
+/* --- À remplacer: styles pour la grille et les cartes produits --- */
+.produits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+  align-items: start;
 }
 
-.produit { 
-    background: var(--blanc);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-    position: relative;
-    border: 1px solid rgba(139, 69, 19, 0.1);
-    display: flex;
-    flex-direction: column;
+.produit {
+  background: var(--blanc);
+  border-radius: 18px;
+  overflow: visible;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  position: relative;
+  text-align: center;
+  padding-bottom: 18px;
+  border: 1px solid rgba(139, 69, 19, 0.06);
 }
 
 .produit:hover {
-    transform: translateY(-12px);
-    box-shadow: var(--shadow-hover);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
 }
 
-.produit-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
-    color: var(--blanc);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    z-index: 2;
+/* Zone de l’image */
+.produit-media {
+  height: 220px;
+  width: 92%;
+  max-width: 340px;
+  margin: 18px auto 12px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--creme-fonce) 0%, #E8D5B5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(139,69,19,0.03);
 }
 
-.produit-media { 
+.produit-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  transition: var(--transition);
+}
+
+/* Zone info */
+.produit-info {
+  padding: 8px 18px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.produit-nom {
+  font-size: 1rem;
+  color: var(--chocolat);
+  margin: 6px 0 2px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.produit-subtitle {
+  font-size: 0.87rem;
+  color: var(--texte-clair);
+  margin-bottom: 6px;
+}
+
+/* Étoiles centrées */
+.stars {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  color: #f5c342;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+/* Prix */
+.produit-prix {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--cafe);
+  margin: 8px 0;
+}
+
+/* Bouton acheter */
+.btn-ajouter {
+  background: linear-gradient(135deg, var(--cafe) 0%, var(--chocolat) 100%);
+  color: var(--blanc);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 28px;
+  cursor: pointer;
+  width: 70%;
+  max-width: 240px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* responsive */
+@media (max-width: 992px) {
+  .produits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .produits-grid {
+    grid-template-columns: 1fr;
+  }
+  .produit-media {
     width: 100%;
-    height: 220px;
-    background: linear-gradient(135deg, var(--creme-fonce) 0%, #E8D5B5 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
+    max-width: 560px;
+  }
+  .btn-ajouter {
+    width: 90%;
+  }
 }
-
-.produit-media::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><defs><pattern id="grain" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="12.5" cy="12.5" r="0.5" fill="%235C3D2E"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-}
-
-.produit-media img { 
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: var(--transition);
-}
-
-.produit:hover .produit-media img {
-    transform: scale(1.05);
-}
-
-.produit-info { 
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-/* NOUVEAU STYLE POUR LA PRÉSENTATION DES PRODUITS */
-.produit-origine {
-    font-size: 0.9rem;
-    color: var(--texte-clair);
-    margin-bottom: 12px;
-    font-weight: 600;
-}
-
-.produit-prix-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-}
-
-.produit-prix-original {
-    font-size: 1.1rem;
-    color: var(--texte-clair);
-    text-decoration: line-through;
-}
-
-.produit-reduction {
-    background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
-    color: var(--blanc);
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.produit-prix-actuel {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--cafe);
-}
-
-.produit-poids {
-    font-size: 0.9rem;
-    color: var(--texte-clair);
-    margin-bottom: 16px;
-}
-
-.produit-nom { 
-    font-size: 1.3rem;
-    color: var(--chocolat);
-    margin: 0 0 12px 0;
-    font-weight: 700;
-}
-
-.produit-description { 
-    margin-bottom: 16px;
-    color: var(--texte-clair);
-    flex: 1;
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-
-.produit-qualite {
-    display: inline-block;
-    background: var(--creme);
-    color: var(--cafe);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-    border: 1px solid rgba(139, 69, 19, 0.2);
-}
-
-.produit-avis {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
-    color: var(--texte-clair);
-}
-
-.produit-etoiles {
-    color: #FFD700;
-}
-
-.btn-ajouter { 
-    background: linear-gradient(135deg, var(--cafe) 0%, var(--chocolat) 100%);
-    color: var(--blanc);
-    border: none;
-    padding: 14px 20px;
-    border-radius: 12px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: var(--transition);
-    margin-top: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.btn-ajouter:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
-}
-
-.btn-ajouter.success { 
-    background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);
-}
-        /* ===== INFORMATIONS SECTION ===== */
-        #partie3 { 
-            background: linear-gradient(135deg, var(--creme-fonce) 0%, var(--creme) 100%);
-            position: relative;
-        }
-
-        .remarques { 
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-
-        .remarque { 
-            background: var(--blanc);
-            padding: 32px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            text-align: center;
-            border: 1px solid rgba(139, 69, 19, 0.1);
-        }
-
-        .remarque:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .remarque h3 { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
-
-        .remarque h3 i { 
-            margin-right: 12px;
-            font-size: 1.8rem;
-            color: var(--cafe);
-        }
-
-        .remarque p {
-            color: var(--texte-clair);
-            line-height: 1.6;
-        }
 
         /* ===== CONTACT SECTION ===== */
         #partie4 { 
@@ -774,50 +674,58 @@
     }
 
     // ---- AFFICHER PRODUITS ----
-    function afficherProduits(produits) {
-        const container = document.getElementById('produits-grid');
-        container.innerHTML = ''; // vider avant affichage
+function afficherProduits(produits) {
+    const container = document.getElementById('produits-grid');
+    container.innerHTML = '';
 
-        produits.forEach(produit => {
-            // Sécuriser les valeurs
-            const nom = produit.nom || 'Produit';
-            const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
-            const description = produit.description || '';
-            const gout = produit.gout || '';
-            const ingredients = produit.ingredients || '';
-            const imageUrl = produit.image_url || '';
+    produits.forEach(produit => {
+        const nom = produit.nom || 'Produit';
+        const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
+        const gout = produit.gout || '';
+        const ingredients = produit.ingredients || '';
+        const imageUrl = produit.image_url || '';
 
-            const card = document.createElement('div');
-            card.className = 'produit';
+        const card = document.createElement('div');
+        card.className = 'produit';
 
-            card.innerHTML = `
-                <div class="produit-media">
-                    <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'24\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
-                </div>
-                <div class="produit-info">
-                    <div>
-                        <h3 class="produit-nom">${escapeHtml(nom)}</h3>
-                        <div class="produit-prix">${prix}</div>
-                    </div>
+        const mediaHtml = imageUrl
+            ? `<img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.style.display='none'">`
+            : ``;
 
-                    <div class="produit-description">
-                        <p>${escapeHtml(description)}</p>
-                        ${gout ? `<p><strong>Goût :</strong> ${escapeHtml(gout)}</p>` : ''}
-                        ${ingredients ? `<div class="ingredients"><strong>Ingrédients :</strong> ${escapeHtml(ingredients)}</div>` : ''}
-                    </div>
+        const starsHtml = `
+            <div class="stars">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+            </div>`;
 
-                    <button class="btn-ajouter"
-                        data-nom="${escapeAttr(nom)}"
-                        data-prix="${escapeAttr(produit.prix)}"
-                        data-id="${escapeAttr(produit.id)}">
-                        Ajouter au panier
-                    </button>
-                </div>
-            `;
+        card.innerHTML = `
+            <div class="produit-media">
+                ${mediaHtml}
+            </div>
 
-            container.appendChild(card);
-        });
-    }
+            <div class="produit-info">
+                <h3 class="produit-nom">${escapeHtml(nom)}</h3>
+                ${gout ? `<div class="produit-subtitle">${escapeHtml(gout)}</div>` : ''}
+                ${starsHtml}
+                <div class="produit-prix">${prix}</div>
+
+                ${ingredients ? `<div class="ingredients" style="margin-top:8px; width:86%">
+                    <strong>Ingrédients :</strong> ${escapeHtml(ingredients)}
+                </div>` : ''}
+
+                <button class="btn-ajouter"
+                    data-nom="${escapeAttr(nom)}"
+                    data-prix="${escapeAttr(produit.prix)}"
+                    data-id="${escapeAttr(produit.id)}">
+                    <i class="fas fa-shopping-basket"></i> Acheter
+                </button>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+}
 
     // ---- CHARGER COORDONNÉES ----
     async function chargerCoordonnees() {
