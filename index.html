@@ -143,20 +143,6 @@
             margin-bottom: 40px;
         }
 
-        .logo { 
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, var(--cafe) 0%, var(--cafe-clair) 100%);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: var(--blanc);
-            box-shadow: var(--shadow);
-        }
-
         .hero-subtitle {
             font-size: 1.3rem;
             color: var(--texte-clair);
@@ -232,6 +218,8 @@
             transition: var(--transition);
             position: relative;
             border: 1px solid rgba(139, 69, 19, 0.1);
+            display: flex;
+            flex-direction: column;
         }
 
         .produit:hover {
@@ -289,7 +277,7 @@
             padding: 28px;
             display: flex;
             flex-direction: column;
-            height: 100%;
+            flex-grow: 1;
         }
 
         .produit-header {
@@ -361,7 +349,7 @@
             font-size: 1rem;
             font-weight: 600;
             transition: var(--transition);
-            margin-top: 20px;
+            margin-top: auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -600,13 +588,12 @@
     <section id="partie1">
         <div class="container">
             <div class="logo-container">
-                <div class="logo">🍰</div>
                 <h1>Délices Cake</h1>
                 <p class="hero-subtitle">Découvrez l'authenticité du tiramisu artisanal, préparé avec passion et les meilleurs ingrédients</p>
             </div>
             <div class="video-container">
                 <div class="video-placeholder">
-                    Découvrez notre processus de fabrication artisanal
+                    <!-- Texte supprimé comme demandé -->
                 </div>
             </div>
         </div>
@@ -768,7 +755,49 @@
             const container = document.getElementById('produits-grid');
             container.innerHTML = '';
 
-            produits.forEach(produit => {
+            // Produits par défaut si la base de données est vide
+            const produitsParDefaut = [
+                {
+                    id: 1,
+                    nom: "Tiramisu Classique",
+                    prix: 3.99,
+                    description: "recette traditionnelle italienne avec mascarpone, café et cacao.",
+                    gout: "équilibré, crémeux avec une touche d'amertume du café",
+                    ingredients: "Mascarpone, œufs, sucre, café, cacao, biscuits",
+                    categorie: "classique"
+                },
+                {
+                    id: 2,
+                    nom: "Tiramisu Fruité",
+                    prix: 3.99,
+                    description: "Une variation fruitée avec des framboises, fraises et myrtilles.",
+                    gout: "Fruité, légèrement acidulé, doux et crémeux",
+                    ingredients: "Mascarpone, fruits rouges, sucre, biscuits, crème",
+                    categorie: "fruite"
+                },
+                {
+                    id: 3,
+                    nom: "Tiramisu Chocolat-Noisette",
+                    prix: 3.99,
+                    description: "de chocolat, avec du chocolat noir et des noisettes torréfiées.",
+                    gout: "Intensité chocolat, croquant des noisettes, riche et crémeux",
+                    ingredients: "Mascarpone, chocolat noir, noisettes, café, biscuit",
+                    categorie: "chocolat"
+                },
+                {
+                    id: 4,
+                    nom: "Tiramisu Spéculoos-Caramel",
+                    prix: 3.99,
+                    description: "création originale avec des biscuits spéculoos et une touche de caramel.",
+                    gout: "Doux, épicé, caramel avec une texture croquante",
+                    ingredients: "Mascarpone, spéculoos, caramel, crème, sucre",
+                    categorie: "original"
+                }
+            ];
+
+            const produitsAAfficher = produits && produits.length > 0 ? produits : produitsParDefaut;
+
+            produitsAAfficher.forEach(produit => {
                 const nom = produit.nom || 'Notre Spécialité';
                 const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : 'Sur devis';
                 const description = produit.description || 'Une création exclusive de notre chef pâtissier';
@@ -921,33 +950,4 @@
 
         document.getElementById('contact-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
-            this.reset();
-        });
-
-        // ---- UTILITAIRES ----
-        function escapeHtml(str) {
-            if (str === null || str === undefined) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function escapeAttr(str) {
-            if (str === null || str === undefined) return '';
-            return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-        }
-
-        // ---- DÉMARRAGE ----
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Initialisation du site Délices Cake');
-            await chargerProduits();
-            await chargerCoordonnees();
-            mettreAJourCompteurPanier();
-        });
-    </script>
-</body>
-</html>
+            alert('Merci
