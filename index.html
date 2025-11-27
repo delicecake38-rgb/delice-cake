@@ -1,329 +1,95 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Délices Cake - Boutique de Tiramisu</title>
-    
-    <!-- Inclure Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        /* Styles généraux */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f9f5f0;
-            color: #5c3d2e;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        section {
-            padding: 60px 0;
-        }
-        
-        h1, h2, h3 {
-            color: #8b5a2b;
-            margin-bottom: 20px;
-        }
-        
-        /* Header */
-        header {
-            background-color: #8b5a2b;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        .logo-header {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-links a:hover {
-            opacity: 0.8;
-        }
-        
-        /* Partie 1 - En-tête avec logo et vidéo */
-        #partie1 {
-            background-color: #f1e6d2;
-            text-align: center;
-            padding: 40px 0;
-        }
-        
-        .logo {
-            max-width: 200px;
-            margin-bottom: 20px;
-        }
-        
-        .video-container {
-            max-width: 800px;
-            margin: 0 auto;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .video-placeholder {
-            background-color: #8b5a2b;
-            color: white;
-            padding: 100px 20px;
-            font-size: 18px;
-        }
-        
-        /* Partie 2 - Produits */
-        #partie2 {
-            background-color: white;
-        }
-        
-        .produits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .produit {
-            background-color: #f9f5f0;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-        
-        .produit:hover {
-            transform: translateY(-5px);
-        }
-        
-        .produit-img {
-            height: 200px;
-            background-color: #e6d7c3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #8b5a2b;
-            font-weight: bold;
-        }
-        
-        .produit-info {
-            padding: 20px;
-        }
-        
-        .produit-nom {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .produit-prix {
-            font-size: 18px;
-            font-weight: bold;
-            color: #8b5a2b;
-            margin-bottom: 15px;
-        }
-        
-        .produit-description {
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .btn-ajouter {
-            background-color: #8b5a2b;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        
-        .btn-ajouter:hover {
-            background-color: #6d4621;
-        }
-        
-        /* Partie 3 - Remarques */
-        #partie3 {
-            background-color: #f1e6d2;
-        }
-        
-        .remarques {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        
-        .remarque {
-            flex: 0 0 48%;
-            background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-        }
-        
-        .remarque h3 {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .remarque h3 i {
-            margin-right: 10px;
-            color: #8b5a2b;
-        }
-        
-        /* Partie 4 - Contact */
-        #partie4 {
-            background-color: white;
-        }
-        
-        .contact-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        
-        .coordonnees {
-            flex: 0 0 45%;
-            margin-bottom: 30px;
-        }
-        
-        .coordonnee-item {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: flex-start;
-        }
-        
-        .coordonnee-item i {
-            margin-right: 10px;
-            color: #8b5a2b;
-            margin-top: 5px;
-        }
-        
-        .formulaire-contact {
-            flex: 0 0 45%;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        textarea.form-control {
-            min-height: 120px;
-            resize: vertical;
-        }
-        
-        .btn-envoyer {
-            background-color: #8b5a2b;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        
-        .btn-envoyer:hover {
-            background-color: #6d4621;
-        }
-        
-        /* Pied de page */
-        footer {
-            background-color: #5c3d2e;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 40px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .remarque {
-                flex: 0 0 100%;
-            }
-            
-            .coordonnees, .formulaire-contact {
-                flex: 0 0 100%;
-            }
-        }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #8b5a2b;
-        }
+```
+<!-- Supabase v2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        .error {
-            text-align: center;
-            padding: 20px;
-            color: #d32f2f;
-            background-color: #ffebee;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
+<style>
+    /* Styles généraux */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f9f5f0; color: #5c3d2e; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 60px 0; }
+    h1,h2,h3 { color: #8b5a2b; margin-bottom: 20px; }
 
-        .ingredients {
-            font-size: 13px;
-            color: #7d5d3f;
-            margin-top: 10px;
-            font-style: italic;
-        }
+    /* Header */
+    header { background-color: #8b5a2b; padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .nav-container { display:flex; justify-content:space-between; align-items:center; max-width:1200px; margin:0 auto; padding:0 20px; }
+    .logo-header { color:white; font-size:24px; font-weight:bold; }
+    .nav-links { display:flex; gap:30px; }
+    .nav-links a { color:white; text-decoration:none; transition:opacity .3s; }
+    .nav-links a:hover { opacity:.8; }
 
-        .success {
-            background-color: #4CAF50;
-            color: white;
-        }
-    </style>
+    /* Partie 1 */
+    #partie1 { background-color:#f1e6d2; text-align:center; padding:40px 0; }
+    .logo { max-width:200px; margin-bottom:20px; }
+
+    .video-container { max-width:800px; margin:0 auto; border-radius:10px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
+    .video-placeholder { background-color:#8b5a2b; color:white; padding:100px 20px; font-size:18px; }
+
+    /* Partie 2 - Produits */
+    #partie2 { background-color:white; }
+    .produits-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:30px; }
+    .produit { background-color:#f9f5f0; border-radius:10px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.05); transition:transform .3s ease; display:flex; flex-direction:column; }
+    .produit:hover { transform:translateY(-5px); }
+
+    .produit-media { width:100%; height:200px; background:#e6d7c3; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .produit-media img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .produit-info { padding:20px; flex:1; display:flex; flex-direction:column; }
+    .produit-nom { font-size:20px; margin-bottom:10px; color:#5c3d2e; }
+    .produit-prix { font-size:18px; font-weight:bold; color:#8b5a2b; margin-bottom:10px; }
+    .produit-description { margin-bottom:15px; font-size:14px; color:#666; flex:1; }
+    .ingredients { font-size:13px; color:#7d5d3f; margin-top:10px; font-style:italic; }
+
+    .btn-ajouter { background-color:#8b5a2b; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer; width:100%; font-size:16px; transition:background-color .3s; margin-top:10px; }
+    .btn-ajouter:hover { background-color:#6d4621; }
+    .btn-ajouter.success { background-color:#4CAF50; }
+
+    /* Partie 3 */
+    #partie3 { background-color:#f1e6d2; }
+    .remarques { display:flex; flex-wrap:wrap; justify-content:space-between; }
+    .remarque { flex:0 0 48%; background:white; padding:25px; border-radius:10px; margin-bottom:20px; box-shadow:0 3px 10px rgba(0,0,0,0.05); }
+    .remarque h3 { display:flex; align-items:center; margin-bottom:15px; }
+    .remarque h3 i { margin-right:10px; color:#8b5a2b; }
+
+    /* Partie 4 - Contact */
+    #partie4 { background-color:white; }
+    .contact-container { display:flex; flex-wrap:wrap; justify-content:space-between; }
+    .coordonnees { flex:0 0 45%; margin-bottom:30px; }
+    .coordonnee-item { margin-bottom:15px; display:flex; align-items:flex-start; }
+    .coordonnee-item i { margin-right:10px; color:#8b5a2b; margin-top:5px; }
+    .formulaire-contact { flex:0 0 45%; }
+
+    .form-group { margin-bottom:20px; }
+    .form-group label { display:block; margin-bottom:5px; font-weight:500; }
+    .form-control { width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:16px; }
+    textarea.form-control { min-height:120px; resize:vertical; }
+
+    .btn-envoyer { background-color:#8b5a2b; color:white; border:none; padding:12px 25px; border-radius:5px; cursor:pointer; font-size:16px; transition:background-color .3s; }
+    .btn-envoyer:hover { background-color:#6d4621; }
+
+    footer { background-color:#5c3d2e; color:white; text-align:center; padding:20px 0; margin-top:40px; }
+
+    /* Responsive */
+    @media (max-width:768px) {
+        .remarque { flex:0 0 100%; }
+        .coordonnees, .formulaire-contact { flex:0 0 100%; }
+    }
+
+    .loading { text-align:center; padding:20px; color:#8b5a2b; }
+    .error { text-align:center; padding:20px; color:#d32f2f; background-color:#ffebee; border-radius:5px; margin:10px 0; }
+</style>
+```
+
 </head>
 <body>
-    <!-- Header avec navigation -->
     <header>
         <div class="nav-container">
             <div class="logo-header">Délices Cake</div>
@@ -334,231 +100,348 @@
         </div>
     </header>
 
-    <!-- Partie 1 - Logo et vidéo publicitaire -->
-    <section id="partie1">
-        <div class="container">
-            <div class="logo-container">
-                <div class="logo">[VOTRE LOGO ICI]</div>
-                <h1>Délices Cake</h1>
+```
+<section id="partie1">
+    <div class="container">
+        <div class="logo-container">
+            <div class="logo">[VOTRE LOGO ICI]</div>
+            <h1>Délices Cake</h1>
+        </div>
+        <div class="video-container">
+            <div class="video-placeholder">[VIDÉO PUBLICITAIRE À INTÉGRER]</div>
+        </div>
+    </div>
+</section>
+
+<section id="partie2">
+    <div class="container">
+        <h2>Nos Délicieux Tiramisus</h2>
+        <div id="produits-grid" class="produits-grid">
+            <div class="loading">Chargement des produits...</div>
+        </div>
+    </div>
+</section>
+
+<section id="partie3">
+    <div class="container">
+        <h2>Informations Importantes</h2>
+        <div class="remarques">
+            <div class="remarque">
+                <h3>📞 Commandes en Gros</h3>
+                <p>Pour toute commande importante (plus de 20 pièces), veuillez nous contacter directement pour discuter de vos besoins et obtenir un tarif préférentiel.</p>
             </div>
-            <div class="video-container">
-                <div class="video-placeholder">
-                    [VIDÉO PUBLICITAIRE À INTÉGRER]
-                </div>
+            <div class="remarque">
+                <h3>🚚 Livraison Gratuite</h3>
+                <p>Nous offrons la livraison gratuite à partir de 8 pièces commandées dans un rayon de 15km autour de notre boutique.</p>
+            </div>
+            <div class="remarque">
+                <h3>🎁 Box Surprise Offerte</h3>
+                <p>Pour toute commande de 10 pièces ou plus, recevez gratuitement notre box surprise contenant deux de nos créations spéciales.</p>
+            </div>
+            <div class="remarque">
+                <h3>⏱️ Préparation Fraîche</h3>
+                <p>Tous nos tiramisus sont préparés le jour même de la livraison/retrait pour garantir une fraîcheur et un goût optimaux.</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Partie 2 - Produits -->
-    <section id="partie2">
-        <div class="container">
-            <h2>Nos Délicieux Tiramisus</h2>
-            <div id="produits-grid" class="produits-grid">
-                <div class="loading">Chargement des produits...</div>
-            </div>
-        </div>
-    </section>
+<section id="partie4">
+    <div class="container">
+        <h2>Contactez-nous</h2>
+        <div class="contact-container">
+            <div class="coordonnees">
+                <h3>Nos Coordonnées</h3>
 
-    <!-- Partie 3 - Remarques -->
-    <section id="partie3">
-        <div class="container">
-            <h2>Informations Importantes</h2>
-            <div class="remarques">
-                <div class="remarque">
-                    <h3>📞 Commandes en Gros</h3>
-                    <p>Pour toute commande importante (plus de 20 pièces), veuillez nous contacter directement pour discuter de vos besoins et obtenir un tarif préférentiel.</p>
-                </div>
-                
-                <div class="remarque">
-                    <h3>🚚 Livraison Gratuite</h3>
-                    <p>Nous offrons la livraison gratuite à partir de 8 pièces commandées dans un rayon de 15km autour de notre boutique.</p>
-                </div>
-                
-                <div class="remarque">
-                    <h3>🎁 Box Surprise Offerte</h3>
-                    <p>Pour toute commande de 10 pièces ou plus, recevez gratuitement notre box surprise contenant deux de nos créations spéciales.</p>
-                </div>
-                
-                <div class="remarque">
-                    <h3>⏱️ Préparation Fraîche</h3>
-                    <p>Tous nos tiramisus sont préparés le jour même de la livraison/retrait pour garantir une fraîcheur et un goût optimaux.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Partie 4 - Contact -->
-    <section id="partie4">
-        <div class="container">
-            <h2>Contactez-nous</h2>
-            <div class="contact-container">
-                <div class="coordonnees">
-                    <h3>Nos Coordonnées</h3>
-                    <div class="coordonnee-item">
-                        <i>📞</i>
-                        <div>
-                            <strong>Téléphone:</strong><br>
-                            <span id="telephone">Chargement...</span>
-                        </div>
-                    </div>
-                    
-                    <div class="coordonnee-item">
-                        <i>✉️</i>
-                        <div>
-                            <strong>Email:</strong><br>
-                            <span id="email">Chargement...</span>
-                        </div>
-                    </div>
-                    
-                    <div class="coordonnee-item">
-                        <i>📍</i>
-                        <div>
-                            <strong>Adresse:</strong><br>
-                            <span id="adresse">Chargement...</span>
-                        </div>
-                    </div>
-                    
-                    <div class="coordonnee-item">
-                        <i>🕒</i>
-                        <div>
-                            <strong>Horaires d'ouverture:</strong><br>
-                            <span id="horaires">Chargement...</span>
-                        </div>
+                <div class="coordonnee-item">
+                    <i>📞</i>
+                    <div>
+                        <strong>Téléphone:</strong><br>
+                        <span id="telephone">Chargement...</span>
                     </div>
                 </div>
-                
-                <div class="formulaire-contact">
-                    <h3>Formulaire de Contact</h3>
-                    <form id="contact-form">
-                        <div class="form-group">
-                            <label for="nom">Nom et Prénom</label>
-                            <input type="text" id="nom" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email-client">Email</label>
-                            <input type="email" id="email-client" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="sujet">Sujet</label>
-                            <input type="text" id="sujet" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" class="form-control" required></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn-envoyer">Envoyer le message</button>
-                    </form>
+
+                <div class="coordonnee-item">
+                    <i>✉️</i>
+                    <div>
+                        <strong>Email:</strong><br>
+                        <span id="email">Chargement...</span>
+                    </div>
+                </div>
+
+                <div class="coordonnee-item">
+                    <i>📍</i>
+                    <div>
+                        <strong>Adresse:</strong><br>
+                        <span id="adresse">Chargement...</span>
+                    </div>
+                </div>
+
+                <div class="coordonnee-item">
+                    <i>🕒</i>
+                    <div>
+                        <strong>Horaires d'ouverture:</strong><br>
+                        <span id="horaires">Chargement...</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Délices Cake - Tous droits réservés</p>
-        </div>
-    </footer>
+            <div class="formulaire-contact">
+                <h3>Formulaire de Contact</h3>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="nom">Nom et Prénom</label>
+                        <input type="text" id="nom" class="form-control" required />
+                    </div>
 
-    <script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+                    <div class="form-group">
+                        <label for="email-client">Email</label>
+                        <input type="email" id="email-client" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sujet">Sujet</label>
+                        <input type="text" id="sujet" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" class="form-control" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-envoyer">Envoyer le message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 Délices Cake - Tous droits réservés</p>
+    </div>
+</footer>
 
 <script>
-    const supabaseUrl = "https://ypxvnxddzgaopjdhclzj.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"; 
-   
+    // ---- CONFIG SUPABASE ----
+    const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+
+    // Initialisation correcte (Supabase v2)
     const { createClient } = supabase;
     const client = createClient(supabaseUrl, supabaseKey);
+    console.log('✅ Supabase (client) initialisé');
 
-    /* ----------------------
-       CHARGER PRODUITS
-    ----------------------- */
+    // ---- CHARGER PRODUITS ----
     async function chargerProduits() {
-        const { data: produits, error } = await client
-            .from("produits")
-            .select("*")
-            .order("id");
+        const grid = document.getElementById('produits-grid');
+        grid.innerHTML = '<div class="loading">Chargement des produits...</div>';
 
-        if (error) {
-            console.error("Erreur lors du chargement des produits :", error);
-            return;
+        try {
+            const { data: produits, error } = await client
+                .from('produits')
+                .select('*')
+                .order('id', { ascending: true });
+
+            if (error) {
+                console.error('❌ Erreur Supabase produits:', error);
+                grid.innerHTML = '<div class="error">Erreur de chargement des produits: ' + (error.message || error) + '</div>';
+                return;
+            }
+
+            if (!produits || produits.length === 0) {
+                grid.innerHTML = '<div class="error">Aucun produit trouvé dans la base de données.</div>';
+                return;
+            }
+
+            afficherProduits(produits);
+        } catch (err) {
+            console.error('❌ Exception lors du chargement produits:', err);
+            grid.innerHTML = '<div class="error">Erreur technique lors du chargement des produits.</div>';
         }
-
-        afficherProduits(produits);
     }
 
-
-    /* ----------------------
-       AFFICHER PRODUITS
-    ----------------------- */
+    // ---- AFFICHER PRODUITS ----
     function afficherProduits(produits) {
-        const grid = document.getElementById("produits-grid");
-        grid.innerHTML = "";
+        const container = document.getElementById('produits-grid');
+        container.innerHTML = ''; // vider avant affichage
 
-        produits.forEach((p) => {
-            const card = document.createElement("div");
-            card.className = "produit";
+        produits.forEach(produit => {
+            // Sécuriser les valeurs
+            const nom = produit.nom || 'Produit';
+            const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
+            const description = produit.description || '';
+            const gout = produit.gout || '';
+            const ingredients = produit.ingredients || '';
+            const imageUrl = produit.image_url || '';
+
+            const card = document.createElement('div');
+            card.className = 'produit';
 
             card.innerHTML = `
-                <img src="${p.image_url || 'placeholder.jpg'}" alt="${p.nom}" />
-
+                <div class="produit-media">
+                    <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'24\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
+                </div>
                 <div class="produit-info">
-                    <h3>${p.nom}</h3>
-                    <p class="prix">${p.prix} €</p>
+                    <div>
+                        <h3 class="produit-nom">${escapeHtml(nom)}</h3>
+                        <div class="produit-prix">${prix}</div>
+                    </div>
 
-                    <p>${p.description || ''}</p>
+                    <div class="produit-description">
+                        <p>${escapeHtml(description)}</p>
+                        ${gout ? `<p><strong>Goût :</strong> ${escapeHtml(gout)}</p>` : ''}
+                        ${ingredients ? `<div class="ingredients"><strong>Ingrédients :</strong> ${escapeHtml(ingredients)}</div>` : ''}
+                    </div>
 
-                    <p><strong>Goût :</strong> ${p.gout || '—'}</p>
-                    <p><strong>Ingrédients :</strong> ${p.ingredients || '—'}</p>
+                    <button class="btn-ajouter"
+                        data-nom="${escapeAttr(nom)}"
+                        data-prix="${escapeAttr(produit.prix)}"
+                        data-id="${escapeAttr(produit.id)}">
+                        Ajouter au panier
+                    </button>
                 </div>
             `;
 
-            grid.appendChild(card);
+            container.appendChild(card);
         });
     }
 
-
-    /* ----------------------
-       CHARGER COORDONNÉES
-    ----------------------- */
+    // ---- CHARGER COORDONNÉES ----
     async function chargerCoordonnees() {
-        const { data, error } = await client
-            .from("coordonnees")
-            .select("*")
-            .limit(1);
+        const telephoneEl = document.getElementById('telephone');
+        const emailEl = document.getElementById('email');
+        const adresseEl = document.getElementById('adresse');
+        const horairesEl = document.getElementById('horaires');
 
-        if (error) {
-            console.error("Erreur lors du chargement des coordonnées :", error);
-            return;
+        try {
+            const { data: coordonnees, error } = await client
+                .from('coordonnees')
+                .select('*')
+                .limit(1);
+
+            if (error) {
+                console.error('❌ Erreur Supabase coordonnées:', error);
+                // valeurs fallback
+                appliquerCoordonneesFallback();
+                return;
+            }
+
+            if (coordonnees && coordonnees.length > 0) {
+                const c = coordonnees[0];
+                if (c.telephone) telephoneEl.textContent = c.telephone;
+                if (c.email) emailEl.textContent = c.email;
+                if (c.adresse) adresseEl.textContent = c.adresse;
+                if (c.horaires) horairesEl.innerHTML = c.horaires.replace(/\n/g, '<br>');
+            } else {
+                appliquerCoordonneesFallback();
+            }
+        } catch (err) {
+            console.error('❌ Exception coordonnées:', err);
+            appliquerCoordonneesFallback();
         }
 
-        if (data.length > 0) {
-            afficherCoordonnees(data[0]);
+        function appliquerCoordonneesFallback() {
+            telephoneEl.textContent = "07 84 96 45 71";
+            emailEl.textContent = "delicecake38@gmail.com";
+            adresseEl.textContent = "Grenoble";
+            horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
         }
     }
 
-    /* ----------------------
-       AFFICHER COORDONNÉES
-    ----------------------- */
-    function afficherCoordonnees(c) {
-        document.getElementById("adresse").textContent = c.adresse;
-        document.getElementById("ville").textContent = c.ville;
-        document.getElementById("telephone").textContent = c.telephone;
-        document.getElementById("email").textContent = c.email;
+    // ---- PANIER ----
+    function ajouterAuPanier(nom, prix, id, button) {
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
 
-        if (c.instagram) {
-            document.getElementById("instagram").href = c.instagram;
+        // Utiliser id comme clé (string)
+        const articleExistant = panier.find(article => String(article.id) === String(id));
+
+        if (articleExistant) {
+            articleExistant.quantite += 1;
+        } else {
+            panier.push({
+                id: id,
+                nom: nom,
+                prix: parseFloat(prix) || 0,
+                quantite: 1
+            });
+        }
+
+        localStorage.setItem('panier', JSON.stringify(panier));
+        mettreAJourCompteurPanier();
+
+        // Animation
+        if (button) {
+            const originalText = button.textContent;
+            button.textContent = '✓ Ajouté !';
+            button.classList.add('success');
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('success');
+            }, 1600);
         }
     }
 
-    /* ----------------------
-       LANCEMENT AU CHARGEMENT
-    ----------------------- */
-    document.addEventListener("DOMContentLoaded", () => {
-        chargerProduits();
-        chargerCoordonnees();
+    function mettreAJourCompteurPanier() {
+        const panier = JSON.parse(localStorage.getItem('panier')) || [];
+        const totalArticles = panier.reduce((total, article) => total + (article.quantite || 0), 0);
+        const compteurElement = document.getElementById('nb-articles');
+        if (compteurElement) compteurElement.textContent = totalArticles;
+    }
+
+    // ---- GESTION ÉVÉNEMENTS ----
+    document.addEventListener('click', function(e) {
+        const target = e.target;
+        if (target && target.classList.contains('btn-ajouter')) {
+            const nom = target.getAttribute('data-nom');
+            const prix = target.getAttribute('data-prix');
+            const id = target.getAttribute('data-id');
+            ajouterAuPanier(nom, prix, id, target);
+        }
+    });
+
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
+        this.reset();
+    });
+
+    // ---- UTILITAIRES (sécurité affichage) ----
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+    function escapeAttr(str) {
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    // ---- DÉMARRAGE ----
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('🚀 Page chargée — init Supabase & chargement données');
+        await chargerProduits();
+        await chargerCoordonnees();
+        mettreAJourCompteurPanier();
+
+        // debug console helper
+        window.debugSupabase = async function() {
+            console.log('=== DEBUG SUPABASE (client) ===');
+            const { data: produits, error: errProd } = await client.from('produits').select('*');
+            console.log('Produits:', produits, 'ErrProd:', errProd);
+            const { data: coord, error: errCoord } = await client.from('coordonnees').select('*');
+            console.log('Coordonnées:', coord, 'ErrCoord:', errCoord);
+            console.log('=== FIN DEBUG ===');
+        };
     });
 </script>
+```
+
+</body>
+</html>
+
