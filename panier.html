@@ -1,611 +1,73 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panier - Délices de Tiramisu</title>
-    
-    <!-- Inclure Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f9f5f0;
-            color: #5c3d2e;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Header */
-        header {
-            background-color: #8b5a2b;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-links a:hover {
-            opacity: 0.8;
-        }
-        
-        /* Panier */
-        .panier-section {
-            padding: 60px 0;
-        }
-        
-        .panier-titre {
-            text-align: center;
-            margin-bottom: 40px;
-            color: #8b5a2b;
-        }
-        
-        .panier-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-        }
-        
-        .articles-panier {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .article-panier {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .article-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .article-img {
-            width: 80px;
-            height: 80px;
-            background-color: #e6d7c3;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #8b5a2b;
-            font-weight: bold;
-        }
-        
-        .article-nom {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .article-prix {
-            color: #8b5a2b;
-            font-weight: bold;
-        }
-        
-        .quantite-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .btn-quantite {
-            background: #f1e6d2;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .btn-quantite:hover {
-            background: #e6d7c3;
-        }
-        
-        .quantite-value {
-            min-width: 30px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .btn-supprimer {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .btn-supprimer:hover {
-            background: #ff5252;
-        }
-        
-        /* Résumé commande */
-        .resume-commande {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            height: fit-content;
-        }
-        
-        .resume-titre {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f1e6d2;
-        }
-        
-        .ligne-resume {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        
-        .total {
-            font-size: 20px;
-            font-weight: bold;
-            color: #8b5a2b;
-            margin: 20px 0;
-            padding-top: 20px;
-            border-top: 2px solid #f1e6d2;
-        }
-        
-        .btn-commander {
-            background: #8b5a2b;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.3s;
-        }
-        
-        .btn-commander:hover {
-            background: #6d4621;
-        }
-        
-        .panier-vide {
-            text-align: center;
-            padding: 60px 20px;
-        }
-        
-        .panier-vide p {
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
-        
-        .btn-retour {
-            background: #8b5a2b;
-            color: white;
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            display: inline-block;
-        }
-        
-        footer {
-            background-color: #5c3d2e;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 60px;
-        }
-        
-        .chargement {
-            text-align: center;
-            padding: 40px;
-            color: #8b5a2b;
-        }
-        
-        .message-success {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .message-error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        @media (max-width: 768px) {
-            .panier-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .article-panier {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .article-actions {
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
-                align-items: center;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panier</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background: #f4f4f4; }
+    .total { text-align: right; font-size: 1.2em; margin-top: 20px; }
+    .btn { padding: 10px 16px; background: black; color: white; border: none; cursor: pointer; border-radius: 6px; }
+    .btn:hover { opacity: 0.8; }
+  </style>
 </head>
 <body>
-    <!-- Header avec navigation -->
-    <header>
-        <div class="container nav-container">
-            <div class="logo">Délices de Tiramisu</div>
-            <nav class="nav-links">
-                <a href="index.html">Accueil</a>
-                <a href="panier.html">Panier (<span id="nb-articles">0</span>)</a>
-            </nav>
-        </div>
-    </header>
+  <h1>Votre Panier</h1>
+  <table id="panier-table">
+    <thead>
+      <tr>
+        <th>Produit</th>
+        <th>Prix</th>
+        <th>Quantité</th>
+        <th>Total</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-    <!-- Section Panier -->
-    <section class="panier-section">
-        <div class="container">
-            <h1 class="panier-titre">Votre Panier</h1>
-            
-            <div id="messages-container"></div>
-            
-            <div id="panier-container">
-                <!-- Le contenu du panier sera généré par JavaScript -->
-                <div class="chargement">
-                    <p>Chargement de votre panier...</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <div class="total">Total : <span id="total-panier">0</span> €</div>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 Délices de Tiramisu - Tous droits réservés</p>
-        </div>
-    </footer>
+  <script>
+    function chargerPanier() {
+      const panier = JSON.parse(localStorage.getItem("panier")) || [];
+      const tbody = document.querySelector("#panier-table tbody");
+      tbody.innerHTML = "";
 
-    <!-- Configuration Supabase -->
-    <script src="supabase-config.js"></script>
-    
-    <script>
-        // Fonctions pour gérer le panier
-        let panier = [];
+      let total = 0;
 
-        function getPanier() {
-            try {
-                const panierStorage = localStorage.getItem('panier');
-                return panierStorage ? JSON.parse(panierStorage) : [];
-            } catch (e) {
-                console.error("Erreur lecture panier:", e);
-                return [];
-            }
-        }
+      panier.forEach((item, index) => {
+        const ligne = document.createElement("tr");
 
-        function sauvegarderPanier() {
-            try {
-                localStorage.setItem('panier', JSON.stringify(panier));
-                mettreAJourCompteur();
-            } catch (e) {
-                console.error("Erreur sauvegarde panier:", e);
-            }
-        }
+        const totalItem = item.prix * item.quantite;
+        total += totalItem;
 
-        function mettreAJourCompteur() {
-            const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
-            document.getElementById('nb-articles').textContent = totalArticles;
-        }
+        ligne.innerHTML = `
+          <td>${item.nom}</td>
+          <td>${item.prix} €</td>
+          <td>${item.quantite}</td>
+          <td>${totalItem} €</td>
+          <td><button class="btn" onclick="supprimer(${index})">Supprimer</button></td>
+        `;
 
-        function afficherPanier() {
-            const container = document.getElementById('panier-container');
-            const panierVide = document.getElementById('panier-vide');
-            
-            if (panier.length === 0) {
-                container.innerHTML = `
-                    <div class="panier-vide">
-                        <p>Votre panier est vide</p>
-                        <a href="index.html" class="btn-retour">Retour à la boutique</a>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = `
-                <div class="panier-container">
-                    <div class="articles-panier">
-            `;
-            
-            let sousTotal = 0;
-            let totalPieces = 0;
-            
-            panier.forEach((article, index) => {
-                const prixTotal = article.prix * article.quantite;
-                sousTotal += prixTotal;
-                totalPieces += article.quantite;
-                
-                html += `
-                    <div class="article-panier">
-                        <div class="article-info">
-                            <div class="article-img">🍰</div>
-                            <div>
-                                <div class="article-nom">${article.nom}</div>
-                                <div class="article-prix">${article.prix.toFixed(2)} €</div>
-                            </div>
-                        </div>
-                        <div class="article-actions">
-                            <div class="quantite-controls">
-                                <button class="btn-quantite" onclick="changerQuantite(${index}, -1)">-</button>
-                                <span class="quantite-value">${article.quantite}</span>
-                                <button class="btn-quantite" onclick="changerQuantite(${index}, 1)">+</button>
-                            </div>
-                            <div style="font-weight: bold; margin: 0 15px;">${prixTotal.toFixed(2)} €</div>
-                            <button class="btn-supprimer" onclick="supprimerArticle(${index})">Supprimer</button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            // Calcul des frais de livraison (gratuits à partir de 8 pièces)
-            const fraisLivraison = totalPieces >= 8 ? 0 : 2.50;
-            const total = sousTotal + fraisLivraison;
-            
-            html += `
-                    </div>
-                    <div class="resume-commande">
-                        <h3 class="resume-titre">Résumé de la commande</h3>
-                        <div class="ligne-resume">
-                            <span>Sous-total:</span>
-                            <span id="sous-total">${sousTotal.toFixed(2)} €</span>
-                        </div>
-                        <div class="ligne-resume">
-                            <span>Frais de livraison:</span>
-                            <span id="frais-livraison">${fraisLivraison.toFixed(2)} €</span>
-                        </div>
-                        <div id="promotions">
-                            ${totalPieces >= 8 ? '<div style="color: green; font-size: 14px; margin-bottom: 10px;">✓ Livraison gratuite (8+ pièces)</div>' : ''}
-                            ${totalPieces >= 10 ? '<div style="color: #8b5a2b; font-size: 14px; margin-bottom: 10px;">🎁 Box surprise offerte !</div>' : ''}
-                        </div>
-                        <div class="ligne-resume total">
-                            <span>Total:</span>
-                            <span id="total-commande">${total.toFixed(2)} €</span>
-                        </div>
-                        <button class="btn-commander" onclick="passerCommande()">Passer la commande</button>
-                        
-                        <div style="margin-top: 20px; font-size: 14px; color: #666;">
-                            <p>💡 Livraison gratuite à partir de 8 pièces</p>
-                            <p>🎁 Box surprise offerte à partir de 10 pièces</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-        }
+        tbody.appendChild(ligne);
+      });
 
-        function afficherMessage(message, type = 'success') {
-            const container = document.getElementById('messages-container');
-            const messageClass = type === 'success' ? 'message-success' : 'message-error';
-            
-            container.innerHTML = `<div class="${messageClass}">${message}</div>`;
-            
-            // Supprimer le message après 5 secondes
-            setTimeout(() => {
-                container.innerHTML = '';
-            }, 5000);
-        }
+      document.getElementById("total-panier").textContent = total.toFixed(2);
+    }
 
-        function mettreAJourResume() {
-            // Recalculer les totaux
-            let sousTotal = 0;
-            let totalPieces = 0;
-            
-            panier.forEach(article => {
-                sousTotal += article.prix * article.quantite;
-                totalPieces += article.quantite;
-            });
-            
-            const fraisLivraison = totalPieces >= 8 ? 0 : 2.50;
-            const total = sousTotal + fraisLivraison;
-            
-            // Mettre à jour l'affichage
-            const sousTotalElement = document.getElementById('sous-total');
-            const fraisLivraisonElement = document.getElementById('frais-livraison');
-            const totalElement = document.getElementById('total-commande');
-            const promotionsElement = document.getElementById('promotions');
-            
-            if (sousTotalElement) sousTotalElement.textContent = `${sousTotal.toFixed(2)} €`;
-            if (fraisLivraisonElement) fraisLivraisonElement.textContent = `${fraisLivraison.toFixed(2)} €`;
-            if (totalElement) totalElement.textContent = `${total.toFixed(2)} €`;
-            
-            // Mettre à jour les promotions
-            if (promotionsElement) {
-                let promotionsHTML = '';
-                if (totalPieces >= 8) {
-                    promotionsHTML += '<div style="color: green; font-size: 14px; margin-bottom: 10px;">✓ Livraison gratuite (8+ pièces)</div>';
-                }
-                if (totalPieces >= 10) {
-                    promotionsHTML += '<div style="color: #8b5a2b; font-size: 14px; margin-bottom: 10px;">🎁 Box surprise offerte !</div>';
-                }
-                promotionsElement.innerHTML = promotionsHTML;
-            }
-        }
+    function supprimer(index) {
+      const panier = JSON.parse(localStorage.getItem("panier")) || [];
+      panier.splice(index, 1);
+      localStorage.setItem("panier", JSON.stringify(panier));
+      chargerPanier();
+    }
 
-        function changerQuantite(index, changement) {
-            panier[index].quantite += changement;
-            
-            if (panier[index].quantite <= 0) {
-                panier.splice(index, 1);
-                // Si on supprime un article, il faut réafficher tout le panier
-                sauvegarderPanier();
-                afficherPanier();
-            } else {
-                // Si on change juste la quantité, on met à jour seulement le résumé
-                sauvegarderPanier();
-                mettreAJourResume();
-                
-                // Mettre à jour l'affichage de la quantité pour cet article
-                const quantiteElements = document.querySelectorAll('.quantite-value');
-                if (quantiteElements[index]) {
-                    quantiteElements[index].textContent = panier[index].quantite;
-                }
-                
-                // Mettre à jour le prix total pour cet article
-                const prixTotalElements = document.querySelectorAll('.article-actions div');
-                if (prixTotalElements[index * 2]) { // Index pair car il y a deux divs par article
-                    const prixTotal = (panier[index].prix * panier[index].quantite).toFixed(2);
-                    prixTotalElements[index * 2].textContent = `${prixTotal} €`;
-                }
-            }
-        }
-
-        function supprimerArticle(index) {
-            panier.splice(index, 1);
-            sauvegarderPanier();
-            afficherPanier(); // On réaffiche tout car la structure a changé
-        }
-
-        async function passerCommande() {
-            const panierActuel = getPanier();
-            if (panierActuel.length === 0) {
-                afficherMessage('Votre panier est vide !', 'error');
-                return;
-            }
-            
-            const totalPieces = panierActuel.reduce((total, article) => total + article.quantite, 0);
-            const totalPrix = panierActuel.reduce((total, article) => total + (article.prix * article.quantite), 0);
-            const fraisLivraison = totalPieces >= 8 ? 0 : 2.50;
-            
-            // Demander les informations du client
-            const nomClient = prompt("Votre nom et prénom :");
-            if (!nomClient) {
-                afficherMessage('Commande annulée. Le nom est obligatoire.', 'error');
-                return;
-            }
-            
-            const telephone = prompt("Votre numéro de téléphone :");
-            if (!telephone) {
-                afficherMessage('Commande annulée. Le téléphone est obligatoire.', 'error');
-                return;
-            }
-            
-            const adresse = prompt("Votre adresse de livraison :");
-            if (!adresse) {
-                afficherMessage('Commande annulée. L\'adresse est obligatoire.', 'error');
-                return;
-            }
-            
-            const emailClient = prompt("Votre email (facultatif) :") || '';
-            
-            try {
-                // Générer un numéro de commande unique
-                const numeroCommande = 'CMD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-                
-                // Préparer les données de la commande
-                const commandeData = {
-                    numero_commande: numeroCommande,
-                    client_nom: nomClient,
-                    client_telephone: telephone,
-                    client_adresse: adresse,
-                    client_email: emailClient,
-                    articles: panierActuel,
-                    total_pieces: totalPieces,
-                    total_prix: totalPrix,
-                    frais_livraison: fraisLivraison,
-                    statut: 'en_attente',
-                    promotions: {
-                        livraison_gratuite: totalPieces >= 8,
-                        box_surprise: totalPieces >= 10
-                    }
-                };
-                
-                console.log("Envoi de la commande à Supabase:", commandeData);
-                
-                // Envoyer la commande à Supabase
-                const { data, error } = await supabase
-                    .from('commandes')
-                    .insert([commandeData]);
-                
-                if (error) {
-                    console.error("Erreur Supabase:", error);
-                    throw error;
-                }
-                
-                let message = `Commande #${numeroCommande} passée avec succès !`;
-                message += `\nTotal: ${(totalPrix + fraisLivraison).toFixed(2)}€`;
-                message += `\nNous vous contacterons au ${telephone} pour confirmer.`;
-                
-                if (totalPieces >= 10) {
-                    message += '\n\n🎁 Félicitations ! Box surprise offerte !';
-                } else if (totalPieces >= 8) {
-                    message += '\n\n🚚 Félicitations ! Livraison gratuite !';
-                }
-                
-                afficherMessage(message);
-                
-                // Vider le panier
-                panier = [];
-                localStorage.removeItem('panier');
-                afficherPanier();
-                
-            } catch (error) {
-                console.error('Erreur enregistrement commande:', error);
-                afficherMessage('Erreur technique. Veuillez nous appeler directement.', 'error');
-            }
-        }
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Charger le panier depuis le localStorage
-            panier = getPanier();
-            mettreAJourCompteur();
-            afficherPanier();
-        });
-    </script>
+    document.addEventListener("DOMContentLoaded", chargerPanier);
+  </script>
 </body>
 </html>
