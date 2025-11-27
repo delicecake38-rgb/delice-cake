@@ -870,64 +870,6 @@
         }
     }
 
-    function mettreAJourCompteurPanier() {
-        const panier = JSON.parse(localStorage.getItem('panier')) || [];
-        const totalArticles = panier.reduce((total, article) => total + (article.quantite || 0), 0);
-        const compteurElement = document.getElementById('nb-articles');
-        if (compteurElement) compteurElement.textContent = totalArticles;
-    }
-
-    // ---- GESTION ÉVÉNEMENTS ----
-    document.addEventListener('click', function(e) {
-        const target = e.target;
-        if (target && target.classList.contains('btn-ajouter')) {
-            const nom = target.getAttribute('data-nom');
-            const prix = target.getAttribute('data-prix');
-            const id = target.getAttribute('data-id');
-            ajouterAuPanier(nom, prix, id, target);
-        }
-    });
-
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
-        this.reset();
-    });
-
-    // ---- UTILITAIRES (sécurité affichage) ----
-    function escapeHtml(str) {
-        if (str === null || str === undefined) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-    function escapeAttr(str) {
-        if (str === null || str === undefined) return '';
-        return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    }
-
-    // ---- DÉMARRAGE ----
-    document.addEventListener('DOMContentLoaded', async function() {
-        console.log('🚀 Page chargée — init Supabase & chargement données');
-        await chargerProduits();
-        await chargerCoordonnees();
-        mettreAJourCompteurPanier();
-
-        // debug console helper
-        window.debugSupabase = async function() {
-            console.log('=== DEBUG SUPABASE (client) ===');
-            const { data: produits, error: errProd } = await client.from('produits').select('*');
-            console.log('Produits:', produits, 'ErrProd:', errProd);
-            const { data: coord, error: errCoord } = await client.from('coordonnees').select('*');
-            console.log('Coordonnées:', coord, 'ErrCoord:', errCoord);
-            console.log('=== FIN DEBUG ===');
-        };
-    });
-</script>
-```
 
 // ---- PANIER ----
         function ajouterAuPanier(nom, prix, id, button) {
