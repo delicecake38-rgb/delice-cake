@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Ajouter un produit</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    h1 { text-align: center; }
+    form { max-width: 500px; margin: auto; }
+    input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; }
+    .btn { background: black; color: white; padding: 12px; border: none; width: 100%; border-radius: 6px; cursor: pointer; }
+    .btn:hover { opacity: 0.8; }
+    .msg { margin-top: 15px; text-align: center; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <h1>Panneau Admin – Ajouter un produit</h1>
+
+  <form id="form-produit">
+    <input type="text" id="nom" placeholder="Nom du produit" required>
+    <input type="number" id="prix" placeholder="Prix (€)" required>
+    <input type="number" id="quantite" placeholder="Quantité en stock" required>
+    <input type="text" id="gout" placeholder="Goût">
+    <input type="text" id="categorie" placeholder="Catégorie">
+    <input type="text" id="origine" placeholder="Origine">
+    <textarea id="description" placeholder="Description"></textarea>
+    <textarea id="ingredients" placeholder="Ingrédients"></textarea>
+    <input type="text" id="image_url" placeholder="URL de l'image" required>
+
+    <button class="btn" type="submit">Ajouter le produit</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+
+<script>
+  const supabaseUrl = "https://ypxvnxddzgaopjdhclzj.supabase.co";
+  const supabaseKey = "PUBLIC-ANON-KEY-ICI"; // ⚠️ Mets ta clé ici
+  const { createClient } = supabase;
+  const client = createClient(supabaseUrl, supabaseKey);
+
+  document.getElementById("form-produit").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const produit = {
+      nom: document.getElementById("nom").value,
+      prix: parseFloat(document.getElementById("prix").value),
+      quantite: parseInt(document.getElementById("quantite").value),
+      gout: document.getElementById("gout").value,
+      categorie: document.getElementById("categorie").value,
+      origine: document.getElementById("origine").value,
+      description: document.getElementById("description").value,
+      ingredients: document.getElementById("ingredients").value,
+      image_url: document.getElementById("image_url").value
+    };
+
+    const { data, error } = await client.from("produits").insert([produit]);
+
+    const msg = document.getElementById("msg");
+
+    if (error) {
+      msg.textContent = "Erreur : " + error.message;
+      msg.style.color = "red";
+    } else {
+      msg.textContent = "Produit ajouté avec succès !";
+      msg.style.color = "green";
+      e.target.reset();
+    }
+  });
+</script>
+
+</body>
+</html>
