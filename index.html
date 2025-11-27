@@ -91,6 +91,11 @@
             gap: 12px;
         }
 
+        .logo-header::before {
+            content: "🍰";
+            font-size: 2rem;
+        }
+
         .nav-links { 
             display: flex;
             gap: 40px;
@@ -712,131 +717,199 @@
     </footer>
 
     <script>
-    // ---- CONFIG SUPABASE ----
-    const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+        // ---- CONFIG SUPABASE ----
+        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
 
-    // Initialisation correcte (Supabase v2)
-    const { createClient } = supabase;
-    const client = createClient(supabaseUrl, supabaseKey);
-    console.log('✅ Supabase (client) initialisé');
+        // Initialisation correcte (Supabase v2)
+        const { createClient } = supabase;
+        const client = createClient(supabaseUrl, supabaseKey);
+        console.log('✅ Supabase initialisé');
 
-    // ---- CHARGER PRODUITS ----
-    async function chargerProduits() {
-        const grid = document.getElementById('produits-grid');
-        grid.innerHTML = '<div class="loading">Chargement des produits...</div>';
+        // ---- CHARGER PRODUITS ----
+        async function chargerProduits() {
+            const grid = document.getElementById('produits-grid');
+            grid.innerHTML = '<div class="loading">Préparation de nos délices...</div>';
 
-        try {
-            const { data: produits, error } = await client
-                .from('produits')
-                .select('*')
-                .order('id', { ascending: true });
+            try {
+                const { data: produits, error } = await client
+                    .from('produits')
+                    .select('*')
+                    .order('id', { ascending: true });
 
-            if (error) {
-                console.error('❌ Erreur Supabase produits:', error);
-                grid.innerHTML = '<div class="error">Erreur de chargement des produits: ' + (error.message || error) + '</div>';
-                return;
+                if (error) {
+                    console.error('❌ Erreur Supabase produits:', error);
+                    // Afficher les produits par défaut en cas d'erreur
+                    afficherProduitsParDefaut();
+                    return;
+                }
+
+                if (!produits || produits.length === 0) {
+                    // Utiliser les produits par défaut si la base est vide
+                    afficherProduitsParDefaut();
+                    return;
+                }
+
+                afficherProduits(produits);
+            } catch (err) {
+                console.error('❌ Exception lors du chargement produits:', err);
+                afficherProduitsParDefaut();
             }
-
-            if (!produits || produits.length === 0) {
-                grid.innerHTML = '<div class="error">Aucun produit trouvé dans la base de données.</div>';
-                return;
-            }
-
-            afficherProduits(produits);
-        } catch (err) {
-            console.error('❌ Exception lors du chargement produits:', err);
-            grid.innerHTML = '<div class="error">Erreur technique lors du chargement des produits.</div>';
         }
-    }
 
-    // ---- AFFICHER PRODUITS ----
-    function afficherProduits(produits) {
-        const container = document.getElementById('produits-grid');
-        container.innerHTML = ''; // vider avant affichage
+        // ---- PRODUITS PAR DÉFAUT ----
+        function afficherProduitsParDefaut() {
+            const produitsParDefaut = [
+                {
+                    id: 1,
+                    nom: "Tiramisu Classique",
+                    prix: 3.99,
+                    description: "Recette traditionnelle italienne avec mascarpone, café et cacao.",
+                    gout: "Équilibré, crémeux avec une touche d'amertume du café",
+                    ingredients: "Mascarpone, œufs, sucre, café, cacao, biscuits",
+                    categorie: "classique",
+                    image_url: ""
+                },
+                {
+                    id: 2,
+                    nom: "Tiramisu Fruité",
+                    prix: 3.99,
+                    description: "Une variation fruitée avec des framboises, fraises et myrtilles.",
+                    gout: "Fruité, légèrement acidulé, doux et crémeux",
+                    ingredients: "Mascarpone, fruits rouges, sucre, biscuits, crème",
+                    categorie: "fruite",
+                    image_url: ""
+                },
+                {
+                    id: 3,
+                    nom: "Tiramisu Chocolat-Noisette",
+                    prix: 3.99,
+                    description: "Variation chocolatée avec du chocolat noir et des noisettes torréfiées.",
+                    gout: "Intensité chocolat, croquant des noisettes, riche et crémeux",
+                    ingredients: "Mascarpone, chocolat noir, noisettes, café, biscuit",
+                    categorie: "chocolat",
+                    image_url: ""
+                },
+                {
+                    id: 4,
+                    nom: "Tiramisu Spéculoos-Caramel",
+                    prix: 3.99,
+                    description: "Création originale avec des biscuits spéculoos et une touche de caramel.",
+                    gout: "Doux, épicé, caramel avec une texture croquante",
+                    ingredients: "Mascarpone, spéculoos, caramel, crème, sucre",
+                    categorie: "original",
+                    image_url: ""
+                }
+            ];
 
-        produits.forEach(produit => {
-            // Sécuriser les valeurs
-            const nom = produit.nom || 'Produit';
-            const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
-            const description = produit.description || '';
-            const gout = produit.gout || '';
-            const ingredients = produit.ingredients || '';
-            const imageUrl = produit.image_url || '';
+            afficherProduits(produitsParDefaut);
+        }
 
-            const card = document.createElement('div');
-            card.className = 'produit';
+        // ---- AFFICHER PRODUITS ----
+        function afficherProduits(produits) {
+            const container = document.getElementById('produits-grid');
+            container.innerHTML = '';
 
-            card.innerHTML = `
-                <div class="produit-media">
-                    <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'24\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
-                </div>
-                <div class="produit-info">
-                    <div>
-                        <h3 class="produit-nom">${escapeHtml(nom)}</h3>
-                        <div class="produit-prix">${prix}</div>
+            produits.forEach(produit => {
+                const nom = produit.nom || 'Notre Spécialité';
+                const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : 'Sur devis';
+                const description = produit.description || 'Une création exclusive de notre chef pâtissier';
+                const gout = produit.gout || 'Saveur raffinée et équilibrée';
+                const ingredients = produit.ingredients || 'Ingrédients sélectionnés avec soin';
+                const imageUrl = produit.image_url || '';
+                const categorie = produit.categorie || 'classique';
+
+                const card = document.createElement('div');
+                card.className = 'produit';
+
+                // Badge selon la catégorie
+                const badges = {
+                    'classique': '⭐ Classique',
+                    'fruite': '🍓 Fruité', 
+                    'chocolat': '🍫 Chocolat',
+                    'original': '✨ Création'
+                };
+
+                card.innerHTML = `
+                    ${badges[categorie] ? `<div class="produit-badge">${badges[categorie]}</div>` : ''}
+                    
+                    <div class="produit-media">
+                        <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'48\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
                     </div>
+                    
+                    <div class="produit-info">
+                        <div class="produit-header">
+                            <h3 class="produit-nom">${escapeHtml(nom)}</h3>
+                            <div class="produit-prix">${prix}</div>
+                        </div>
 
-                    <div class="produit-description">
-                        <p>${escapeHtml(description)}</p>
-                        ${gout ? `<p><strong>Goût :</strong> ${escapeHtml(gout)}</p>` : ''}
-                        ${ingredients ? `<div class="ingredients"><strong>Ingrédients :</strong> ${escapeHtml(ingredients)}</div>` : ''}
+                        <div class="produit-description">
+                            <p>${escapeHtml(description)}</p>
+                        </div>
+
+                        <div class="produit-caracteristiques">
+                            <div class="caracteristique">
+                                <i class="fas fa-star"></i>
+                                <span><strong>Profil:</strong> ${escapeHtml(gout)}</span>
+                            </div>
+                        </div>
+
+                        ${ingredients ? `
+                            <div class="ingredients">
+                                <strong>🎯 Ingrédients phares:</strong> ${escapeHtml(ingredients)}
+                            </div>
+                        ` : ''}
+
+                        <button class="btn-ajouter"
+                            data-nom="${escapeAttr(nom)}"
+                            data-prix="${escapeAttr(produit.prix)}"
+                            data-id="${escapeAttr(produit.id)}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Ajouter au panier
+                        </button>
                     </div>
+                `;
 
-                    <button class="btn-ajouter"
-                        data-nom="${escapeAttr(nom)}"
-                        data-prix="${escapeAttr(produit.prix)}"
-                        data-id="${escapeAttr(produit.id)}">
-                        Ajouter au panier
-                    </button>
-                </div>
-            `;
-
-            container.appendChild(card);
-        });
-    }
-
-    // ---- CHARGER COORDONNÉES ----
-    async function chargerCoordonnees() {
-        const telephoneEl = document.getElementById('telephone');
-        const emailEl = document.getElementById('email');
-        const adresseEl = document.getElementById('adresse');
-        const horairesEl = document.getElementById('horaires');
-
-        try {
-            const { data: coordonnees, error } = await client
-                .from('coordonnees')
-                .select('*')
-                .limit(1);
-
-            if (error) {
-                console.error('❌ Erreur Supabase coordonnées:', error);
-                // valeurs fallback
-                appliquerCoordonneesFallback();
-                return;
-            }
-
-            if (coordonnees && coordonnees.length > 0) {
-                const c = coordonnees[0];
-                if (c.telephone) telephoneEl.textContent = c.telephone;
-                if (c.email) emailEl.textContent = c.email;
-                if (c.adresse) adresseEl.textContent = c.adresse;
-                if (c.horaires) horairesEl.innerHTML = c.horaires.replace(/\n/g, '<br>');
-            } else {
-                appliquerCoordonneesFallback();
-            }
-        } catch (err) {
-            console.error('❌ Exception coordonnées:', err);
-            appliquerCoordonneesFallback();
+                container.appendChild(card);
+            });
         }
 
-        function appliquerCoordonneesFallback() {
-            telephoneEl.textContent = "07 84 96 45 71";
-            emailEl.textContent = "delicecake38@gmail.com";
-            adresseEl.textContent = "Grenoble";
-            horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
+        // ---- CHARGER COORDONNÉES ----
+        async function chargerCoordonnees() {
+            const telephoneEl = document.getElementById('telephone');
+            const emailEl = document.getElementById('email');
+            const adresseEl = document.getElementById('adresse');
+            const horairesEl = document.getElementById('horaires');
+
+            try {
+                const { data: coordonnees, error } = await client
+                    .from('coordonnees')
+                    .select('*')
+                    .limit(1);
+
+                if (error) throw error;
+
+                if (coordonnees && coordonnees.length > 0) {
+                    const c = coordonnees[0];
+                    telephoneEl.textContent = c.telephone || "07 84 96 45 71";
+                    emailEl.textContent = c.email || "delicecake38@gmail.com";
+                    adresseEl.textContent = c.adresse || "Grenoble, France";
+                    horairesEl.innerHTML = (c.horaires || "Lundi - Dimanche: 10h-19h").replace(/\n/g, '<br>');
+                } else {
+                    appliquerCoordonneesFallback();
+                }
+            } catch (err) {
+                console.error('❌ Erreur chargement coordonnées:', err);
+                appliquerCoordonneesFallback();
+            }
+
+            function appliquerCoordonneesFallback() {
+                telephoneEl.textContent = "07 84 96 45 71";
+                emailEl.textContent = "delicecake38@gmail.com";
+                adresseEl.textContent = "Grenoble, France";
+                horairesEl.innerHTML = "Lundi - Dimanche: 10h-19h";
+            }
         }
-    }
 
         // ---- PANIER ----
         function ajouterAuPanier(nom, prix, id, button) {
@@ -884,4 +957,48 @@
                 const nom = e.target.getAttribute('data-nom');
                 const prix = e.target.getAttribute('data-prix');
                 const id = e.target.getAttribute('data-id');
-                ajouterAuPanier(n
+                ajouterAuPanier(nom, prix, id, e.target);
+            }
+            
+            // Vérifier aussi si le clic est sur un élément enfant du bouton
+            if (e.target.closest('.btn-ajouter')) {
+                const button = e.target.closest('.btn-ajouter');
+                const nom = button.getAttribute('data-nom');
+                const prix = button.getAttribute('data-prix');
+                const id = button.getAttribute('data-id');
+                ajouterAuPanier(nom, prix, id, button);
+            }
+        });
+
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
+            this.reset();
+        });
+
+        // ---- UTILITAIRES ----
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function escapeAttr(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        // ---- DÉMARRAGE ----
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Initialisation du site Délices Cake');
+            await chargerProduits();
+            await chargerCoordonnees();
+            mettreAJourCompteurPanier();
+        });
+    </script>
+</body>
+</html>
