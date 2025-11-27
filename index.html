@@ -712,111 +712,131 @@
     </footer>
 
     <script>
-        // ---- CONFIG SUPABASE ----
-        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+    // ---- CONFIG SUPABASE ----
+    const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
 
-        // Initialisation correcte (Supabase v2)
-        const { createClient } = supabase;
-        const client = createClient(supabaseUrl, supabaseKey);
-        console.log('✅ Supabase initialisé');
+    // Initialisation correcte (Supabase v2)
+    const { createClient } = supabase;
+    const client = createClient(supabaseUrl, supabaseKey);
+    console.log('✅ Supabase (client) initialisé');
 
-        // ---- CHARGER PRODUITS ----
-        async function chargerProduits() {
-            const grid = document.getElementById('produits-grid');
-            grid.innerHTML = '<div class="loading">Préparation de nos délices...</div>';
+    // ---- CHARGER PRODUITS ----
+    async function chargerProduits() {
+        const grid = document.getElementById('produits-grid');
+        grid.innerHTML = '<div class="loading">Chargement des produits...</div>';
 
-            try {
-                const { data: produits, error } = await client
-                    .from('produits')
-                    .select('*')
-                    .order('id', { ascending: true });
+        try {
+            const { data: produits, error } = await client
+                .from('produits')
+                .select('*')
+                .order('id', { ascending: true });
 
-        // ---- AFFICHER PRODUITS ----
-        function afficherProduits(produits) {
-            const container = document.getElementById('produits-grid');
-            container.innerHTML = '';
+            if (error) {
+                console.error('❌ Erreur Supabase produits:', error);
+                grid.innerHTML = '<div class="error">Erreur de chargement des produits: ' + (error.message || error) + '</div>';
+                return;
+            }
 
-            produits.forEach(produit => {
-                const nom = produit.nom || 'Notre Spécialité';
-                const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : 'Sur devis';
-                const description = produit.description || 'Une création exclusive de notre chef pâtissier';
-                const gout = produit.gout || 'Saveur raffinée et équilibrée';
-                const ingredients = produit.ingredients || 'Ingrédients sélectionnés avec soin';
-                const imageUrl = produit.image_url || '';
-                const categorie = produit.categorie || 'classique';
+            if (!produits || produits.length === 0) {
+                grid.innerHTML = '<div class="error">Aucun produit trouvé dans la base de données.</div>';
+                return;
+            }
 
-                const card = document.createElement('div');
-                card.className = 'produit';
+            afficherProduits(produits);
+        } catch (err) {
+            console.error('❌ Exception lors du chargement produits:', err);
+            grid.innerHTML = '<div class="error">Erreur technique lors du chargement des produits.</div>';
+        }
+    }
 
-                // Badge selon la catégorie
-                const badges = {
-                    'classique': '⭐ Classique',
-                    'fruite': '🍓 Fruité', 
-                    'chocolat': '🍫 Chocolat',
-                    'original': '✨ Création'
-                };
+    // ---- AFFICHER PRODUITS ----
+    function afficherProduits(produits) {
+        const container = document.getElementById('produits-grid');
+        container.innerHTML = ''; // vider avant affichage
 
-                card.innerHTML = `
-                    ${badges[categorie] ? `<div class="produit-badge">${badges[categorie]}</div>` : ''}
-                    
-                    <div class="produit-media">
-                        <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'48\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
+        produits.forEach(produit => {
+            // Sécuriser les valeurs
+            const nom = produit.nom || 'Produit';
+            const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
+            const description = produit.description || '';
+            const gout = produit.gout || '';
+            const ingredients = produit.ingredients || '';
+            const imageUrl = produit.image_url || '';
+
+            const card = document.createElement('div');
+            card.className = 'produit';
+
+            card.innerHTML = `
+                <div class="produit-media">
+                    <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'24\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
+                </div>
+                <div class="produit-info">
+                    <div>
+                        <h3 class="produit-nom">${escapeHtml(nom)}</h3>
+                        <div class="produit-prix">${prix}</div>
                     </div>
-                    
-                    <div class="produit-info">
-                        <div class="produit-header">
-                            <h3 class="produit-nom">${escapeHtml(nom)}</h3>
-                            <div class="produit-prix">${prix}</div>
-                        </div>
 
-                        <div class="produit-description">
-                            <p>${escapeHtml(description)}</p>
-                        </div>
-
-                        <div class="produit-caracteristiques">
-                            <div class="caracteristique">
-                                <i class="fas fa-star"></i>
-                                <span><strong>Profil:</strong> ${escapeHtml(gout)}</span>
-                            </div>
-                        </div>
-
-                        ${ingredients ? `
-                            <div class="ingredients">
-                                <strong>🎯 Ingrédients phares:</strong> ${escapeHtml(ingredients)}
-                            </div>
-                        ` : ''}
-
-                        <button class="btn-ajouter"
-                            data-nom="${escapeAttr(nom)}"
-                            data-prix="${escapeAttr(produit.prix)}"
-                            data-id="${escapeAttr(produit.id)}">
-                            <i class="fas fa-shopping-cart"></i>
-                            Ajouter au panier
-                        </button>
+                    <div class="produit-description">
+                        <p>${escapeHtml(description)}</p>
+                        ${gout ? `<p><strong>Goût :</strong> ${escapeHtml(gout)}</p>` : ''}
+                        ${ingredients ? `<div class="ingredients"><strong>Ingrédients :</strong> ${escapeHtml(ingredients)}</div>` : ''}
                     </div>
-                `;
 
-                container.appendChild(card);
-            });
+                    <button class="btn-ajouter"
+                        data-nom="${escapeAttr(nom)}"
+                        data-prix="${escapeAttr(produit.prix)}"
+                        data-id="${escapeAttr(produit.id)}">
+                        Ajouter au panier
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    // ---- CHARGER COORDONNÉES ----
+    async function chargerCoordonnees() {
+        const telephoneEl = document.getElementById('telephone');
+        const emailEl = document.getElementById('email');
+        const adresseEl = document.getElementById('adresse');
+        const horairesEl = document.getElementById('horaires');
+
+        try {
+            const { data: coordonnees, error } = await client
+                .from('coordonnees')
+                .select('*')
+                .limit(1);
+
+            if (error) {
+                console.error('❌ Erreur Supabase coordonnées:', error);
+                // valeurs fallback
+                appliquerCoordonneesFallback();
+                return;
+            }
+
+            if (coordonnees && coordonnees.length > 0) {
+                const c = coordonnees[0];
+                if (c.telephone) telephoneEl.textContent = c.telephone;
+                if (c.email) emailEl.textContent = c.email;
+                if (c.adresse) adresseEl.textContent = c.adresse;
+                if (c.horaires) horairesEl.innerHTML = c.horaires.replace(/\n/g, '<br>');
+            } else {
+                appliquerCoordonneesFallback();
+            }
+        } catch (err) {
+            console.error('❌ Exception coordonnées:', err);
+            appliquerCoordonneesFallback();
         }
 
-        // ---- CHARGER COORDONNÉES ----
-        async function chargerCoordonnees() {
-            const telephoneEl = document.getElementById('telephone');
-            const emailEl = document.getElementById('email');
-            const adresseEl = document.getElementById('adresse');
-            const horairesEl = document.getElementById('horaires');
-
-            try {
-                const { data: coordonnees, error } = await client
-                    .from('coordonnees')
-                    .select('*')
-                    .limit(1);
-
-                if (error) throw error;
-
-
+        function appliquerCoordonneesFallback() {
+            telephoneEl.textContent = "07 84 96 45 71";
+            emailEl.textContent = "delicecake38@gmail.com";
+            adresseEl.textContent = "Grenoble";
+            horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
+        }
+    }
 
         // ---- PANIER ----
         function ajouterAuPanier(nom, prix, id, button) {
