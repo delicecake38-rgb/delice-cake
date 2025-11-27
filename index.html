@@ -464,202 +464,101 @@
     </footer>
 
     <script>
-        // Configuration Supabase
-        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
-        
-        // Initialiser Supabase
-        const supabase = window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        console.log("✅ Supabase initialisé");
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        // Fonctions pour Supabase
-        async function chargerProduits() {
-            try {
-                console.log("🔍 Tentative de chargement des produits depuis Supabase...");
-                
-                const { data: produits, error } = await supabase
-                    .from('produits')
-                    .select('*')
-                    .order('id');
+<script>
+    const supabaseUrl = "https://ypxvnxddzgaopjdhclzj.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"; 
+   
+    const { createClient } = supabase;
+    const client = createClient(supabaseUrl, supabaseKey);
 
-                if (error) {
-                    console.error('❌ Erreur Supabase produits:', error);
-                    document.getElementById('produits-grid').innerHTML = 
-                        '<div class="error">Erreur de chargement des produits: ' + error.message + '</div>';
-                    return;
-                }
-                
-                console.log("✅ Produits chargés:", produits);
-                
-                if (!produits || produits.length === 0) {
-                    document.getElementById('produits-grid').innerHTML = 
-                        '<div class="error">Aucun produit trouvé dans la base de données.</div>';
-                    return;
-                }
-                
-                afficherProduits(produits);
-                
-            } catch (error) {
-                console.error('❌ Erreur chargement produits:', error);
-                document.getElementById('produits-grid').innerHTML = 
-                    '<div class="error">Erreur technique lors du chargement des produits.</div>';
-            }
+    /* ----------------------
+       CHARGER PRODUITS
+    ----------------------- */
+    async function chargerProduits() {
+        const { data: produits, error } = await client
+            .from("produits")
+            .select("*")
+            .order("id");
+
+        if (error) {
+            console.error("Erreur lors du chargement des produits :", error);
+            return;
         }
 
-        async function chargerCoordonnees() {
-            try {
-                console.log("🔍 Tentative de chargement des coordonnées...");
-                
-                // Essayer d'abord avec single() pour récupérer un seul enregistrement
-                const { data: coordonnees, error } = await supabase
-                    .from('coordonnees')
-                    .select('*')
-                    .limit(1);
+        afficherProduits(produits);
+    }
 
-                if (error) {
-                    console.error('❌ Erreur Supabase coordonnées:', error);
-                    throw error;
-                }
-                
-                if (coordonnees && coordonnees.length > 0) {
-                    console.log("✅ Coordonnées chargées:", coordonnees[0]);
-                    afficherCoordonnees(coordonnees[0]);
-                } else {
-                    throw new Error('Aucune coordonnée trouvée dans la base');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erreur chargement coordonnées:', error);
-                // Utiliser des valeurs par défaut
-                afficherCoordonnees({
-                    telephone: "07 84 96 45 71",
-                    email: "delicecake38@gmail.com",
-                    adresse: "Grenoble",
-                    horaires: "Lundi - Dimanche: 10h-19h"
-                });
-            }
-        }
 
-        function afficherProduits(produits) {
-            const container = document.getElementById('produits-grid');
-            
-            container.innerHTML = produits.map(produit => `
-                <div class="produit">
-                    <div class="produit-img">
-                        <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 48px; background: #e6d7c3; color: #8b5a2b;">🍰</div>
-                    </div>
-                    <div class="produit-info">
-                        <h3 class="produit-nom">${produit.nom}</h3>
-                        <div class="produit-prix">${parseFloat(produit.prix).toFixed(2)} €</div>
-                        <div class="produit-description">
-                            <p>${produit.description || ''}</p>
-                            ${produit.gout ? `<p><strong>Goût:</strong> ${produit.gout}</p>` : ''}
-                            ${produit.ingredients ? `<div class="ingredients"><strong>Ingrédients:</strong> ${produit.ingredients}</div>` : ''}
-                        </div>
-                        <button class="btn-ajouter" 
-                                data-nom="${produit.nom}" 
-                                data-prix="${produit.prix}"
-                                data-id="${produit.id}">
-                            Ajouter au panier
-                        </button>
-                    </div>
+    /* ----------------------
+       AFFICHER PRODUITS
+    ----------------------- */
+    function afficherProduits(produits) {
+        const grid = document.getElementById("produits-grid");
+        grid.innerHTML = "";
+
+        produits.forEach((p) => {
+            const card = document.createElement("div");
+            card.className = "produit";
+
+            card.innerHTML = `
+                <img src="${p.image_url || 'placeholder.jpg'}" alt="${p.nom}" />
+
+                <div class="produit-info">
+                    <h3>${p.nom}</h3>
+                    <p class="prix">${p.prix} €</p>
+
+                    <p>${p.description || ''}</p>
+
+                    <p><strong>Goût :</strong> ${p.gout || '—'}</p>
+                    <p><strong>Ingrédients :</strong> ${p.ingredients || '—'}</p>
                 </div>
-            `).join('');
-        }
+            `;
 
-        function afficherCoordonnees(coordonnees) {
-            if (coordonnees.telephone) document.getElementById('telephone').textContent = coordonnees.telephone;
-            if (coordonnees.email) document.getElementById('email').textContent = coordonnees.email;
-            if (coordonnees.adresse) document.getElementById('adresse').textContent = coordonnees.adresse;
-            if (coordonnees.horaires) {
-                document.getElementById('horaires').innerHTML = coordonnees.horaires.replace(/\n/g, '<br>');
-            }
-        }
-
-        // Fonctions pour le panier
-        function ajouterAuPanier(nom, prix, id) {
-            let panier = JSON.parse(localStorage.getItem('panier')) || [];
-            
-            const articleExistant = panier.find(article => article.id === id);
-            
-            if (articleExistant) {
-                articleExistant.quantite += 1;
-            } else {
-                panier.push({
-                    id: id,
-                    nom: nom,
-                    prix: parseFloat(prix),
-                    quantite: 1
-                });
-            }
-            
-            localStorage.setItem('panier', JSON.stringify(panier));
-            mettreAJourCompteurPanier();
-            
-            // Animation de confirmation
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = '✓ Ajouté !';
-            button.classList.add('success');
-            
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.classList.remove('success');
-            }, 2000);
-        }
-        
-        function mettreAJourCompteurPanier() {
-            const panier = JSON.parse(localStorage.getItem('panier')) || [];
-            const totalArticles = panier.reduce((total, article) => total + article.quantite, 0);
-            const compteurElement = document.getElementById('nb-articles');
-            if (compteurElement) {
-                compteurElement.textContent = totalArticles;
-            }
-        }
-
-        // Gestion des événements
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('btn-ajouter')) {
-                const nom = e.target.getAttribute('data-nom');
-                const prix = e.target.getAttribute('data-prix');
-                const id = e.target.getAttribute('data-id');
-                ajouterAuPanier(nom, prix, id);
-            }
+            grid.appendChild(card);
         });
+    }
 
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
-            this.reset();
-        });
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log("🚀 Page chargée, initialisation...");
-            await chargerProduits();
-            await chargerCoordonnees();
-            mettreAJourCompteurPanier();
-            
-            // Test de débogage
-            console.log("=== DÉBOGAGE SUPABASE ===");
-            console.log("URL:", supabaseUrl);
-            console.log("Clé:", supabaseKey ? "***" + supabaseKey.slice(-4) : "MANQUANTE");
-        });
+    /* ----------------------
+       CHARGER COORDONNÉES
+    ----------------------- */
+    async function chargerCoordonnees() {
+        const { data, error } = await client
+            .from("coordonnees")
+            .select("*")
+            .limit(1);
 
-        // Fonction de débogage accessible depuis la console
-        window.debugSupabase = async function() {
-            console.log('=== DÉBOGAGE SUPABASE ===');
-            
-            // Test produits
-            const { data: produits, error: errProd } = await supabase.from('produits').select('*');
-            console.log('Produits:', produits, 'Erreur:', errProd);
-            
-            // Test coordonnées
-            const { data: coord, error: errCoord } = await supabase.from('coordonnees').select('*');
-            console.log('Coordonnées:', coord, 'Erreur:', errCoord);
-            
-            console.log('=== FIN DÉBOGAGE ===');
-        };
-    </script>
-</body>
-</html>
+        if (error) {
+            console.error("Erreur lors du chargement des coordonnées :", error);
+            return;
+        }
+
+        if (data.length > 0) {
+            afficherCoordonnees(data[0]);
+        }
+    }
+
+    /* ----------------------
+       AFFICHER COORDONNÉES
+    ----------------------- */
+    function afficherCoordonnees(c) {
+        document.getElementById("adresse").textContent = c.adresse;
+        document.getElementById("ville").textContent = c.ville;
+        document.getElementById("telephone").textContent = c.telephone;
+        document.getElementById("email").textContent = c.email;
+
+        if (c.instagram) {
+            document.getElementById("instagram").href = c.instagram;
+        }
+    }
+
+    /* ----------------------
+       LANCEMENT AU CHARGEMENT
+    ----------------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+        chargerProduits();
+        chargerCoordonnees();
+    });
+</script>
