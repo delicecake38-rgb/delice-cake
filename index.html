@@ -711,243 +711,233 @@
         </div>
     </footer>
 
-    <script>
-        // ---- CONFIG SUPABASE ----
-        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+    <!DOCTYPE html>
 
-        // Initialisation correcte (Supabase v2)
-        const { createClient } = supabase;
-        const client = createClient(supabaseUrl, supabaseKey);
-        console.log('✅ Supabase initialisé');
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Délices Cake - Boutique de Tiramisu</title>
+    
+<script>
+    // ---- CONFIG SUPABASE ----
+    const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
 
-        // ---- CHARGER PRODUITS ----
-        async function chargerProduits() {
-            const grid = document.getElementById('produits-grid');
-            grid.innerHTML = '<div class="loading">Préparation de nos délices...</div>';
+    // Initialisation correcte (Supabase v2)
+    const { createClient } = supabase;
+    const client = createClient(supabaseUrl, supabaseKey);
+    console.log('✅ Supabase (client) initialisé');
 
-            try {
-                const { data: produits, error } = await client
-                    .from('produits')
-                    .select('*')
-                    .order('id', { ascending: true });
+    // ---- CHARGER PRODUITS ----
+    async function chargerProduits() {
+        const grid = document.getElementById('produits-grid');
+        grid.innerHTML = '<div class="loading">Chargement des produits...</div>';
 
-                if (error) {
-                    console.error('❌ Erreur Supabase produits:', error);
-                    grid.innerHTML = '<div class="error">Désolé, nous rencontrons un problème technique. Veuillez réessayer dans quelques instants.</div>';
-                    return;
-                }
+        try {
+            const { data: produits, error } = await client
+                .from('produits')
+                .select('*')
+                .order('id', { ascending: true });
 
-                if (!produits || produits.length === 0) {
-                    grid.innerHTML = '<div class="error">Aucun produit disponible pour le moment. Revenez vite !</div>';
-                    return;
-                }
-
-                afficherProduits(produits);
-            } catch (err) {
-                console.error('❌ Exception lors du chargement produits:', err);
-                grid.innerHTML = '<div class="error">Service temporairement indisponible. Contactez-nous directement.</div>';
+            if (error) {
+                console.error('❌ Erreur Supabase produits:', error);
+                grid.innerHTML = '<div class="error">Erreur de chargement des produits: ' + (error.message || error) + '</div>';
+                return;
             }
+
+            if (!produits || produits.length === 0) {
+                grid.innerHTML = '<div class="error">Aucun produit trouvé dans la base de données.</div>';
+                return;
+            }
+
+            afficherProduits(produits);
+        } catch (err) {
+            console.error('❌ Exception lors du chargement produits:', err);
+            grid.innerHTML = '<div class="error">Erreur technique lors du chargement des produits.</div>';
+        }
+    }
+
+    // ---- AFFICHER PRODUITS ----
+    function afficherProduits(produits) {
+        const container = document.getElementById('produits-grid');
+        container.innerHTML = ''; // vider avant affichage
+
+        produits.forEach(produit => {
+            // Sécuriser les valeurs
+            const nom = produit.nom || 'Produit';
+            const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
+            const description = produit.description || '';
+            const gout = produit.gout || '';
+            const ingredients = produit.ingredients || '';
+            const imageUrl = produit.image_url || '';
+
+            const card = document.createElement('div');
+            card.className = 'produit';
+
+            card.innerHTML = `
+                <div class="produit-media">
+                    <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'24\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
+                </div>
+                <div class="produit-info">
+                    <div>
+                        <h3 class="produit-nom">${escapeHtml(nom)}</h3>
+                        <div class="produit-prix">${prix}</div>
+                    </div>
+
+                    <div class="produit-description">
+                        <p>${escapeHtml(description)}</p>
+                        ${gout ? `<p><strong>Goût :</strong> ${escapeHtml(gout)}</p>` : ''}
+                        ${ingredients ? `<div class="ingredients"><strong>Ingrédients :</strong> ${escapeHtml(ingredients)}</div>` : ''}
+                    </div>
+
+                    <button class="btn-ajouter"
+                        data-nom="${escapeAttr(nom)}"
+                        data-prix="${escapeAttr(produit.prix)}"
+                        data-id="${escapeAttr(produit.id)}">
+                        Ajouter au panier
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    // ---- CHARGER COORDONNÉES ----
+    async function chargerCoordonnees() {
+        const telephoneEl = document.getElementById('telephone');
+        const emailEl = document.getElementById('email');
+        const adresseEl = document.getElementById('adresse');
+        const horairesEl = document.getElementById('horaires');
+
+        try {
+            const { data: coordonnees, error } = await client
+                .from('coordonnees')
+                .select('*')
+                .limit(1);
+
+            if (error) {
+                console.error('❌ Erreur Supabase coordonnées:', error);
+                // valeurs fallback
+                appliquerCoordonneesFallback();
+                return;
+            }
+
+            if (coordonnees && coordonnees.length > 0) {
+                const c = coordonnees[0];
+                if (c.telephone) telephoneEl.textContent = c.telephone;
+                if (c.email) emailEl.textContent = c.email;
+                if (c.adresse) adresseEl.textContent = c.adresse;
+                if (c.horaires) horairesEl.innerHTML = c.horaires.replace(/\n/g, '<br>');
+            } else {
+                appliquerCoordonneesFallback();
+            }
+        } catch (err) {
+            console.error('❌ Exception coordonnées:', err);
+            appliquerCoordonneesFallback();
         }
 
-        // ---- AFFICHER PRODUITS ----
-        function afficherProduits(produits) {
-            const container = document.getElementById('produits-grid');
-            container.innerHTML = '';
+        function appliquerCoordonneesFallback() {
+            telephoneEl.textContent = "07 84 96 45 71";
+            emailEl.textContent = "delicecake38@gmail.com";
+            adresseEl.textContent = "Grenoble";
+            horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
+        }
+    }
 
-            // Produits par défaut si la base de données est vide
-            const produitsParDefaut = [
-                {
-                    id: 1,
-                    nom: "Tiramisu Classique",
-                    prix: 3.99,
-                    description: "recette traditionnelle italienne avec mascarpone, café et cacao.",
-                    gout: "équilibré, crémeux avec une touche d'amertume du café",
-                    ingredients: "Mascarpone, œufs, sucre, café, cacao, biscuits",
-                    categorie: "classique"
-                },
-                {
-                    id: 2,
-                    nom: "Tiramisu Fruité",
-                    prix: 3.99,
-                    description: "Une variation fruitée avec des framboises, fraises et myrtilles.",
-                    gout: "Fruité, légèrement acidulé, doux et crémeux",
-                    ingredients: "Mascarpone, fruits rouges, sucre, biscuits, crème",
-                    categorie: "fruite"
-                },
-                {
-                    id: 3,
-                    nom: "Tiramisu Chocolat-Noisette",
-                    prix: 3.99,
-                    description: "de chocolat, avec du chocolat noir et des noisettes torréfiées.",
-                    gout: "Intensité chocolat, croquant des noisettes, riche et crémeux",
-                    ingredients: "Mascarpone, chocolat noir, noisettes, café, biscuit",
-                    categorie: "chocolat"
-                },
-                {
-                    id: 4,
-                    nom: "Tiramisu Spéculoos-Caramel",
-                    prix: 3.99,
-                    description: "création originale avec des biscuits spéculoos et une touche de caramel.",
-                    gout: "Doux, épicé, caramel avec une texture croquante",
-                    ingredients: "Mascarpone, spéculoos, caramel, crème, sucre",
-                    categorie: "original"
-                }
-            ];
+    // ---- PANIER ----
+    function ajouterAuPanier(nom, prix, id, button) {
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
 
-            const produitsAAfficher = produits && produits.length > 0 ? produits : produitsParDefaut;
+        // Utiliser id comme clé (string)
+        const articleExistant = panier.find(article => String(article.id) === String(id));
 
-            produitsAAfficher.forEach(produit => {
-                const nom = produit.nom || 'Notre Spécialité';
-                const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : 'Sur devis';
-                const description = produit.description || 'Une création exclusive de notre chef pâtissier';
-                const gout = produit.gout || 'Saveur raffinée et équilibrée';
-                const ingredients = produit.ingredients || 'Ingrédients sélectionnés avec soin';
-                const imageUrl = produit.image_url || '';
-                const categorie = produit.categorie || 'classique';
-
-                const card = document.createElement('div');
-                card.className = 'produit';
-
-                // Badge selon la catégorie
-                const badges = {
-                    'classique': '⭐ Classique',
-                    'fruite': '🍓 Fruité', 
-                    'chocolat': '🍫 Chocolat',
-                    'original': '✨ Création'
-                };
-
-                card.innerHTML = `
-                    ${badges[categorie] ? `<div class="produit-badge">${badges[categorie]}</div>` : ''}
-                    
-                    <div class="produit-media">
-                        <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'48\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
-                    </div>
-                    
-                    <div class="produit-info">
-                        <div class="produit-header">
-                            <h3 class="produit-nom">${escapeHtml(nom)}</h3>
-                            <div class="produit-prix">${prix}</div>
-                        </div>
-
-                        <div class="produit-description">
-                            <p>${escapeHtml(description)}</p>
-                        </div>
-
-                        <div class="produit-caracteristiques">
-                            <div class="caracteristique">
-                                <i class="fas fa-star"></i>
-                                <span><strong>Profil:</strong> ${escapeHtml(gout)}</span>
-                            </div>
-                        </div>
-
-                        ${ingredients ? `
-                            <div class="ingredients">
-                                <strong>🎯 Ingrédients phares:</strong> ${escapeHtml(ingredients)}
-                            </div>
-                        ` : ''}
-
-                        <button class="btn-ajouter"
-                            data-nom="${escapeAttr(nom)}"
-                            data-prix="${escapeAttr(produit.prix)}"
-                            data-id="${escapeAttr(produit.id)}">
-                            <i class="fas fa-shopping-cart"></i>
-                            Ajouter au panier
-                        </button>
-                    </div>
-                `;
-
-                container.appendChild(card);
+        if (articleExistant) {
+            articleExistant.quantite += 1;
+        } else {
+            panier.push({
+                id: id,
+                nom: nom,
+                prix: parseFloat(prix) || 0,
+                quantite: 1
             });
         }
 
-        // ---- CHARGER COORDONNÉES ----
-        async function chargerCoordonnees() {
-            const telephoneEl = document.getElementById('telephone');
-            const emailEl = document.getElementById('email');
-            const adresseEl = document.getElementById('adresse');
-            const horairesEl = document.getElementById('horaires');
+        localStorage.setItem('panier', JSON.stringify(panier));
+        mettreAJourCompteurPanier();
 
-            try {
-                const { data: coordonnees, error } = await client
-                    .from('coordonnees')
-                    .select('*')
-                    .limit(1);
+        // Animation
+        if (button) {
+            const originalText = button.textContent;
+            button.textContent = '✓ Ajouté !';
+            button.classList.add('success');
 
-                if (error) throw error;
-
-                if (coordonnees && coordonnees.length > 0) {
-                    const c = coordonnees[0];
-                    telephoneEl.textContent = c.telephone || "07 84 96 45 71";
-                    emailEl.textContent = c.email || "delicecake38@gmail.com";
-                    adresseEl.textContent = c.adresse || "Grenoble, France";
-                    horairesEl.innerHTML = (c.horaires || "Lundi - Dimanche: 10h-19h").replace(/\n/g, '<br>');
-                } else {
-                    appliquerCoordonneesFallback();
-                }
-            } catch (err) {
-                console.error('❌ Erreur chargement coordonnées:', err);
-                appliquerCoordonneesFallback();
-            }
-
-            function appliquerCoordonneesFallback() {
-                telephoneEl.textContent = "07 84 96 45 71";
-                emailEl.textContent = "delicecake38@gmail.com";
-                adresseEl.textContent = "Grenoble, France";
-                horairesEl.innerHTML = "Lundi - Dimanche: 10h-19h";
-            }
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('success');
+            }, 1600);
         }
+    }
 
-        // ---- PANIER ----
-        function ajouterAuPanier(nom, prix, id, button) {
-            let panier = JSON.parse(localStorage.getItem('panier')) || [];
-            const articleExistant = panier.find(article => String(article.id) === String(id));
+    function mettreAJourCompteurPanier() {
+        const panier = JSON.parse(localStorage.getItem('panier')) || [];
+        const totalArticles = panier.reduce((total, article) => total + (article.quantite || 0), 0);
+        const compteurElement = document.getElementById('nb-articles');
+        if (compteurElement) compteurElement.textContent = totalArticles;
+    }
 
-            if (articleExistant) {
-                articleExistant.quantite += 1;
-            } else {
-                panier.push({
-                    id: id,
-                    nom: nom,
-                    prix: parseFloat(prix) || 0,
-                    quantite: 1
-                });
-            }
-
-            localStorage.setItem('panier', JSON.stringify(panier));
-            mettreAJourCompteurPanier();
-
-            // Animation de confirmation
-            if (button) {
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i> Ajouté !';
-                button.classList.add('success');
-
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.classList.remove('success');
-                }, 2000);
-            }
+    // ---- GESTION ÉVÉNEMENTS ----
+    document.addEventListener('click', function(e) {
+        const target = e.target;
+        if (target && target.classList.contains('btn-ajouter')) {
+            const nom = target.getAttribute('data-nom');
+            const prix = target.getAttribute('data-prix');
+            const id = target.getAttribute('data-id');
+            ajouterAuPanier(nom, prix, id, target);
         }
+    });
 
-        function mettreAJourCompteurPanier() {
-            const panier = JSON.parse(localStorage.getItem('panier')) || [];
-            const totalArticles = panier.reduce((total, article) => total + (article.quantite || 0), 0);
-            const compteurElement = document.getElementById('nb-articles');
-            if (compteurElement) compteurElement.textContent = totalArticles;
-        }
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
+        this.reset();
+    });
 
-        // ---- GESTION ÉVÉNEMENTS ----
-        document.addEventListener('click', function(e) {
-            const target = e.target.closest('.btn-ajouter');
-            if (target) {
-                const nom = target.getAttribute('data-nom');
-                const prix = target.getAttribute('data-prix');
-                const id = target.getAttribute('data-id');
-                ajouterAuPanier(nom, prix, id, target);
-            }
-        });
+    // ---- UTILITAIRES (sécurité affichage) ----
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+    function escapeAttr(str) {
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
 
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Merci
+    // ---- DÉMARRAGE ----
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('🚀 Page chargée — init Supabase & chargement données');
+        await chargerProduits();
+        await chargerCoordonnees();
+        mettreAJourCompteurPanier();
+
+        // debug console helper
+        window.debugSupabase = async function() {
+            console.log('=== DEBUG SUPABASE (client) ===');
+            const { data: produits, error: errProd } = await client.from('produits').select('*');
+            console.log('Produits:', produits, 'ErrProd:', errProd);
+            const { data: coord, error: errCoord } = await client.from('coordonnees').select('*');
+            console.log('Coordonnées:', coord, 'ErrCoord:', errCoord);
+            console.log('=== FIN DEBUG ===');
+        };
+    });
+</script>
+```
+
+</body>
+</html>
