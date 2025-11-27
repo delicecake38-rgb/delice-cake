@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Délices Cake - Boutique de Tiramisu Artisanal</title>
 
-    <!-- Supabase -->
+    <!-- Supabase v2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Icons -->
-    <script src="https://kit.fontawesome.com/4f6b9c5e56.js" crossorigin="anonymous"></script>
+
+    <!-- Icônes Font Awesome (AJOUT IMPORTANT) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ====== VARIABLES & RESET ====== */
+        /* ===== VARIABLES ET RESET ===== */
         :root {
             --cafe: #8B4513;
             --cafe-clair: #A67B5B;
@@ -25,119 +26,554 @@
             --shadow: 0 8px 30px rgba(0,0,0,0.08);
             --shadow-hover: 0 15px 40px rgba(0,0,0,0.12);
             --radius: 16px;
-            --transition: .3s cubic-bezier(0.4,0,0.2,1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
         }
-        body {
-            font-family: "Segoe UI", sans-serif;
-            line-height: 1.7;
-            background: var(--creme);
-            color: var(--texte);
+
+        body { 
+            background-color: var(--creme); 
+            color: var(--texte); 
+            line-height: 1.7; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-        .container { max-width: 1200px; margin: auto; padding: 0 20px; }
-        section { padding: 80px 0; }
-        h1, h2, h3 { color: var(--cafe); margin-bottom: 24px; font-weight: 700; }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+        }
+
+        section { 
+            padding: 80px 0; 
+        }
+
+        h1, h2, h3 {
+            color: var(--cafe);
+            margin-bottom: 24px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.3rem; }
 
         /* ===== HEADER ===== */
-        header {
-            background: linear-gradient(135deg, var(--cafe), var(--chocolat));
+        header { 
+            background: linear-gradient(135deg, var(--cafe) 0%, var(--chocolat) 100%);
             padding: 20px 0;
-            position: sticky; top: 0; z-index: 1000;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        .nav-container {
-            display: flex; justify-content: space-between; align-items: center;
-            max-width: 1200px; margin: auto; padding: 0 20px;
-        }
-        .logo-header { font-size: 1.8rem; color: var(--blanc); font-weight: 700; }
-        .nav-links { display: flex; gap: 40px; }
-        .nav-links a {
-            color: var(--blanc); text-decoration: none; font-weight: 500;
-            padding: 8px 16px; border-radius: 25px; transition: var(--transition);
-        }
-        .nav-links a:hover { background: rgba(255,255,255,.15); transform: translateY(-2px); }
-        .nav-links a.active { background: rgba(255,255,255,.25); }
 
-        /* ===== HERO ===== */
-        #partie1 {
-            background: linear-gradient(135deg, var(--creme-fonce), var(--creme));
-            text-align: center;
-            padding: 100px 0;
-        }
-        .hero-subtitle {
-            font-size: 1.2rem; color: var(--texte-clair);
-            margin-bottom: 40px; max-width: 600px; margin: auto;
-        }
-        .video-container {
-            max-width: 800px; margin: auto; border-radius: 16px;
-            overflow: hidden; box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-        .video-container:hover {
-            transform: translateY(-8px); box-shadow: var(--shadow-hover);
-        }
-        .video-placeholder {
-            background: linear-gradient(135deg, var(--cafe), var(--chocolat));
-            height: 300px; border-radius: 16px;
+        .nav-container { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        /* ===== PRODUITS ===== */
-        .produits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px,1fr));
+        .logo-header { 
+            color: var(--blanc);
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-links { 
+            display: flex;
             gap: 40px;
         }
-        .produit {
-            background: var(--blanc); border-radius: 16px;
-            overflow: hidden; box-shadow: var(--shadow);
+
+        .nav-links a { 
+            color: var(--blanc);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 25px;
             transition: var(--transition);
-            display: flex; flex-direction: column;
+            position: relative;
         }
-        .produit:hover { transform: translateY(-10px); }
 
-        .produit-media {
-            height: 220px; overflow: hidden;
-            background: var(--creme-fonce);
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
         }
-        .produit-media img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: .3s;
-        }
-        .produit:hover img { transform: scale(1.05); }
 
-        .produit-info {
-            padding: 24px; display: flex; flex-direction: column;
+        .nav-links a.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* ===== HERO SECTION ===== */
+        #partie1 { 
+            background: linear-gradient(135deg, var(--creme-fonce) 0%, var(--creme) 100%);
+            text-align: center;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #partie1::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%235C3D2E"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        }
+
+        .logo-container {
+            margin-bottom: 40px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--texte-clair);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .video-container { 
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transform: translateY(0);
+            transition: var(--transition);
+        }
+
+        .video-container:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .video-placeholder { 
+            background: linear-gradient(135deg, var(--cafe) 0%, var(--chocolat) 100%);
+            color: var(--blanc);
+            padding: 80px 40px;
+            font-size: 1.2rem;
+            position: relative;
+            overflow: hidden;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-placeholder::before {
+            content: "▶";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            opacity: 0.3;
+        }
+
+        /* ===== PRODUITS SECTION ===== */
+        #partie2 { 
+            background-color: var(--blanc);
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--texte-clair);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .produits-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+        }
+
+        .produit { 
+            background: var(--blanc);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid rgba(139, 69, 19, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .produit:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .produit-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: var(--blanc);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .produit-media { 
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, var(--creme-fonce) 0%, #E8D5B5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .produit-media::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><defs><pattern id="grain" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="12.5" cy="12.5" r="0.5" fill="%235C3D2E"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        }
+
+        .produit-media img { 
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .produit:hover .produit-media img {
+            transform: scale(1.05);
+        }
+
+        .produit-info { 
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
             flex-grow: 1;
         }
+
         .produit-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
         }
-        .produit-nom { font-size: 1.3rem; font-weight: 700; color: var(--chocolat); }
-        .produit-prix {
-            font-weight: 700; font-size: 1.3rem; background: var(--creme);
-            padding: 6px 14px; border-radius: 20px;
-        }
-        .produit-description { color: var(--texte-clair); margin: 16px 0; }
 
-        .btn-ajouter {
+        .produit-nom { 
+            font-size: 1.3rem;
+            color: var(--chocolat);
+            margin: 0;
+            flex: 1;
+        }
+
+        .produit-prix { 
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--cafe);
+            background: var(--creme);
+            padding: 6px 14px;
+            border-radius: 25px;
+            margin-left: 12px;
+        }
+
+        .produit-description { 
+            margin-bottom: 16px;
+            color: var(--texte-clair);
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .produit-caracteristiques {
+            margin: 16px 0;
+        }
+
+        .caracteristique {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--texte-clair);
+        }
+
+        .caracteristique i {
+            color: var(--cafe);
+            width: 16px;
+        }
+
+        .ingredients { 
+            font-size: 0.9rem;
+            color: var(--texte-clair);
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--creme);
+            border-radius: 12px;
+            border-left: 4px solid var(--cafe);
+        }
+
+        .btn-ajouter { 
+            background: linear-gradient(135deg, var(--cafe) 0%, var(--chocolat) 100%);
+            color: var(--blanc);
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
             margin-top: auto;
-            background: linear-gradient(135deg, var(--cafe), var(--chocolat));
-            padding: 14px; color: white; border: none; border-radius: 12px;
-            cursor: pointer; font-weight: 600; transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .btn-ajouter:hover { transform: translateY(-2px); }
 
-        .loading { text-align: center; padding: 40px; color: var(--cafe); }
+        .btn-ajouter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
+        }
 
-        footer {
-            background: linear-gradient(135deg, var(--chocolat), #3a251a);
-            color: white; text-align: center; padding: 40px 0; margin-top: 60px;
+        .btn-ajouter.success { 
+            background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);
+        }
+
+        /* ===== INFORMATIONS SECTION ===== */
+        #partie3 { 
+            background: linear-gradient(135deg, var(--creme-fonce) 0%, var(--creme) 100%);
+            position: relative;
+        }
+
+        .remarques { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .remarque { 
+            background: var(--blanc);
+            padding: 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            border: 1px solid rgba(139, 69, 19, 0.1);
+        }
+
+        .remarque:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .remarque h3 { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .remarque h3 i { 
+            margin-right: 12px;
+            font-size: 1.8rem;
+            color: var(--cafe);
+        }
+
+        .remarque p {
+            color: var(--texte-clair);
+            line-height: 1.6;
+        }
+
+        /* ===== CONTACT SECTION ===== */
+        #partie4 { 
+            background-color: var(--blanc);
+        }
+
+        .contact-container { 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .coordonnees { 
+            background: var(--creme);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .coordonnee-item { 
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .coordonnee-item:hover {
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .coordonnee-item i { 
+            color: var(--cafe);
+            font-size: 1.3rem;
+            margin-top: 4px;
+            min-width: 24px;
+        }
+
+        .formulaire-contact { 
+            background: var(--creme);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .form-group { 
+            margin-bottom: 24px;
+        }
+
+        .form-group label { 
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--chocolat);
+        }
+
+        .form-control { 
+            width: 100%;
+            padding: 16px;
+            border: 2px solid rgba(139, 69, 19, 0.1);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--blanc);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cafe);
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+
+        textarea.form-control { 
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .btn-envoyer { 
+            background: linear-gradient(135deg, var(--cafe) 0%, var(--chocolat) 100%);
+            color: var(--blanc);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .btn-envoyer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
+        }
+
+        /* ===== FOOTER ===== */
+        footer { 
+            background: linear-gradient(135deg, var(--chocolat) 0%, #4A2F21 100%);
+            color: var(--blanc);
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+
+        /* ===== ÉTATS ===== */
+        .loading { 
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--cafe);
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--cafe);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error { 
+            text-align: center;
+            padding: 40px 20px;
+            color: #D32F2F;
+            background: #FFEBEE;
+            border-radius: var(--radius);
+            margin: 20px 0;
+            border: 1px solid #FFCDD2;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            section { padding: 60px 0; }
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.8rem; }
+            
+            .nav-links { gap: 20px; }
+            .produits-grid { grid-template-columns: 1fr; gap: 30px; }
+            .contact-container { grid-template-columns: 1fr; gap: 40px; }
+            .remarques { grid-template-columns: 1fr; }
+            
+            .produit-header { flex-direction: column; gap: 12px; }
+            .produit-prix { margin-left: 0; align-self: flex-start; }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container { flex-direction: column; gap: 16px; }
+            .nav-links { gap: 16px; }
+            .logo-header { font-size: 1.5rem; }
         }
     </style>
 </head>
-
 <body>
     <header>
         <div class="nav-container">
@@ -151,27 +587,129 @@
 
     <section id="partie1">
         <div class="container">
-            <h1>Délices Cake</h1>
-            <p class="hero-subtitle">Découvrez nos tiramisus artisanaux préparés avec passion</p>
+            <div class="logo-container">
+                <h1>Délices Cake</h1>
+                <p class="hero-subtitle">Découvrez l'authenticité du tiramisu artisanal, préparé avec passion et les meilleurs ingrédients</p>
+            </div>
             <div class="video-container">
-                <div class="video-placeholder"></div>
+                <div class="video-placeholder">
+                    <!-- Texte supprimé comme demandé -->
+                </div>
             </div>
         </div>
     </section>
 
     <section id="partie2">
         <div class="container">
-            <h2 style="text-align:center">Nos Créations Signature</h2>
+            <div class="section-header">
+                <h2>Nos Créations Signature</h2>
+                <p class="section-subtitle">Chaque tiramisu est une œuvre d'art culinaire, préparée fraîchement chaque jour avec des ingrédients d'exception</p>
+            </div>
             <div id="produits-grid" class="produits-grid">
-                <div class="loading">Chargement des produits...</div>
+                <div class="loading">Chargement de nos délices...</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="partie3">
+        <div class="container">
+            <div class="section-header">
+                <h2>Pourquoi Nous Choisir ?</h2>
+                <p class="section-subtitle">L'excellence au service de votre plaisir</p>
+            </div>
+            <div class="remarques">
+                <div class="remarque">
+                    <h3><i class="fas fa-crown"></i> Qualité Premium</h3>
+                    <p>Ingrédients sélectionnés avec soin pour un goût authentique et une texture incomparable</p>
+                </div>
+                <div class="remarque">
+                    <h3><i class="fas fa-shipping-fast"></i> Livraison Express</h3>
+                    <p>Recevez vos tiramisus frais en moins de 2h dans Grenoble et ses alentours</p>
+                </div>
+                <div class="remarque">
+                    <h3><i class="fas fa-gift"></i> Surprises Exclusives</h3>
+                    <p>Box cadeau offerte dès 10 pièces commandées pour sublimer vos moments spéciaux</p>
+                </div>
+                <div class="remarque">
+                    <h3><i class="fas fa-leaf"></i> Fait Maison</h3>
+                    <p>Préparés artisanalement le jour même pour garantir fraîcheur et authenticité</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="partie4">
+        <div class="container">
+            <div class="section-header">
+                <h2>Passer Votre Commande</h2>
+                <p class="section-subtitle">Une question ? Un projet d'événement ? Nous sommes là pour vous</p>
+            </div>
+            <div class="contact-container">
+                <div class="coordonnees">
+                    <h3>Nos Coordonnées</h3>
+                    <div class="coordonnee-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong>Téléphone</strong><br>
+                            <span id="telephone">Chargement...</span>
+                        </div>
+                    </div>
+                    <div class="coordonnee-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <strong>Email</strong><br>
+                            <span id="email">Chargement...</span>
+                        </div>
+                    </div>
+                    <div class="coordonnee-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>Adresse</strong><br>
+                            <span id="adresse">Chargement...</span>
+                        </div>
+                    </div>
+                    <div class="coordonnee-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>Horaires</strong><br>
+                            <span id="horaires">Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formulaire-contact">
+                    <h3>Message Rapide</h3>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="nom">Nom et Prénom</label>
+                            <input type="text" id="nom" class="form-control" placeholder="Votre nom complet" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="email-client">Email</label>
+                            <input type="email" id="email-client" class="form-control" placeholder="votre@email.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="sujet">Sujet</label>
+                            <input type="text" id="sujet" class="form-control" placeholder="Objet de votre message" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" class="form-control" placeholder="Décrivez-nous votre projet ou posez-nous vos questions..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-envoyer">
+                            <i class="fas fa-paper-plane"></i> Envoyer le message
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
 
     <footer>
-        © 2025 Délices Cake — Tous droits réservés
+        <div class="container">
+            <p>&copy; 2025 Délices Cake - Tiramisu Artisanal Grenoblois - Tous droits réservés</p>
+        </div>
     </footer>
-
     <script>
         /* -------------------------
            SUPABASE CONFIG
