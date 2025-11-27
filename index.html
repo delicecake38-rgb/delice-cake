@@ -710,77 +710,248 @@
             <p>&copy; 2025 Délices Cake - Tiramisu Artisanal Grenoblois - Tous droits réservés</p>
         </div>
     </footer>
-    <script>
-        /* -------------------------
-           SUPABASE CONFIG
-        --------------------------*/
-        const supabase = supabase.createClient(
-            "https://rqpruupnklbfbzygvifn.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdX..."
-        );
 
-        /* -------------------------
-           AFFICHER PRODUITS
-        --------------------------*/
-        async function chargerProduits() {
-            const grid = document.getElementById("produits-grid");
+<script>
+    // ---- CONFIG SUPABASE ----
+    const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
 
-            const { data, error } = await supabase.from("produits").select("*");
+    // Initialisation correcte (Supabase v2)
+    const { createClient } = supabase;
+    const client = createClient(supabaseUrl, supabaseKey);
+    console.log('✅ Supabase (client) initialisé');
+
+    // ---- CHARGER PRODUITS ----
+    async function chargerProduits() {
+        const grid = document.getElementById('produits-grid');
+        grid.innerHTML = '<div class="loading">Chargement des produits...</div>';
+
+        try {
+            const { data: produits, error } = await client
+                .from('produits')
+                .select('*')
+                .order('id', { ascending: true });
 
             if (error) {
-                grid.innerHTML = `<p class="error">Erreur lors du chargement.</p>`;
+                console.error('❌ Erreur Supabase produits:', error);
+                grid.innerHTML = '<div class="error">Erreur de chargement des produits: ' + (error.message || error) + '</div>';
                 return;
             }
 
-            if (!data.length) {
-                grid.innerHTML = `<p>Aucun produit disponible.</p>`;
+            if (!produits || produits.length === 0) {
+                grid.innerHTML = '<div class="error">Aucun produit trouvé dans la base de données.</div>';
                 return;
             }
 
-            grid.innerHTML = "";
+            afficherProduits(produits);
+        } catch (err) {
+            console.error('❌ Exception lors du chargement produits:', err);
+            grid.innerHTML = '<div class="error">Erreur technique lors du chargement des produits.</div>';
+        }
+    }
 
-            data.forEach(prod => {
-                grid.innerHTML += `
-                <div class="produit">
-                    <div class="produit-media">
-                        <img src="${prod.image}" alt="${prod.nom}">
-                    </div>
-                    <div class="produit-info">
-                        <div class="produit-header">
-                            <h3 class="produit-nom">${prod.nom}</h3>
-                            <div class="produit-prix">${prod.prix}€</div>
-                        </div>
-                        <p class="produit-description">${prod.description}</p>
+    // ---- AFFICHER PRODUITS ----
+    function afficherProduits(produits) {
+        const container = document.getElementById('produits-grid');
+        container.innerHTML = ''; // vider avant affichage
 
-                        <button class="btn-ajouter" onclick="ajouterPanier(${prod.id})">
-                            Ajouter au panier
-                        </button>
+        produits.forEach(produit => {
+            // Sécuriser les valeurs
+            const nom = produit.nom || 'Produit';
+            const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
+            const description = produit.description || '';
+            const gout = produit.gout || '';
+            const ingredients = produit.ingredients || '';
+            const imageUrl = produit.image_url || '';
+
+            const card = document.createElement('div');
+            card.className = 'produit';
+
+            card.innerHTML = `
+                <div class="produit-media">
+                    <img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'600\\' height=\\'400\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23e6d7c3\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'24\\' fill=\\'%238b5a2b\\'>🍰</text></svg>' />
+                </div>
+                <div class="produit-info">
+                    <div>
+                        <h3 class="produit-nom">${escapeHtml(nom)}</h3>
+                        <div class="produit-prix">${prix}</div>
                     </div>
-                </div>`;
+
+                    <div class="produit-description">
+                        <p>${escapeHtml(description)}</p>
+                        ${gout ? `<p><strong>Goût :</strong> ${escapeHtml(gout)}</p>` : ''}
+                        ${ingredients ? `<div class="ingredients"><strong>Ingrédients :</strong> ${escapeHtml(ingredients)}</div>` : ''}
+                    </div>
+
+                    <button class="btn-ajouter"
+                        data-nom="${escapeAttr(nom)}"
+                        data-prix="${escapeAttr(produit.prix)}"
+                        data-id="${escapeAttr(produit.id)}">
+                        Ajouter au panier
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    // ---- CHARGER COORDONNÉES ----
+    async function chargerCoordonnees() {
+        const telephoneEl = document.getElementById('telephone');
+        const emailEl = document.getElementById('email');
+        const adresseEl = document.getElementById('adresse');
+        const horairesEl = document.getElementById('horaires');
+
+        try {
+            const { data: coordonnees, error } = await client
+                .from('coordonnees')
+                .select('*')
+                .limit(1);
+
+            if (error) {
+                console.error('❌ Erreur Supabase coordonnées:', error);
+                // valeurs fallback
+                appliquerCoordonneesFallback();
+                return;
+            }
+
+            if (coordonnees && coordonnees.length > 0) {
+                const c = coordonnees[0];
+                if (c.telephone) telephoneEl.textContent = c.telephone;
+                if (c.email) emailEl.textContent = c.email;
+                if (c.adresse) adresseEl.textContent = c.adresse;
+                if (c.horaires) horairesEl.innerHTML = c.horaires.replace(/\n/g, '<br>');
+            } else {
+                appliquerCoordonneesFallback();
+            }
+        } catch (err) {
+            console.error('❌ Exception coordonnées:', err);
+            appliquerCoordonneesFallback();
+        }
+
+        function appliquerCoordonneesFallback() {
+            telephoneEl.textContent = "07 84 96 45 71";
+            emailEl.textContent = "delicecake38@gmail.com";
+            adresseEl.textContent = "Grenoble";
+            horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
+        }
+    }
+
+    // ---- PANIER ----
+    function ajouterAuPanier(nom, prix, id, button) {
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
+
+        // Utiliser id comme clé (string)
+        const articleExistant = panier.find(article => String(article.id) === String(id));
+
+        if (articleExistant) {
+            articleExistant.quantite += 1;
+        } else {
+            panier.push({
+                id: id,
+                nom: nom,
+                prix: parseFloat(prix) || 0,
+                quantite: 1
             });
         }
 
-        /* -------------------------
-           PANIER LOCALSTORAGE
-        --------------------------*/
-        function mettreAJourCompteur() {
-            const panier = JSON.parse(localStorage.getItem("panier") || "[]");
-            document.getElementById("nb-articles").textContent = panier.length;
+        localStorage.setItem('panier', JSON.stringify(panier));
+        mettreAJourCompteurPanier();
+
+        // Animation
+        if (button) {
+            const originalText = button.textContent;
+            button.textContent = '✓ Ajouté !';
+            button.classList.add('success');
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('success');
+            }, 1600);
+        }
+    }
+
+
+// ---- PANIER ----
+        function ajouterAuPanier(nom, prix, id, button) {
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            const articleExistant = panier.find(article => String(article.id) === String(id));
+
+            if (articleExistant) {
+                articleExistant.quantite += 1;
+            } else {
+                panier.push({
+                    id: id,
+                    nom: nom,
+                    prix: parseFloat(prix) || 0,
+                    quantite: 1
+                });
+            }
+
+            localStorage.setItem('panier', JSON.stringify(panier));
+            mettreAJourCompteurPanier();
+
+            // Animation de confirmation
+            if (button) {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Ajouté !';
+                button.classList.add('success');
+
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('success');
+                }, 2000);
+            }
         }
 
-        function ajouterPanier(id) {
-            let panier = JSON.parse(localStorage.getItem("panier") || "[]");
-            panier.push(id);
-            localStorage.setItem("panier", JSON.stringify(panier));
-            mettreAJourCompteur();
+        function mettreAJourCompteurPanier() {
+            const panier = JSON.parse(localStorage.getItem('panier')) || [];
+            const totalArticles = panier.reduce((total, article) => total + (article.quantite || 0), 0);
+            const compteurElement = document.getElementById('nb-articles');
+            if (compteurElement) compteurElement.textContent = totalArticles;
         }
 
-        /* -------------------------
-           INIT
-        --------------------------*/
-        chargerProduits();
-        mettreAJourCompteur();
+        // ---- GESTION ÉVÉNEMENTS ----
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.btn-ajouter');
+            if (target) {
+                const nom = target.getAttribute('data-nom');
+                const prix = target.getAttribute('data-prix');
+                const id = target.getAttribute('data-id');
+                ajouterAuPanier(nom, prix, id, target);
+            }
+        });
+
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
+            this.reset();
+        });
+
+        // ---- UTILITAIRES ----
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function escapeAttr(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        // ---- DÉMARRAGE ----
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Initialisation du site Délices Cake');
+            await chargerProduits();
+            await chargerCoordonnees();
+            mettreAJourCompteurPanier();
+        });
     </script>
-
 </body>
 </html>
