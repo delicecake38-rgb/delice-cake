@@ -348,13 +348,297 @@
             box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
         }
 
-        /* ===== FOOTER ===== */
-        footer { 
-            background: linear-gradient(135deg, var(--chocolat) 0%, #4A2F21 100%);
-            color: var(--blanc);
+        /* ===== STYLES QR CODE PAIEMENT ===== */
+        .paiement-qrcode {
+            background: var(--blanc);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+            border: 2px solid var(--cafe);
+        }
+
+        .qr-personnalise {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 25px 0;
+        }
+
+        @media (max-width: 768px) {
+            .qr-personnalise {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .votre-qr {
             text-align: center;
-            padding: 40px 0;
-            margin-top: 80px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--creme-fonce), var(--creme));
+            border-radius: 12px;
+            border: 2px solid var(--cafe-clair);
+        }
+
+        .qr-display {
+            width: 250px;
+            height: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(139, 69, 19, 0.2);
+        }
+
+        .qr-display canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .qr-info {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--cafe);
+        }
+
+        .qr-info p {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions-qr {
+            padding: 20px;
+            background: var(--blanc);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 69, 19, 0.1);
+        }
+
+        .etapes {
+            margin: 20px 0;
+        }
+
+        .etape {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: var(--creme);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .etape:hover {
+            background: var(--creme-fonce);
+            transform: translateX(5px);
+        }
+
+        .etape .numero {
+            width: 30px;
+            height: 30px;
+            background: var(--cafe);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .apps-support {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(139, 69, 19, 0.1);
+        }
+
+        .support-text {
+            color: var(--texte-clair);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .apps-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 1.8rem;
+        }
+
+        .apps-icons span {
+            color: var(--cafe);
+            transition: var(--transition);
+        }
+
+        .apps-icons span:hover {
+            transform: scale(1.2);
+        }
+
+        .alternative-paiement {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(241, 230, 210, 0.5);
+            border-radius: 12px;
+            border: 1px dashed var(--cafe);
+        }
+
+        .info-bancaire {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(139, 69, 19, 0.1);
+        }
+
+        .btn-copy {
+            background: var(--cafe-clair);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-copy:hover {
+            background: var(--cafe);
+            transform: translateY(-2px);
+        }
+
+        .confirmation-qr {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--creme-fonce);
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, var(--success), #66BB6A);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .small-text {
+            color: var(--texte-clair);
+            font-size: 0.9rem;
+        }
+
+        /* ===== CONFIRMATION FINALE ===== */
+        .confirmation-finale {
+            background: var(--blanc);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .confirmation-icon {
+            font-size: 4rem;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+
+        .recap-commande {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .recap-item {
+            background: var(--creme);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .recap-item i {
+            font-size: 1.5rem;
+            color: var(--cafe);
+        }
+
+        .instructions-finales {
+            background: rgba(241, 230, 210, 0.5);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .instructions-finales ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .instructions-finales li {
+            margin-bottom: 10px;
+        }
+
+        .contact-urgence {
+            background: rgba(139, 69, 19, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .actions-finales {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-accueil, .btn-imprimer {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-accueil {
+            background: linear-gradient(135deg, var(--cafe) 0%, var(--chocolat) 100%);
+            color: white;
+        }
+
+        .btn-imprimer {
+            background: var(--creme);
+            color: var(--texte);
+            border: 2px solid var(--cafe-clair);
         }
 
         /* ===== RESPONSIVE ===== */
@@ -390,6 +674,14 @@
             .btn-commander {
                 width: 100%;
             }
+
+            .recap-commande {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-finales {
+                flex-direction: column;
+            }
         }
 
         @media (max-width: 480px) {
@@ -424,6 +716,77 @@
 
             <div id="panier-contenu">
                 <!-- Contenu du panier généré dynamiquement -->
+            </div>
+
+            <!-- Section paiement QR Code (cachée par défaut) -->
+            <div class="paiement-qrcode" id="paiement-qrcode" style="display: none;">
+                <h3><i class="fas fa-qrcode"></i> Paiement à la livraison</h3>
+                
+                <div class="qr-personnalise">
+                    <div class="votre-qr">
+                        <h4>Votre QR Code bancaire</h4>
+                        <div class="qr-display">
+                            <canvas id="qr-canvas"></canvas>
+                        </div>
+                        <div class="qr-info">
+                            <p><i class="fas fa-user"></i> <strong>Bénéficiaire :</strong> DÉLICES CAKE</p>
+                            <p><i class="fas fa-euro-sign"></i> <strong>Montant :</strong> <span id="montant-qr">0,00</span> €</p>
+                            <p><i class="fas fa-hashtag"></i> <strong>Commande :</strong> <span id="commande-qr">DLCP-0001</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions-qr">
+                        <h4><i class="fas fa-mobile-alt"></i> Comment payer :</h4>
+                        <div class="etapes">
+                            <div class="etape">
+                                <span class="numero">1</span>
+                                <p>À la livraison, ouvrez votre app bancaire</p>
+                            </div>
+                            <div class="etape">
+                                <span class="numero">2</span>
+                                <p>Cliquez sur "Virement" ou "Payer"</p>
+                            </div>
+                            <div class="etape">
+                                <span class="numero">3</span>
+                                <p>Scannez ce QR Code avec l'app</p>
+                            </div>
+                            <div class="etape">
+                                <span class="numero">4</span>
+                                <p>Confirmez le paiement</p>
+                            </div>
+                        </div>
+                        
+                        <div class="apps-support">
+                            <p class="support-text">Fonctionne avec :</p>
+                            <div class="apps-icons">
+                                <span title="Application bancaire"><i class="fas fa-university"></i></span>
+                                <span title="Lydia"><i class="fas fa-mobile-alt"></i></span>
+                                <span title="PayPal"><i class="fab fa-paypal"></i></span>
+                                <span title="Google Pay"><i class="fab fa-google-pay"></i></span>
+                                <span title="Apple Pay"><i class="fab fa-apple-pay"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alternative-paiement">
+                    <p><i class="fas fa-info-circle"></i> Alternative : Virement manuel</p>
+                    <div class="info-bancaire">
+                        <p><strong>IBAN :</strong> FR76 XXXX XXXX XXXX XXXX XXXX XXX</p>
+                        <p><strong>BIC :</strong> XXXXXXXX</p>
+                        <p><strong>Référence :</strong> <span id="reference-virement">DLCP-0001</span></p>
+                    </div>
+                    <button class="btn-copy" onclick="copierIBAN()">
+                        <i class="far fa-copy"></i> Copier les coordonnées
+                    </button>
+                </div>
+                
+                <div class="confirmation-qr">
+                    <button class="btn-confirm" onclick="confirmerCommandeQR()">
+                        <i class="fas fa-check"></i> Je confirme ma commande
+                    </button>
+                    <p class="small-text">Le paiement se fera à la livraison par QR Code</p>
+                </div>
             </div>
 
             <div class="resume-panier" id="resume-panier" style="display: none;">
@@ -477,6 +840,7 @@
             const contenuElement = document.getElementById('panier-contenu');
             const resumeElement = document.getElementById('resume-panier');
             const videElement = document.getElementById('panier-vide');
+            const qrElement = document.getElementById('paiement-qrcode');
             
             // Mettre à jour le compteur dans le header
             mettreAJourCompteurPanier();
@@ -484,12 +848,14 @@
             if (panier.length === 0) {
                 contenuElement.innerHTML = '';
                 resumeElement.style.display = 'none';
+                qrElement.style.display = 'none';
                 videElement.style.display = 'block';
                 return;
             }
 
             videElement.style.display = 'none';
             resumeElement.style.display = 'block';
+            qrElement.style.display = 'none'; // Cacher QR Code par défaut
 
             // Créer le tableau des produits
             let html = `
@@ -597,6 +963,7 @@
             }
         }
 
+        // ---- FONCTIONS PAIEMENT QR CODE ----
         function commander() {
             const panier = JSON.parse(localStorage.getItem('panier')) || [];
             
@@ -604,26 +971,280 @@
                 alert('Votre panier est vide !');
                 return;
             }
-
-            // Simulation de commande
-            let message = 'Merci pour votre commande !\n\n';
-            message += 'Récapitulatif :\n';
             
-            let total = 0;
-            panier.forEach(item => {
-                const totalItem = item.prix * item.quantite;
-                total += totalItem;
-                message += `- ${item.nom} (x${item.quantite}) : ${totalItem.toFixed(2)} €\n`;
+            // Afficher le paiement QR Code
+            afficherPaiementQR();
+        }
+
+        function afficherPaiementQR() {
+            const panier = JSON.parse(localStorage.getItem('panier')) || [];
+            
+            if (panier.length === 0) {
+                alert('Votre panier est vide !');
+                return;
+            }
+
+            // Calculer le total
+            const total = calculerTotalPanier();
+            
+            // Générer numéro de commande
+            const numeroCommande = genererNumeroCommandeQR();
+            
+            // Cacher le résumé du panier
+            document.getElementById('resume-panier').style.display = 'none';
+            
+            // Afficher la section QR Code
+            const qrElement = document.getElementById('paiement-qrcode');
+            qrElement.style.display = 'block';
+            document.getElementById('montant-qr').textContent = total.toFixed(2).replace('.', ',');
+            document.getElementById('commande-qr').textContent = numeroCommande;
+            document.getElementById('reference-virement').textContent = numeroCommande;
+            
+            // Générer QR Code
+            genererQRCodePaiement(total, numeroCommande);
+            
+            // Scroll vers la section
+            qrElement.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculerTotalPanier() {
+            const panier = JSON.parse(localStorage.getItem('panier')) || [];
+            return panier.reduce((total, item) => total + (item.prix * item.quantite), 0);
+        }
+
+        function genererNumeroCommandeQR() {
+            const date = new Date();
+            const prefix = 'DLCP'; // Délices Cake Paiement
+            const jour = date.getDate().toString().padStart(2, '0');
+            const sequence = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            return `${prefix}-${jour}${sequence}`;
+        }
+
+        function genererQRCodePaiement(montant, numeroCommande) {
+            // Récupérer votre IBAN (à remplacer par le vôtre)
+            const votreIBAN = 'FR76XXXXXXXXXXXXXXXXXXXXXX'; // Votre IBAN ici
+            const votreNom = 'DELICES CAKE';
+            
+            // Format pour QR Code SEPA
+            const qrText = `BCD\n001\n1\nSCT\n\n${votreNom}\n${votreIBAN}\nEUR${montant.toFixed(2)}\n\n${numeroCommande}\nCommande Délices Cake`;
+            
+            // Générer le QR Code visuel
+            genererQRCodeSimple(qrText);
+        }
+
+        function genererQRCodeSimple(text) {
+            const canvas = document.getElementById('qr-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Dimensions
+            canvas.width = 250;
+            canvas.height = 250;
+            
+            // Effacer le canvas
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Dessiner un QR Code stylisé
+            ctx.fillStyle = '#5C3D2E';
+            
+            // Carré central
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const size = 100;
+            
+            // Dessiner un QR Code stylisé
+            ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
+            
+            // Ajouter un logo cake au centre
+            ctx.fillStyle = 'white';
+            ctx.font = '40px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🍰', centerX, centerY);
+            
+            // Texte en bas
+            ctx.fillStyle = '#8B4513';
+            ctx.font = '12px Arial';
+            ctx.fillText('DÉLICES CAKE', centerX, canvas.height - 10);
+        }
+
+        function copierIBAN() {
+            // Remplacez par votre vrai IBAN
+            const iban = 'FR76 XXXX XXXX XXXX XXXX XXXX XXX';
+            const reference = document.getElementById('reference-virement').textContent;
+            const texte = `IBAN: ${iban}\nRÉFÉRENCE: ${reference}`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(texte).then(() => {
+                    alert('✅ Coordonnées bancaires copiées !\nCollez-les dans votre application bancaire.');
+                }).catch(err => {
+                    copierFallback(texte);
+                });
+            } else {
+                copierFallback(texte);
+            }
+        }
+
+        function copierFallback(texte) {
+            const textarea = document.createElement('textarea');
+            textarea.value = texte;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('✅ Coordonnées copiées !');
+        }
+
+        function confirmerCommandeQR() {
+            const numeroCommande = document.getElementById('commande-qr').textContent;
+            const montant = document.getElementById('montant-qr').textContent;
+            
+            // Demander les infos de contact
+            const nom = prompt('Pour finaliser votre commande, veuillez saisir votre nom :');
+            if (!nom) return;
+            
+            const telephone = prompt('Votre numéro de téléphone pour la livraison :');
+            if (!telephone) return;
+            
+            const adresse = prompt('Votre adresse de livraison (Grenoble et alentours) :');
+            if (!adresse) return;
+            
+            // Enregistrer la commande
+            const panier = JSON.parse(localStorage.getItem('panier')) || [];
+            const commande = {
+                id: numeroCommande,
+                date: new Date().toISOString(),
+                statut: 'confirmée',
+                paiement: {
+                    methode: 'qr_livraison',
+                    montant: parseFloat(montant.replace(',', '.')),
+                    paye: false
+                },
+                client: {
+                    nom: nom,
+                    telephone: telephone,
+                    adresse: adresse
+                },
+                produits: panier.map(item => ({
+                    nom: item.nom,
+                    quantite: item.quantite,
+                    prix: item.prix
+                }))
+            };
+            
+            // Sauvegarder
+            sauvegarderCommandeQR(commande);
+            
+            // Envoyer email
+            envoyerEmailCommandeQR(commande);
+            
+            // Afficher confirmation
+            afficherConfirmationCommande(commande);
+            
+            // Vider le panier
+            localStorage.removeItem('panier');
+        }
+
+        function sauvegarderCommandeQR(commande) {
+            // Sauvegarder dans localStorage
+            const commandes = JSON.parse(localStorage.getItem('commandes_delices') || '[]');
+            commandes.push(commande);
+            localStorage.setItem('commandes_delices', JSON.stringify(commandes));
+            
+            // Afficher dans la console (pour vous)
+            console.log('📦 NOUVELLE COMMANDE :', commande);
+        }
+
+        function envoyerEmailCommandeQR(commande) {
+            const email = 'delicecake38@gmail.com'; // Votre email
+            const sujet = `Nouvelle commande - ${commande.id}`;
+            
+            let corps = `🎂 NOUVELLE COMMANDE DÉLICES CAKE 🎂\n\n`;
+            corps += `📋 NUMÉRO : ${commande.id}\n`;
+            corps += `📅 DATE : ${new Date(commande.date).toLocaleString('fr-FR')}\n`;
+            corps += `💰 MONTANT : ${commande.paiement.montant.toFixed(2)} €\n`;
+            corps += `💳 PAIEMENT : QR Code à la livraison\n\n`;
+            
+            corps += `👤 CLIENT :\n`;
+            corps += `Nom : ${commande.client.nom}\n`;
+            corps += `Téléphone : ${commande.client.telephone}\n`;
+            corps += `Adresse : ${commande.client.adresse}\n\n`;
+            
+            corps += `🛒 PRODUITS :\n`;
+            commande.produits.forEach(p => {
+                corps += `- ${p.nom} x${p.quantite} : ${(p.prix * p.quantite).toFixed(2)} €\n`;
             });
             
-            message += `\nTotal : ${total.toFixed(2)} €`;
-            message += '\n\nNous vous contacterons sous peu pour finaliser votre commande.';
+            corps += `\n📦 TOTAL : ${commande.paiement.montant.toFixed(2)} €\n\n`;
+            corps += `✅ À PRÉPARER POUR LA LIVRAISON !`;
             
-            alert(message);
+            // Ouvrir le client mail par défaut
+            window.open(`mailto:${email}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`);
+        }
+
+        function afficherConfirmationCommande(commande) {
+            const confirmationHTML = `
+                <div class="confirmation-finale">
+                    <div class="confirmation-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2>Commande confirmée !</h2>
+                    <p class="sous-titre">Vos délices tiramisu sont en préparation</p>
+                    
+                    <div class="recap-commande">
+                        <div class="recap-item">
+                            <i class="fas fa-hashtag"></i>
+                            <div>
+                                <small>Numéro</small>
+                                <p>${commande.id}</p>
+                            </div>
+                        </div>
+                        <div class="recap-item">
+                            <i class="fas fa-euro-sign"></i>
+                            <div>
+                                <small>Montant</small>
+                                <p>${commande.paiement.montant.toFixed(2)} €</p>
+                            </div>
+                        </div>
+                        <div class="recap-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <small>Livraison</small>
+                                <p>${commande.client.adresse}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions-finales">
+                        <h4><i class="fas fa-info-circle"></i> Prochaines étapes :</h4>
+                        <ol>
+                            <li>Nous préparons vos tiramisus frais</li>
+                            <li>Nous vous appelons pour confirmer l'horaire</li>
+                            <li>Livraison dans les 2h (Grenoble)</li>
+                            <li>Paiement par QR Code à la livraison</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="contact-urgence">
+                        <p><i class="fas fa-phone"></i> Une question ? <strong>07 84 96 45 71</strong></p>
+                    </div>
+                    
+                    <div class="actions-finales">
+                        <button class="btn-accueil" onclick="location.href='index.html'">
+                            <i class="fas fa-home"></i> Retour à l'accueil
+                        </button>
+                        <button class="btn-imprimer" onclick="window.print()">
+                            <i class="fas fa-print"></i> Imprimer ce récapitulatif
+                        </button>
+                    </div>
+                </div>
+            `;
             
-            // Optionnel: vider le panier après commande
-            // localStorage.removeItem('panier');
-            // chargerPanier();
+            document.getElementById('panier-contenu').innerHTML = confirmationHTML;
+            document.getElementById('resume-panier').style.display = 'none';
+            document.getElementById('paiement-qrcode').style.display = 'none';
         }
 
         function mettreAJourCompteurPanier() {
@@ -652,564 +1273,3 @@
     </script>
 </body>
 </html>
-
-<!-- Section paiement QR Code -->
-<div class="paiement-qrcode" id="paiement-qrcode" style="display: none;">
-    <h3><i class="fas fa-qrcode"></i> Paiement à la livraison</h3>
-    
-    <div class="qr-personnalise">
-        <div class="votre-qr">
-            <h4>Votre QR Code bancaire</h4>
-            <div class="qr-display">
-                <!-- QR Code sera généré ici -->
-                <canvas id="qr-canvas"></canvas>
-            </div>
-            <div class="qr-info">
-                <p><i class="fas fa-user"></i> <strong>Bénéficiaire :</strong> DÉLICES CAKE</p>
-                <p><i class="fas fa-euro-sign"></i> <strong>Montant :</strong> <span id="montant-qr">0,00</span> €</p>
-                <p><i class="fas fa-hashtag"></i> <strong>Commande :</strong> <span id="commande-qr">DLCP-0001</span></p>
-            </div>
-        </div>
-        
-        <div class="instructions-qr">
-            <h4><i class="fas fa-mobile-alt"></i> Comment payer :</h4>
-            <div class="etapes">
-                <div class="etape">
-                    <span class="numero">1</span>
-                    <p>À la livraison, ouvrez votre app bancaire</p>
-                </div>
-                <div class="etape">
-                    <span class="numero">2</span>
-                    <p>Cliquez sur "Virement" ou "Payer"</p>
-                </div>
-                <div class="etape">
-                    <span class="numero">3</span>
-                    <p>Scannez ce QR Code avec l'app</p>
-                </div>
-                <div class="etape">
-                    <span class="numero">4</span>
-                    <p>Confirmez le paiement</p>
-                </div>
-            </div>
-            
-            <div class="apps-support">
-                <p class="support-text">Fonctionne avec :</p>
-                <div class="apps-icons">
-                    <span title="Application bancaire"><i class="fas fa-university"></i></span>
-                    <span title="Lydia"><i class="fas fa-mobile-alt"></i></span>
-                    <span title="PayPal"><i class="fab fa-paypal"></i></span>
-                    <span title="Google Pay"><i class="fab fa-google-pay"></i></span>
-                    <span title="Apple Pay"><i class="fab fa-apple-pay"></i></span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="alternative-paiement">
-        <p><i class="fas fa-info-circle"></i> Alternative : Virement manuel</p>
-        <div class="info-bancaire">
-            <p><strong>IBAN :</strong> FR76 XXXX XXXX XXXX XXXX XXXX XXX</p>
-            <p><strong>BIC :</strong> XXXXXXXX</p>
-            <p><strong>Référence :</strong> <span id="reference-virement">DLCP-0001</span></p>
-        </div>
-        <button class="btn-copy" onclick="copierIBAN()">
-            <i class="far fa-copy"></i> Copier les coordonnées
-        </button>
-    </div>
-    
-    <div class="confirmation-qr">
-        <button class="btn-confirm" onclick="confirmerCommandeQR()">
-            <i class="fas fa-check"></i> Je confirme ma commande
-        </button>
-        <p class="small-text">Le paiement se fera à la livraison par QR Code</p>
-    </div>
-</div>
-
-/* Styles QR Code Paiement */
-.paiement-qrcode {
-    background: var(--blanc);
-    padding: 30px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin-top: 30px;
-    border: 2px solid var(--cafe);
-}
-
-.qr-personnalise {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin: 25px 0;
-}
-
-@media (max-width: 768px) {
-    .qr-personnalise {
-        grid-template-columns: 1fr;
-    }
-}
-
-.votre-qr {
-    text-align: center;
-    padding: 20px;
-    background: linear-gradient(135deg, var(--creme-fonce), var(--creme));
-    border-radius: 12px;
-    border: 2px solid var(--cafe-clair);
-}
-
-.qr-display {
-    width: 250px;
-    height: 250px;
-    margin: 20px auto;
-    padding: 15px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border: 1px solid rgba(139, 69, 19, 0.2);
-}
-
-.qr-display canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-.qr-info {
-    margin-top: 20px;
-    text-align: left;
-    background: rgba(255,255,255,0.8);
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 4px solid var(--cafe);
-}
-
-.qr-info p {
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.instructions-qr {
-    padding: 20px;
-    background: var(--blanc);
-    border-radius: 12px;
-    border: 1px solid rgba(139, 69, 19, 0.1);
-}
-
-.etapes {
-    margin: 20px 0;
-}
-
-.etape {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    padding: 12px;
-    background: var(--creme);
-    border-radius: 8px;
-    transition: var(--transition);
-}
-
-.etape:hover {
-    background: var(--creme-fonce);
-    transform: translateX(5px);
-}
-
-.etape .numero {
-    width: 30px;
-    height: 30px;
-    background: var(--cafe);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.apps-support {
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(139, 69, 19, 0.1);
-}
-
-.support-text {
-    color: var(--texte-clair);
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.apps-icons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    font-size: 1.8rem;
-}
-
-.apps-icons span {
-    color: var(--cafe);
-    transition: var(--transition);
-}
-
-.apps-icons span:hover {
-    transform: scale(1.2);
-}
-
-.alternative-paiement {
-    margin: 25px 0;
-    padding: 20px;
-    background: rgba(241, 230, 210, 0.5);
-    border-radius: 12px;
-    border: 1px dashed var(--cafe);
-}
-
-.info-bancaire {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin: 15px 0;
-    font-family: monospace;
-    font-size: 0.9rem;
-    border: 1px solid rgba(139, 69, 19, 0.1);
-}
-
-.btn-copy {
-    background: var(--cafe-clair);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-copy:hover {
-    background: var(--cafe);
-    transform: translateY(-2px);
-}
-
-.confirmation-qr {
-    text-align: center;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid var(--creme-fonce);
-}
-
-.btn-confirm {
-    background: linear-gradient(135deg, var(--success), #66BB6A);
-    color: white;
-    border: none;
-    padding: 16px 40px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.btn-confirm:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-}
-
-.small-text {
-    color: var(--texte-clair);
-    font-size: 0.9rem;
-}
-
-// QR Code Paiement - Solution simple et gratuite
-
-function afficherPaiementQR() {
-    const panier = JSON.parse(localStorage.getItem('panier')) || [];
-    
-    if (panier.length === 0) {
-        alert('Votre panier est vide !');
-        return;
-    }
-
-    // Calculer le total
-    const total = calculerTotalPanier();
-    
-    // Générer numéro de commande
-    const numeroCommande = genererNumeroCommandeQR();
-    
-    // Afficher la section
-    document.getElementById('paiement-qrcode').style.display = 'block';
-    document.getElementById('montant-qr').textContent = total.toFixed(2).replace('.', ',');
-    document.getElementById('commande-qr').textContent = numeroCommande;
-    document.getElementById('reference-virement').textContent = numeroCommande;
-    
-    // Générer QR Code
-    genererQRCodePaiement(total, numeroCommande);
-    
-    // Scroll vers la section
-    document.getElementById('paiement-qrcode').scrollIntoView({ behavior: 'smooth' });
-}
-
-function genererNumeroCommandeQR() {
-    const date = new Date();
-    const prefix = 'DLCP'; // Délices Cake Paiement
-    const jour = date.getDate().toString().padStart(2, '0');
-    const sequence = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    return `${prefix}-${jour}${sequence}`;
-}
-
-function genererQRCodePaiement(montant, numeroCommande) {
-    // Récupérer votre IBAN (à remplacer par le vôtre)
-    const votreIBAN = 'FR76XXXXXXXXXXXXXXXXXXXXXX'; // Votre IBAN ici
-    const votreNom = 'DELICES CAKE';
-    
-    // Créer les données du virement SEPA
-    const dataQR = {
-        version: '008',
-        characterSet: '1',
-        identification: 'SCT',
-        bic: '', // Optionnel
-        name: votreNom,
-        iban: votreIBAN,
-        amount: montant.toFixed(2),
-        purpose: `CMD${numeroCommande}`,
-        remittance: `Commande ${numeroCommande} - Délices Cake`,
-        information: 'Paiement tiramisu'
-    };
-    
-    // Format pour QR Code SEPA
-    const qrText = `BCD\n001\n1\nSCT\n\n${votreNom}\n${votreIBAN}\nEUR${montant.toFixed(2)}\n\n${numeroCommande}\nCommande Délices Cake`;
-    
-    // Utiliser une librairie QR Code simple
-    genererQRCodeSimple(qrText);
-}
-
-function genererQRCodeSimple(text) {
-    const canvas = document.getElementById('qr-canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Dimensions
-    canvas.width = 250;
-    canvas.height = 250;
-    
-    // Effacer le canvas
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Dessiner un QR Code simple (version simplifiée)
-    // En production, utilisez une librairie comme qrcode.js
-    dessinerQRCodeBasique(ctx, text);
-}
-
-function dessinerQRCodeBasique(ctx, text) {
-    // Dessiner un QR Code stylisé (placeholder)
-    ctx.fillStyle = '#5C3D2E';
-    
-    // Carré central
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const size = 100;
-    
-    // Dessiner un QR Code stylisé
-    ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
-    
-    // Ajouter un logo cake au centre
-    ctx.fillStyle = 'white';
-    ctx.font = '40px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🍰', centerX, centerY);
-    
-    // Texte en bas
-    ctx.fillStyle = '#8B4513';
-    ctx.font = '12px Arial';
-    ctx.fillText('DÉLICES CAKE', centerX, canvas.height - 10);
-}
-
-function copierIBAN() {
-    const iban = 'FR76 XXXX XXXX XXXX XXXX XXXX XXX'; // Votre IBAN
-    const reference = document.getElementById('reference-virement').textContent;
-    const texte = `IBAN: ${iban}\nRÉFÉRENCE: ${reference}`;
-    
-    navigator.clipboard.writeText(texte).then(() => {
-        alert('Coordonnées bancaires copiées !\nCollez-les dans votre application bancaire.');
-    }).catch(err => {
-        // Fallback pour anciens navigateurs
-        const textarea = document.createElement('textarea');
-        textarea.value = texte;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('Coordonnées copiées !');
-    });
-}
-
-function confirmerCommandeQR() {
-    const numeroCommande = document.getElementById('commande-qr').textContent;
-    const montant = document.getElementById('montant-qr').textContent;
-    
-    // Demander les infos de contact
-    const nom = prompt('Pour finaliser votre commande, veuillez saisir votre nom :');
-    if (!nom) return;
-    
-    const telephone = prompt('Votre numéro de téléphone pour la livraison :');
-    if (!telephone) return;
-    
-    const adresse = prompt('Votre adresse de livraison (Grenoble et alentours) :');
-    if (!adresse) return;
-    
-    // Enregistrer la commande
-    const panier = JSON.parse(localStorage.getItem('panier')) || [];
-    const commande = {
-        id: numeroCommande,
-        date: new Date().toISOString(),
-        statut: 'confirmée',
-        paiement: {
-            methode: 'qr_livraison',
-            montant: parseFloat(montant.replace(',', '.')),
-            paye: false
-        },
-        client: {
-            nom: nom,
-            telephone: telephone,
-            adresse: adresse
-        },
-        produits: panier.map(item => ({
-            nom: item.nom,
-            quantite: item.quantite,
-            prix: item.prix
-        }))
-    };
-    
-    // Sauvegarder
-    sauvegarderCommandeQR(commande);
-    
-    // Envoyer email
-    envoyerEmailCommandeQR(commande);
-    
-    // Afficher confirmation
-    afficherConfirmationCommande(commande);
-    
-    // Vider le panier
-    localStorage.removeItem('panier');
-    chargerPanier();
-}
-
-function sauvegarderCommandeQR(commande) {
-    // Sauvegarder dans localStorage
-    const commandes = JSON.parse(localStorage.getItem('commandes_delices') || '[]');
-    commandes.push(commande);
-    localStorage.setItem('commandes_delices', JSON.stringify(commandes));
-    
-    // Afficher dans la console (pour vous)
-    console.log('📦 NOUVELLE COMMANDE :', commande);
-}
-
-function envoyerEmailCommandeQR(commande) {
-    const email = 'delicecake38@gmail.com'; // Votre email
-    const sujet = `Nouvelle commande - ${commande.id}`;
-    
-    let corps = `🎂 NOUVELLE COMMANDE DÉLICES CAKE 🎂\n\n`;
-    corps += `📋 NUMÉRO : ${commande.id}\n`;
-    corps += `📅 DATE : ${new Date(commande.date).toLocaleString('fr-FR')}\n`;
-    corps += `💰 MONTANT : ${commande.paiement.montant.toFixed(2)} €\n`;
-    corps += `💳 PAIEMENT : QR Code à la livraison\n\n`;
-    
-    corps += `👤 CLIENT :\n`;
-    corps += `Nom : ${commande.client.nom}\n`;
-    corps += `Téléphone : ${commande.client.telephone}\n`;
-    corps += `Adresse : ${commande.client.adresse}\n\n`;
-    
-    corps += `🛒 PRODUITS :\n`;
-    commande.produits.forEach(p => {
-        corps += `- ${p.nom} x${p.quantite} : ${(p.prix * p.quantite).toFixed(2)} €\n`;
-    });
-    
-    corps += `\n📦 TOTAL : ${commande.paiement.montant.toFixed(2)} €\n\n`;
-    corps += `✅ À PRÉPARER POUR LA LIVRAISON !`;
-    
-    // Ouvrir le client mail par défaut
-    window.open(`mailto:${email}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`);
-}
-
-function afficherConfirmationCommande(commande) {
-    const confirmationHTML = `
-        <div class="confirmation-finale">
-            <div class="confirmation-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2>Commande confirmée !</h2>
-            <p class="sous-titre">Vos délices tiramisu sont en préparation</p>
-            
-            <div class="recap-commande">
-                <div class="recap-item">
-                    <i class="fas fa-hashtag"></i>
-                    <div>
-                        <small>Numéro</small>
-                        <p>${commande.id}</p>
-                    </div>
-                </div>
-                <div class="recap-item">
-                    <i class="fas fa-euro-sign"></i>
-                    <div>
-                        <small>Montant</small>
-                        <p>${commande.paiement.montant.toFixed(2)} €</p>
-                    </div>
-                </div>
-                <div class="recap-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <div>
-                        <small>Livraison</small>
-                        <p>${commande.client.adresse}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="instructions-finales">
-                <h4><i class="fas fa-info-circle"></i> Prochaines étapes :</h4>
-                <ol>
-                    <li>Nous préparons vos tiramisus frais</li>
-                    <li>Nous vous appelons pour confirmer l'horaire</li>
-                    <li>Livraison dans les 2h (Grenoble)</li>
-                    <li>Paiement par QR Code à la livraison</li>
-                </ol>
-            </div>
-            
-            <div class="contact-urgence">
-                <p><i class="fas fa-phone"></i> Une question ? <strong>07 84 96 45 71</strong></p>
-            </div>
-            
-            <div class="actions-finales">
-                <button class="btn-accueil" onclick="location.href='index.html'">
-                    <i class="fas fa-home"></i> Retour à l'accueil
-                </button>
-                <button class="btn-imprimer" onclick="window.print()">
-                    <i class="fas fa-print"></i> Imprimer ce récapitulatif
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('panier-contenu').innerHTML = confirmationHTML;
-    document.getElementById('resume-panier').style.display = 'none';
-    document.getElementById('paiement-qrcode').style.display = 'none';
-}
-
-// Modifier la fonction commander() existante
-function commander() {
-    const panier = JSON.parse(localStorage.getItem('panier')) || [];
-    
-    if (panier.length === 0) {
-        alert('Votre panier est vide !');
-        return;
-    }
-    
-    // Afficher directement le QR Code (solution simple)
-    afficherPaiementQR();
-}
