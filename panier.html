@@ -1097,56 +1097,64 @@
             alert('✅ Coordonnées copiées !');
         }
 
-        function confirmerCommandeQR() {
-            const numeroCommande = document.getElementById('commande-qr').textContent;
-            const montant = document.getElementById('montant-qr').textContent;
-            
-            // Demander les infos de contact
-            const nom = prompt('Pour finaliser votre commande, veuillez saisir votre nom :');
-            if (!nom) return;
-            
-            const telephone = prompt('Votre numéro de téléphone pour la livraison :');
-            if (!telephone) return;
-            
-            const adresse = prompt('Votre adresse de livraison (Grenoble et alentours) :');
-            if (!adresse) return;
-            
-            // Enregistrer la commande
-            const panier = JSON.parse(localStorage.getItem('panier')) || [];
-            const commande = {
-                id: numeroCommande,
-                date: new Date().toISOString(),
-                statut: 'confirmée',
-                paiement: {
-                    methode: 'qr_livraison',
-                    montant: parseFloat(montant.replace(',', '.')),
-                    paye: false
-                },
-                client: {
-                    nom: nom,
-                    telephone: telephone,
-                    adresse: adresse
-                },
-                produits: panier.map(item => ({
-                    nom: item.nom,
-                    quantite: item.quantite,
-                    prix: item.prix
-                }))
-            };
-            
-            // Sauvegarder
-            sauvegarderCommandeQR(commande);
-            
-            // Envoyer email
-            envoyerEmailCommandeQR(commande);
-            
-            // Afficher confirmation
-            afficherConfirmationCommande(commande);
-            
-            // Vider le panier
-            localStorage.removeItem('panier');
-        }
+async function confirmerCommandeQR() {
+    const numeroCommande = document.getElementById('commande-qr').textContent;
+    const montant = document.getElementById('montant-qr').textContent;
+    
+    // Demander les infos de contact
+    const nom = prompt('Pour finaliser votre commande, veuillez saisir votre nom :');
+    if (!nom) return;
+    
+    const telephone = prompt('Votre numéro de téléphone pour la livraison :');
+    if (!telephone) return;
+    
+    const adresse = prompt('Votre adresse de livraison (Grenoble et alentours) :');
+    if (!adresse) return;
+    
+    // Enregistrer la commande
+    const panier = JSON.parse(localStorage.getItem('panier')) || [];
+    const commande = {
+        id: numeroCommande,
+        date: new Date().toISOString(),
+        statut: 'en_attente',
+        paiement: {
+            methode: 'qr_livraison',
+            montant: parseFloat(montant.replace(',', '.')),
+            paye: false
+        },
+        client: {
+            nom: nom,
+            telephone: telephone,
+            adresse: adresse
+        },
+        produits: panier.map(item => ({
+            nom: item.nom,
+            quantite: item.quantite,
+            prix: item.prix
+        }))
+    };
+    
+    // 1. Envoyer email à VOUS
+    envoyerEmailCommandeQR(commande);
+    
+    // 2. Enregistrer dans Supabase
+    const resultSupabase = await enregistrerCommandeSupabase(commande);
+    
+    // 3. Sauvegarder localement (backup)
+    sauvegarderCommandeLocale(commande);
+    
+    // 4. Afficher confirmation
+    afficherConfirmationCommande(commande);
+    
+    // 5. Vider le panier
+    localStorage.removeItem('panier');
+}
 
+function sauvegarderCommandeLocale(commande) {
+    const commandes = JSON.parse(localStorage.getItem('commandes_delices') || '[]');
+    commandes.push(commande);
+    localStorage.setItem('commandes_delices', JSON.stringify(commandes));
+}
         function sauvegarderCommandeQR(commande) {
             // Sauvegarder dans localStorage
             const commandes = JSON.parse(localStorage.getItem('commandes_delices') || '[]');
@@ -1157,33 +1165,44 @@
             console.log('📦 NOUVELLE COMMANDE :', commande);
         }
 
-        function envoyerEmailCommandeQR(commande) {
-            const email = 'delicecake38@gmail.com'; // Votre email
-            const sujet = `Nouvelle commande - ${commande.id}`;
-            
-            let corps = `🎂 NOUVELLE COMMANDE DÉLICES CAKE 🎂\n\n`;
-            corps += `📋 NUMÉRO : ${commande.id}\n`;
-            corps += `📅 DATE : ${new Date(commande.date).toLocaleString('fr-FR')}\n`;
-            corps += `💰 MONTANT : ${commande.paiement.montant.toFixed(2)} €\n`;
-            corps += `💳 PAIEMENT : QR Code à la livraison\n\n`;
-            
-            corps += `👤 CLIENT :\n`;
-            corps += `Nom : ${commande.client.nom}\n`;
-            corps += `Téléphone : ${commande.client.telephone}\n`;
-            corps += `Adresse : ${commande.client.adresse}\n\n`;
-            
-            corps += `🛒 PRODUITS :\n`;
-            commande.produits.forEach(p => {
-                corps += `- ${p.nom} x${p.quantite} : ${(p.prix * p.quantite).toFixed(2)} €\n`;
-            });
-            
-            corps += `\n📦 TOTAL : ${commande.paiement.montant.toFixed(2)} €\n\n`;
-            corps += `✅ À PRÉPARER POUR LA LIVRAISON !`;
-            
-            // Ouvrir le client mail par défaut
-            window.open(`mailto:${email}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`);
-        }
-
+// ---- ENVOYER EMAIL À VOUS ----
+function envoyerEmailCommandeQR(commande) {
+    // REMPLACEZ AVEC VOTRE EMAIL PERSO
+    const votreEmailPerso = 'ton.email.personnel@gmail.com'; // ← CHANGEZ ICI !
+    
+    const sujet = `🎂 NOUVELLE COMMANDE - ${commande.id}`;
+    
+    let corps = `NOUVELLE COMMANDE DÉLICES CAKE\n\n`;
+    corps += `📋 NUMÉRO : ${commande.id}\n`;
+    corps += `📅 DATE : ${new Date(commande.date).toLocaleString('fr-FR')}\n`;
+    corps += `💰 MONTANT : ${commande.paiement.montant.toFixed(2)} €\n`;
+    corps += `💳 PAIEMENT : QR Code à la livraison\n\n`;
+    
+    corps += `👤 CLIENT :\n`;
+    corps += `Nom : ${commande.client.nom}\n`;
+    corps += `Téléphone : ${commande.client.telephone}\n`;
+    corps += `Adresse : ${commande.client.adresse}\n\n`;
+    
+    corps += `🛒 PRODUITS :\n`;
+    commande.produits.forEach(p => {
+        corps += `- ${p.nom} x${p.quantite} : ${(p.prix * p.quantite).toFixed(2)} €\n`;
+    });
+    
+    corps += `\n📦 TOTAL : ${commande.paiement.montant.toFixed(2)} €\n\n`;
+    corps += `⚠️ ACTION REQUISE :\n`;
+    corps += `1. Préparer les tiramisus frais\n`;
+    corps += `2. Appeler le client au ${commande.client.telephone}\n`;
+    corps += `3. Livrer à : ${commande.client.adresse}\n`;
+    corps += `4. Paiement QR Code à la livraison\n\n`;
+    corps += `⏰ URGENCE : Livraison dans les 2h !`;
+    
+    // Ouvrir l'email pré-rempli
+    window.open(`mailto:${votreEmailPerso}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`);
+    
+    // Afficher un message pour vous
+    console.log('📧 Email envoyé à :', votreEmailPerso);
+    console.log('📦 Détails commande :', commande);
+}
         function afficherConfirmationCommande(commande) {
             const confirmationHTML = `
                 <div class="confirmation-finale">
@@ -1253,7 +1272,53 @@
             const compteurElement = document.getElementById('nb-articles');
             if (compteurElement) compteurElement.textContent = totalArticles;
         }
-
+// ---- ENREGISTRER COMMANDE DANS SUPABASE ----
+async function enregistrerCommandeSupabase(commande) {
+    try {
+        // Utiliser le même client Supabase que votre site
+        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+        
+        // Initialiser Supabase
+        const { createClient } = supabase;
+        const clientSupabase = createClient(supabaseUrl, supabaseKey);
+        
+        // Préparer les données
+        const commandeData = {
+            numero_commande: commande.id,
+            date_commande: commande.date,
+            client_nom: commande.client.nom,
+            client_telephone: commande.client.telephone,
+            client_adresse: commande.client.adresse,
+            montant_total: commande.paiement.montant,
+            statut: 'en_attente', // en_attente, confirmee, livree, annulee
+            methode_paiement: commande.paiement.methode,
+            produits_json: JSON.stringify(commande.produits),
+            created_at: new Date().toISOString()
+        };
+        
+        console.log('📤 Envoi à Supabase...', commandeData);
+        
+        // Insérer dans la table 'commandes'
+        const { data, error } = await clientSupabase
+            .from('commandes')
+            .insert([commandeData])
+            .select();
+            
+        if (error) {
+            console.error('❌ Erreur Supabase:', error);
+            alert('La commande a été enregistrée mais il y a eu un problème technique. Nous vous avons envoyé un email.');
+        } else {
+            console.log('✅ Commande enregistrée dans Supabase:', data);
+        }
+        
+        return { success: !error, data, error };
+        
+    } catch (error) {
+        console.error('❌ Exception Supabase:', error);
+        return { success: false, error };
+    }
+}
         // ---- UTILITAIRE ----
         function escapeHtml(str) {
             if (str === null || str === undefined) return '';
