@@ -644,34 +644,45 @@
                     </div>
                 </div>
                 
-                <div class="formulaire-contact">
-                    <h3>Message Rapide</h3>
-                    <form id="contact-form"> 
-                        <form action="https://formspree.io/f/mnnevabb">
-                        <div class="form-group">
-                            <label for="nom">Nom et Prénom</label>
-                            <input type="text" id="nom" class="form-control" placeholder="Votre nom complet" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="email-client">Email</label>
-                            <input type="email" id="email-client" class="form-control" placeholder="votre@email.com" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="sujet">Sujet</label>
-                            <input type="text" id="sujet" class="form-control" placeholder="Objet de votre message" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" class="form-control" placeholder="Décrivez-nous votre projet ou posez-nous vos questions..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn-envoyer">
-                            <i class="fas fa-paper-plane"></i> Envoyer le message
-                        </button>
-                    </form>
-                </div>
-            </div>
+<div class="formulaire-contact">
+    <h3>Message Rapide</h3>
+    <form action="https://formspree.io/f/mnnevabb" method="POST">
+        <!-- Champ email pour la réponse (Obligatoire pour Formspree) -->
+        <input type="hidden" name="_replyto" id="replyto-email">
+        
+        <!-- Redirection après envoi (optionnel) -->
+        <input type="hidden" name="_next" value="https://votresite.com/merci.html">
+        
+        <!-- Sujet personnalisé -->
+        <input type="hidden" name="_subject" value="Nouveau message contact">
+        
+        <div class="form-group">
+            <label for="nom">Nom et Prénom</label>
+            <input type="text" id="nom" name="nom" class="form-control" placeholder="Votre nom complet" required />
         </div>
-    </section>
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" 
+                   placeholder="votre@email.com" required 
+                   oninput="document.getElementById('replyto-email').value = this.value" />
+        </div>
+        
+        <div class="form-group">
+            <label for="sujet">Sujet</label>
+            <input type="text" id="sujet" name="sujet" class="form-control" placeholder="Objet de votre message" required />
+        </div>
+        
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" class="form-control" placeholder="Décrivez-nous votre projet..." required></textarea>
+        </div>
+        
+        <button type="submit" class="btn-envoyer">
+            <i class="fas fa-paper-plane"></i> Envoyer le message
+        </button>
+    </form>
+</div>
 
     <footer>
         <div class="container">
