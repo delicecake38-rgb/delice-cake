@@ -694,8 +694,12 @@
 <script>
   // ---- CONFIG SUPABASE ----
   const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo'; // ⚠️ Utiliser la clé anon publique
-  const client = Supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+  
+  // CORRECTION : Initialisation correcte pour Supabase v2
+  const { createClient } = supabase;
+  const client = createClient(supabaseUrl, supabaseKey);
+  
   console.log('✅ Supabase initialisé');
 
   // ---- UTILITAIRES ----
@@ -717,9 +721,16 @@
   // ---- CHARGER PRODUITS ----
   async function chargerProduits() {
       const grid = document.getElementById('produits-grid');
+      if (!grid) {
+          console.error('❌ Élément #produits-grid non trouvé');
+          return;
+      }
+      
       grid.innerHTML = '<div class="loading">Chargement des produits...</div>';
 
       try {
+          console.log('🔄 Tentative de chargement des produits depuis Supabase...');
+          
           const { data: produits, error } = await client
               .from('produits')
               .select('*')
@@ -727,26 +738,32 @@
 
           if (error) {
               console.error('❌ Erreur Supabase produits:', error);
-              grid.innerHTML = '<div class="error">Erreur de chargement des produits.</div>';
+              grid.innerHTML = `
+                  <div class="error">
+                      <p>Erreur de chargement des produits</p>
+                      <small>Code: ${error.code || 'N/A'} - Message: ${error.message || 'Veuillez réessayer'}</small>
+                  </div>`;
               return;
           }
 
-          console.log('Produits récupérés:', produits);
+          console.log('📦 Produits récupérés:', produits);
 
           if (!produits || produits.length === 0) {
-              grid.innerHTML = '<div class="error">Aucun produit trouvé.</div>';
+              grid.innerHTML = '<div class="error">Aucun produit disponible pour le moment.</div>';
               return;
           }
 
           afficherProduits(produits);
       } catch (err) {
           console.error('❌ Exception lors du chargement produits:', err);
-          grid.innerHTML = '<div class="error">Erreur technique lors du chargement des produits.</div>';
+          grid.innerHTML = '<div class="error">Erreur technique. Vérifiez votre connexion internet.</div>';
       }
   }
 
   function afficherProduits(produits) {
       const container = document.getElementById('produits-grid');
+      if (!container) return;
+      
       container.innerHTML = '';
 
       produits.forEach(produit => {
@@ -760,8 +777,10 @@
           card.className = 'produit';
 
           const mediaHtml = imageUrl
-              ? `<img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.style.display='none'">`
-              : '';
+              ? `<img src="${imageUrl}" alt="${escapeHtml(nom)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">`
+              : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--cafe-clair);">
+                     <i class="fas fa-cake fa-3x"></i>
+                 </div>`;
 
           const starsHtml = `
               <div class="stars">
@@ -777,7 +796,7 @@
                   ${gout ? `<div class="produit-subtitle">${escapeHtml(gout)}</div>` : ''}
                   ${starsHtml}
                   <div class="produit-prix">${prix}</div>
-                  ${ingredients ? `<div class="ingredients" style="margin-top:8px; width:86%">
+                  ${ingredients ? `<div class="ingredients" style="margin-top:8px; width:86%; font-size:0.9rem; color:var(--texte-clair);">
                       <strong>Ingrédients :</strong> ${escapeHtml(ingredients)}
                   </div>` : ''}
                   <button class="btn-ajouter"
@@ -799,6 +818,8 @@
       const horairesEl = document.getElementById('horaires');
 
       try {
+          console.log('🔄 Tentative de chargement des coordonnées...');
+          
           const { data: coordonnees, error } = await client
               .from('coordonnees')
               .select('*')
@@ -810,14 +831,14 @@
               return;
           }
 
-          console.log('Coordonnées récupérées:', coordonnees);
+          console.log('📞 Coordonnées récupérées:', coordonnees);
 
           if (coordonnees && coordonnees.length > 0) {
               const c = coordonnees[0];
-              telephoneEl.textContent = c.telephone || '';
-              emailEl.textContent = c.email || '';
-              adresseEl.textContent = c.adresse || '';
-              horairesEl.innerHTML = (c.horaires || '').replace(/\n/g, '<br>');
+              if (telephoneEl) telephoneEl.textContent = c.telephone || '';
+              if (emailEl) emailEl.textContent = c.email || '';
+              if (adresseEl) adresseEl.textContent = c.adresse || '';
+              if (horairesEl) horairesEl.innerHTML = (c.horaires || '').replace(/\n/g, '<br>');
           } else {
               fallbackCoordonnees();
           }
@@ -827,10 +848,11 @@
       }
 
       function fallbackCoordonnees() {
-          telephoneEl.textContent = "07 84 96 45 71";
-          emailEl.textContent = "delicecake38@gmail.com";
-          adresseEl.textContent = "Grenoble";
-          horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
+          console.log('⚠️ Utilisation des coordonnées par défaut');
+          if (telephoneEl) telephoneEl.textContent = "07 84 96 45 71";
+          if (emailEl) emailEl.textContent = "delicecake38@gmail.com";
+          if (adresseEl) adresseEl.textContent = "Grenoble";
+          if (horairesEl) horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
       }
   }
 
@@ -842,34 +864,43 @@
       if (articleExistant) {
           articleExistant.quantite += 1;
       } else {
-          panier.push({ id, nom, prix: parseFloat(prix) || 0, quantite: 1 });
+          panier.push({ 
+              id: id, 
+              nom: nom, 
+              prix: parseFloat(prix) || 0, 
+              quantite: 1 
+          });
       }
 
       localStorage.setItem('panier', JSON.stringify(panier));
       mettreAJourCompteurPanier();
 
       if (button) {
-          const originalText = button.innerHTML;
+          const originalHTML = button.innerHTML;
           button.innerHTML = '<i class="fas fa-check"></i> Ajouté !';
-          button.classList.add('success');
+          button.style.background = 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)';
+          
           setTimeout(() => {
-              button.innerHTML = originalText;
-              button.classList.remove('success');
-          }, 2000);
+              button.innerHTML = originalHTML;
+              button.style.background = '';
+          }, 1500);
       }
   }
 
   function mettreAJourCompteurPanier() {
       const panier = JSON.parse(localStorage.getItem('panier')) || [];
-      const totalArticles = panier.reduce((sum, a) => sum + (a.quantite || 0), 0);
+      const totalArticles = panier.reduce((sum, article) => sum + (article.quantite || 0), 0);
       const compteur = document.getElementById('nb-articles');
-      if (compteur) compteur.textContent = totalArticles;
+      if (compteur) {
+          compteur.textContent = totalArticles;
+      }
   }
 
   // ---- ÉVÉNEMENTS ----
   document.addEventListener('click', e => {
       const target = e.target.closest('.btn-ajouter');
       if (target) {
+          e.preventDefault();
           const nom = target.getAttribute('data-nom');
           const prix = target.getAttribute('data-prix');
           const id = target.getAttribute('data-id');
@@ -879,12 +910,32 @@
 
   // ---- INITIALISATION ----
   document.addEventListener('DOMContentLoaded', async () => {
-      console.log('🚀 Initialisation site Délices Cake');
-      await chargerProduits();
-      await chargerCoordonnees();
-      mettreAJourCompteurPanier();
+      console.log('🚀 Démarrage du site Délices Cake');
+      
+      // Vérifier si Supabase est chargé
+      if (!window.supabase) {
+          console.error('❌ Supabase n\'est pas chargé !');
+          document.getElementById('produits-grid').innerHTML = 
+              '<div class="error">Erreur: Bibliothèque Supabase non chargée</div>';
+          return;
+      }
+      
+      try {
+          // Charger les données
+          await Promise.all([
+              chargerProduits(),
+              chargerCoordonnees()
+          ]);
+          
+          // Mettre à jour le compteur panier
+          mettreAJourCompteurPanier();
+          
+          console.log('✅ Site initialisé avec succès');
+      } catch (error) {
+          console.error('❌ Erreur lors de l\'initialisation:', error);
+      }
   });
-</script>
 
-</body>
-</html>
+  // Recharger le compteur si l'utilisateur revient sur la page
+  window.addEventListener('focus', mettreAJourCompteurPanier);
+</script>
