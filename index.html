@@ -697,8 +697,7 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
 
     // Initialisation correcte (Supabase v2)
-    const { createClient } = supabase;
-    const client = createClient(supabaseUrl, supabaseKey);
+    const client = supabase.createClient(supabaseUrl, supabaseKey);
     console.log('✅ Supabase (client) initialisé');
 
     // ---- CHARGER PRODUITS ----
