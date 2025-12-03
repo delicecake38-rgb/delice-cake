@@ -692,253 +692,199 @@
     </footer>
 
 <script>
-    // ---- CONFIG SUPABASE ----
-    const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+  // ---- CONFIG SUPABASE ----
+  const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo'; // ⚠️ Utiliser la clé anon publique
+  const client = Supabase.createClient(supabaseUrl, supabaseKey);
+  console.log('✅ Supabase initialisé');
 
-    // Initialisation correcte (Supabase v2)
-    const client = supabase.createClient(supabaseUrl, supabaseKey);
-    console.log('✅ Supabase (client) initialisé');
+  // ---- UTILITAIRES ----
+  function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+  }
 
-    // ---- CHARGER PRODUITS ----
-    async function chargerProduits() {
-        const grid = document.getElementById('produits-grid');
-        grid.innerHTML = '<div class="loading">Chargement des produits...</div>';
+  function escapeAttr(str) {
+      if (!str) return '';
+      return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
 
-        try {
-            const { data: produits, error } = await client
-                .from('produits')
-                .select('*')
-                .order('id', { ascending: true });
+  // ---- CHARGER PRODUITS ----
+  async function chargerProduits() {
+      const grid = document.getElementById('produits-grid');
+      grid.innerHTML = '<div class="loading">Chargement des produits...</div>';
 
-            if (error) {
-                console.error('❌ Erreur Supabase produits:', error);
-                grid.innerHTML = '<div class="error">Erreur de chargement des produits: ' + (error.message || error) + '</div>';
-                return;
-            }
+      try {
+          const { data: produits, error } = await client
+              .from('produits')
+              .select('*')
+              .order('id', { ascending: true });
 
-            if (!produits || produits.length === 0) {
-                grid.innerHTML = '<div class="error">Aucun produit trouvé dans la base de données.</div>';
-                return;
-            }
+          if (error) {
+              console.error('❌ Erreur Supabase produits:', error);
+              grid.innerHTML = '<div class="error">Erreur de chargement des produits.</div>';
+              return;
+          }
 
-            afficherProduits(produits);
-        } catch (err) {
-            console.error('❌ Exception lors du chargement produits:', err);
-            grid.innerHTML = '<div class="error">Erreur technique lors du chargement des produits.</div>';
-        }
-    }
+          console.log('Produits récupérés:', produits);
 
-    // ---- AFFICHER PRODUITS ----
-function afficherProduits(produits) {
-    const container = document.getElementById('produits-grid');
-    container.innerHTML = '';
+          if (!produits || produits.length === 0) {
+              grid.innerHTML = '<div class="error">Aucun produit trouvé.</div>';
+              return;
+          }
 
-    produits.forEach(produit => {
-        const nom = produit.nom || 'Produit';
-        const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
-        const gout = produit.gout || '';
-        const ingredients = produit.ingredients || '';
-        const imageUrl = produit.image_url || '';
+          afficherProduits(produits);
+      } catch (err) {
+          console.error('❌ Exception lors du chargement produits:', err);
+          grid.innerHTML = '<div class="error">Erreur technique lors du chargement des produits.</div>';
+      }
+  }
 
-        const card = document.createElement('div');
-        card.className = 'produit';
+  function afficherProduits(produits) {
+      const container = document.getElementById('produits-grid');
+      container.innerHTML = '';
 
-        const mediaHtml = imageUrl
-            ? `<img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.style.display='none'">`
-            : ``;
+      produits.forEach(produit => {
+          const nom = produit.nom || 'Produit';
+          const prix = produit.prix != null ? parseFloat(produit.prix).toFixed(2) + ' €' : '—';
+          const gout = produit.gout || '';
+          const ingredients = produit.ingredients || '';
+          const imageUrl = produit.image_url || '';
 
-        const starsHtml = `
-            <div class="stars">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-            </div>`;
+          const card = document.createElement('div');
+          card.className = 'produit';
 
-        card.innerHTML = `
-            <div class="produit-media">
-                ${mediaHtml}
-            </div>
+          const mediaHtml = imageUrl
+              ? `<img src="${imageUrl}" alt="${escapeHtml(nom)}" onerror="this.style.display='none'">`
+              : '';
 
-            <div class="produit-info">
-                <h3 class="produit-nom">${escapeHtml(nom)}</h3>
-                ${gout ? `<div class="produit-subtitle">${escapeHtml(gout)}</div>` : ''}
-                ${starsHtml}
-                <div class="produit-prix">${prix}</div>
+          const starsHtml = `
+              <div class="stars">
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+              </div>`;
 
-                ${ingredients ? `<div class="ingredients" style="margin-top:8px; width:86%">
-                    <strong>Ingrédients :</strong> ${escapeHtml(ingredients)}
-                </div>` : ''}
+          card.innerHTML = `
+              <div class="produit-media">${mediaHtml}</div>
+              <div class="produit-info">
+                  <h3 class="produit-nom">${escapeHtml(nom)}</h3>
+                  ${gout ? `<div class="produit-subtitle">${escapeHtml(gout)}</div>` : ''}
+                  ${starsHtml}
+                  <div class="produit-prix">${prix}</div>
+                  ${ingredients ? `<div class="ingredients" style="margin-top:8px; width:86%">
+                      <strong>Ingrédients :</strong> ${escapeHtml(ingredients)}
+                  </div>` : ''}
+                  <button class="btn-ajouter"
+                      data-nom="${escapeAttr(nom)}"
+                      data-prix="${escapeAttr(produit.prix)}"
+                      data-id="${escapeAttr(produit.id)}">
+                      <i class="fas fa-shopping-basket"></i> Acheter
+                  </button>
+              </div>`;
+          container.appendChild(card);
+      });
+  }
 
-                <button class="btn-ajouter"
-                    data-nom="${escapeAttr(nom)}"
-                    data-prix="${escapeAttr(produit.prix)}"
-                    data-id="${escapeAttr(produit.id)}">
-                    <i class="fas fa-shopping-basket"></i> Acheter
-                </button>
-            </div>
-        `;
+  // ---- CHARGER COORDONNEES ----
+  async function chargerCoordonnees() {
+      const telephoneEl = document.getElementById('telephone');
+      const emailEl = document.getElementById('email');
+      const adresseEl = document.getElementById('adresse');
+      const horairesEl = document.getElementById('horaires');
 
-        container.appendChild(card);
-    });
-}
+      try {
+          const { data: coordonnees, error } = await client
+              .from('coordonnees')
+              .select('*')
+              .limit(1);
 
-    // ---- CHARGER COORDONNÉES ----
-    async function chargerCoordonnees() {
-        const telephoneEl = document.getElementById('telephone');
-        const emailEl = document.getElementById('email');
-        const adresseEl = document.getElementById('adresse');
-        const horairesEl = document.getElementById('horaires');
+          if (error) {
+              console.error('❌ Erreur Supabase coordonnées:', error);
+              fallbackCoordonnees();
+              return;
+          }
 
-        try {
-            const { data: coordonnees, error } = await client
-                .from('coordonnees')
-                .select('*')
-                .limit(1);
+          console.log('Coordonnées récupérées:', coordonnees);
 
-            if (error) {
-                console.error('❌ Erreur Supabase coordonnées:', error);
-                // valeurs fallback
-                appliquerCoordonneesFallback();
-                return;
-            }
+          if (coordonnees && coordonnees.length > 0) {
+              const c = coordonnees[0];
+              telephoneEl.textContent = c.telephone || '';
+              emailEl.textContent = c.email || '';
+              adresseEl.textContent = c.adresse || '';
+              horairesEl.innerHTML = (c.horaires || '').replace(/\n/g, '<br>');
+          } else {
+              fallbackCoordonnees();
+          }
+      } catch (err) {
+          console.error('❌ Exception coordonnées:', err);
+          fallbackCoordonnees();
+      }
 
-            if (coordonnees && coordonnees.length > 0) {
-                const c = coordonnees[0];
-                if (c.telephone) telephoneEl.textContent = c.telephone;
-                if (c.email) emailEl.textContent = c.email;
-                if (c.adresse) adresseEl.textContent = c.adresse;
-                if (c.horaires) horairesEl.innerHTML = c.horaires.replace(/\n/g, '<br>');
-            } else {
-                appliquerCoordonneesFallback();
-            }
-        } catch (err) {
-            console.error('❌ Exception coordonnées:', err);
-            appliquerCoordonneesFallback();
-        }
+      function fallbackCoordonnees() {
+          telephoneEl.textContent = "07 84 96 45 71";
+          emailEl.textContent = "delicecake38@gmail.com";
+          adresseEl.textContent = "Grenoble";
+          horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
+      }
+  }
 
-        function appliquerCoordonneesFallback() {
-            telephoneEl.textContent = "07 84 96 45 71";
-            emailEl.textContent = "delicecake38@gmail.com";
-            adresseEl.textContent = "Grenoble";
-            horairesEl.textContent = "Lundi - Dimanche: 10h-19h";
-        }
-    }
+  // ---- PANIER ----
+  function ajouterAuPanier(nom, prix, id, button) {
+      let panier = JSON.parse(localStorage.getItem('panier')) || [];
+      const articleExistant = panier.find(article => String(article.id) === String(id));
 
-    // ---- PANIER ----
-    function ajouterAuPanier(nom, prix, id, button) {
-        let panier = JSON.parse(localStorage.getItem('panier')) || [];
+      if (articleExistant) {
+          articleExistant.quantite += 1;
+      } else {
+          panier.push({ id, nom, prix: parseFloat(prix) || 0, quantite: 1 });
+      }
 
-        // Utiliser id comme clé (string)
-        const articleExistant = panier.find(article => String(article.id) === String(id));
+      localStorage.setItem('panier', JSON.stringify(panier));
+      mettreAJourCompteurPanier();
 
-        if (articleExistant) {
-            articleExistant.quantite += 1;
-        } else {
-            panier.push({
-                id: id,
-                nom: nom,
-                prix: parseFloat(prix) || 0,
-                quantite: 1
-            });
-        }
+      if (button) {
+          const originalText = button.innerHTML;
+          button.innerHTML = '<i class="fas fa-check"></i> Ajouté !';
+          button.classList.add('success');
+          setTimeout(() => {
+              button.innerHTML = originalText;
+              button.classList.remove('success');
+          }, 2000);
+      }
+  }
 
-        localStorage.setItem('panier', JSON.stringify(panier));
-        mettreAJourCompteurPanier();
+  function mettreAJourCompteurPanier() {
+      const panier = JSON.parse(localStorage.getItem('panier')) || [];
+      const totalArticles = panier.reduce((sum, a) => sum + (a.quantite || 0), 0);
+      const compteur = document.getElementById('nb-articles');
+      if (compteur) compteur.textContent = totalArticles;
+  }
 
-        // Animation
-        if (button) {
-            const originalText = button.textContent;
-            button.textContent = '✓ Ajouté !';
-            button.classList.add('success');
+  // ---- ÉVÉNEMENTS ----
+  document.addEventListener('click', e => {
+      const target = e.target.closest('.btn-ajouter');
+      if (target) {
+          const nom = target.getAttribute('data-nom');
+          const prix = target.getAttribute('data-prix');
+          const id = target.getAttribute('data-id');
+          ajouterAuPanier(nom, prix, id, target);
+      }
+  });
 
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.classList.remove('success');
-            }, 1600);
-        }
-    }
+  // ---- INITIALISATION ----
+  document.addEventListener('DOMContentLoaded', async () => {
+      console.log('🚀 Initialisation site Délices Cake');
+      await chargerProduits();
+      await chargerCoordonnees();
+      mettreAJourCompteurPanier();
+  });
+</script>
 
-
-// ---- PANIER ----
-        function ajouterAuPanier(nom, prix, id, button) {
-            let panier = JSON.parse(localStorage.getItem('panier')) || [];
-            const articleExistant = panier.find(article => String(article.id) === String(id));
-
-            if (articleExistant) {
-                articleExistant.quantite += 1;
-            } else {
-                panier.push({
-                    id: id,
-                    nom: nom,
-                    prix: parseFloat(prix) || 0,
-                    quantite: 1
-                });
-            }
-
-            localStorage.setItem('panier', JSON.stringify(panier));
-            mettreAJourCompteurPanier();
-
-            // Animation de confirmation
-            if (button) {
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i> Ajouté !';
-                button.classList.add('success');
-
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.classList.remove('success');
-                }, 2000);
-            }
-        }
-
-        function mettreAJourCompteurPanier() {
-            const panier = JSON.parse(localStorage.getItem('panier')) || [];
-            const totalArticles = panier.reduce((total, article) => total + (article.quantite || 0), 0);
-            const compteurElement = document.getElementById('nb-articles');
-            if (compteurElement) compteurElement.textContent = totalArticles;
-        }
-
-        // ---- GESTION ÉVÉNEMENTS ----
-        document.addEventListener('click', function(e) {
-            const target = e.target.closest('.btn-ajouter');
-            if (target) {
-                const nom = target.getAttribute('data-nom');
-                const prix = target.getAttribute('data-prix');
-                const id = target.getAttribute('data-id');
-                ajouterAuPanier(nom, prix, id, target);
-            }
-        });
-
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
-            this.reset();
-        });
-
-        // ---- UTILITAIRES ----
-        function escapeHtml(str) {
-            if (str === null || str === undefined) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function escapeAttr(str) {
-            if (str === null || str === undefined) return '';
-            return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-        }
-
-        // ---- DÉMARRAGE ----
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Initialisation du site Délices Cake');
-            await chargerProduits();
-            await chargerCoordonnees();
-            mettreAJourCompteurPanier();
-        });
-    </script>
 </body>
 </html>
