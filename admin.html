@@ -600,21 +600,20 @@
                 alert('❌ Erreur lors de la mise à jour');
             }
         }
+        // Dans admin.html, modifiez la fonction afficherDetails :
+async function afficherDetails(commandeId) {
+    try {
+        const { data: commandes, error } = await clientSupabase
+            .from('commandes')
+            .select('*')
+            .eq('id', commandeId)
+            .single();
         
-        // Afficher les détails d'une commande
-        async function afficherDetails(commandeId) {
-            try {
-                const { data: commandes, error } = await clientSupabase
-                    .from('commandes')
-                    .select('*')
-                    .eq('id', commandeId)
-                    .single();
-                
-                if (error) throw error;
-                
-                const commande = commandes;
-                const produits = JSON.parse(commande.produits_json || '[]');
-                
+        if (error) throw error;
+        
+        const commande = commandes;
+        // ADAPTEZ selon votre structure
+        const produits = commande.articles || JSON.parse(commande.produits_json || '[]');
                 let produitsHtml = '';
                 produits.forEach(p => {
                     produitsHtml += `
@@ -673,12 +672,11 @@
                 document.getElementById('modal-content').innerHTML = modalContent;
                 document.getElementById('details-modal').style.display = 'flex';
                 
-            } catch (error) {
-                console.error('Erreur détails commande:', error);
-                alert('❌ Erreur lors du chargement des détails');
-            }
-        }
-        
+    } catch (error) {
+        console.error('Erreur détails commande:', error);
+        alert('❌ Erreur lors du chargement des détails');
+    }
+}
         // Fermer le modal
         function fermerModal() {
             document.getElementById('details-modal').style.display = 'none';
