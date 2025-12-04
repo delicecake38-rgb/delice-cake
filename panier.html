@@ -1098,56 +1098,88 @@
         }
 
 async function confirmerCommandeQR() {
-    const numeroCommande = document.getElementById('commande-qr').textContent;
-    const montant = document.getElementById('montant-qr').textContent;
-    
-    // Demander les infos de contact
-    const nom = prompt('Pour finaliser votre commande, veuillez saisir votre nom :');
-    if (!nom) return;
-    
-    const telephone = prompt('Votre numéro de téléphone pour la livraison :');
-    if (!telephone) return;
-    
-    const adresse = prompt('Votre adresse de livraison (Grenoble et alentours) :');
-    if (!adresse) return;
-    
-    // Enregistrer la commande
-    const panier = JSON.parse(localStorage.getItem('panier')) || [];
-    const commande = {
-        id: numeroCommande,
-        date: new Date().toISOString(),
-        statut: 'en_attente',
-        paiement: {
-            methode: 'qr_livraison',
-            montant: parseFloat(montant.replace(',', '.')),
-            paye: false
-        },
-        client: {
-            nom: nom,
-            telephone: telephone,
-            adresse: adresse
-        },
-        produits: panier.map(item => ({
-            nom: item.nom,
-            quantite: item.quantite,
-            prix: item.prix
-        }))
-    };
-    
-    // 1. Envoyer email à VOUS
-    envoyerEmailCommandeQR(commande);
-    
-    // 2. Enregistrer dans Supabase
-    const resultSupabase = await enregistrerCommandeSupabase(commande);
-    
-    // 3. Sauvegarder localement (backup)
-    sauvegarderCommandeLocale(commande);
-    
-    // 4. Afficher confirmation
-    afficherConfirmationCommande(commande);
-    
-    // 5. Vider le panier
-    localStorage.removeItem('panier');
+    try {
+        const numeroCommande = document.getElementById('commande-qr').textContent;
+        const montantText = document.getElementById('montant-qr').textContent;
+        const montant = parseFloat(montantText.replace(',', '.').replace(' €', ''));
+        
+        // Demander les infos de contact
+        const nom = prompt('Pour finaliser votre commande, veuillez saisir votre nom :');
+        if (!nom || nom.trim() === '') {
+            alert('Le nom est obligatoire');
+            return;
+        }
+        
+        const telephone = prompt('Votre numéro de téléphone pour la livraison :');
+        if (!telephone || telephone.trim() === '') {
+            alert('Le téléphone est obligatoire');
+            return;
+        }
+        
+        const adresse = prompt('Votre adresse de livraison (Grenoble et alentours) :');
+        if (!adresse || adresse.trim() === '') {
+            alert('L\'adresse est obligatoire');
+            return;
+        }
+        
+        const panier = JSON.parse(localStorage.getItem('panier')) || [];
+        
+        if (panier.length === 0) {
+            alert('Votre panier est vide !');
+            return;
+        }
+        
+        const commande = {
+            id: numeroCommande,
+            date: new Date().toISOString(),
+            statut: 'en_attente',
+            paiement: {
+                methode: 'qr_livraison',
+                montant: montant,
+                paye: false
+            },
+            client: {
+                nom: nom.trim(),
+                telephone: telephone.trim(),
+                adresse: adresse.trim()
+            },
+            produits: panier.map(item => ({
+                nom: item.nom,
+                quantite: item.quantite,
+                prix: item.prix
+            }))
+        };
+        
+        console.log('📝 Commande créée:', commande);
+        
+        // 1. Envoyer email à vous
+        envoyerEmailCommandeQR(commande);
+        
+        // 2. Enregistrer dans Supabase (IMPORTANT!)
+        const resultSupabase = await enregistrerCommandeSupabase(commande);
+        
+        if (!resultSupabase.success) {
+            alert('⚠️ La commande a été prise mais il y a eu un problème technique. Nous vous avons envoyé un email de confirmation.');
+        } else {
+            console.log('✅ Commande enregistrée dans Supabase avec ID:', resultSupabase.data?.id);
+        }
+        
+        // 3. Sauvegarder localement
+        sauvegarderCommandeLocale(commande);
+        
+        // 4. Afficher confirmation
+        afficherConfirmationCommande(commande);
+        
+        // 5. Vider le panier
+        localStorage.removeItem('panier');
+        
+        // 6. Mettre à jour le compteur
+        mettreAJourCompteurPanier();
+        
+    } catch (error) {
+        console.error('❌ Erreur lors de la commande:', error);
+        alert('Une erreur est survenue. Veuillez nous appeler au 07 84 96 45 71');
+    }
 }
 
 function sauvegarderCommandeLocale(commande) {
@@ -1273,50 +1305,144 @@ function envoyerEmailCommandeQR(commande) {
             if (compteurElement) compteurElement.textContent = totalArticles;
         }
 // ---- ENREGISTRER COMMANDE DANS SUPABASE ----
+// ---- ENREGISTRER COMMANDE DANS SUPABASE ----
 async function enregistrerCommandeSupabase(commande) {
     try {
-        // Utiliser le même client Supabase que votre site
+        console.log('📤 Début enregistrement Supabase...', commande);
+        
+        // Initialisation Supabase
         const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
         
-        // Initialiser Supabase
         const { createClient } = supabase;
         const clientSupabase = createClient(supabaseUrl, supabaseKey);
         
-        // Préparer les données
+        // Préparer les données selon la nouvelle table
         const commandeData = {
             numero_commande: commande.id,
-            date_commande: commande.date,
             client_nom: commande.client.nom,
             client_telephone: commande.client.telephone,
             client_adresse: commande.client.adresse,
             montant_total: commande.paiement.montant,
-            statut: 'en_attente', // en_attente, confirmee, livree, annulee
+            statut: 'en_attente',
             methode_paiement: commande.paiement.methode,
             produits_json: JSON.stringify(commande.produits),
-            created_at: new Date().toISOString()
+            date_commande: new Date().toISOString()
         };
         
-        console.log('📤 Envoi à Supabase...', commandeData);
+        console.log('📤 Données pour Supabase:', commandeData);
         
-        // Insérer dans la table 'commandes'
+        // Essayer avec la méthode classique
         const { data, error } = await clientSupabase
             .from('commandes')
             .insert([commandeData])
             .select();
-            
+        
         if (error) {
-            console.error('❌ Erreur Supabase:', error);
-            alert('La commande a été enregistrée mais il y a eu un problème technique. Nous vous avons envoyé un email.');
-        } else {
-            console.log('✅ Commande enregistrée dans Supabase:', data);
+            console.error('❌ Erreur Supabase JS:', error);
+            
+            // Essayer avec l'API REST directe
+            return await enregistrerCommandeREST(commandeData);
         }
         
-        return { success: !error, data, error };
+        console.log('✅ Succès Supabase:', data);
+        return { success: true, data: data[0] };
         
     } catch (error) {
-        console.error('❌ Exception Supabase:', error);
-        return { success: false, error };
+        console.error('❌ Exception:', error);
+        return { success: false, error: error.message };
+    }
+}
+// ---- ENVOYER COMMANDE PAR FORMSPREE ----
+async function envoyerCommandeFormspree(commande) {
+    try {
+        const formData = new FormData();
+        const message = `
+NOUVELLE COMMANDE DÉLICES CAKE
+
+📋 NUMÉRO : ${commande.id}
+📅 DATE : ${new Date(commande.date).toLocaleString('fr-FR')}
+💰 MONTANT : ${commande.paiement.montant.toFixed(2)} €
+💳 PAIEMENT : QR Code à la livraison
+
+👤 CLIENT :
+Nom : ${commande.client.nom}
+Téléphone : ${commande.client.telephone}
+Adresse : ${commande.client.adresse}
+
+🛒 PRODUITS :
+${commande.produits.map(p => `- ${p.nom} x${p.quantite} : ${(p.prix * p.quantite).toFixed(2)} €`).join('\n')}
+
+📦 TOTAL : ${commande.paiement.montant.toFixed(2)} €
+
+⚠️ ACTION REQUISE :
+1. Préparer les tiramisus frais
+2. Appeler le client au ${commande.client.telephone}
+3. Livrer à : ${commande.client.adresse}
+4. Paiement QR Code à la livraison
+
+⏰ URGENCE : Livraison dans les 2h !
+        `;
+        
+        // Utilisez votre endpoint Formspree
+        const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                _subject: `🎂 NOUVELLE COMMANDE - ${commande.id}`,
+                email: 'delicecake38@gmail.com', // Votre email
+                message: message,
+                numero: commande.id,
+                client: commande.client.nom,
+                telephone: commande.client.telephone
+            })
+        });
+        
+        if (response.ok) {
+            console.log('✅ Email envoyé via Formspree');
+            return true;
+        } else {
+            console.error('❌ Erreur Formspree');
+            return false;
+        }
+        
+    } catch (error) {
+        console.error('❌ Exception Formspree:', error);
+        return false;
+    }
+}
+// Fonction de secours avec API REST
+async function enregistrerCommandeREST(commandeData) {
+    try {
+        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+        
+        const response = await fetch(`${supabaseUrl}/rest/v1/commandes`, {
+            method: 'POST',
+            headers: {
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(commandeData)
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status} - ${JSON.stringify(data)}`);
+        }
+        
+        console.log('✅ Succès REST API:', data);
+        return { success: true, data: data[0] };
+        
+    } catch (error) {
+        console.error('❌ Erreur REST:', error);
+        return { success: false, error: error.message };
     }
 }
         // ---- UTILITAIRE ----
