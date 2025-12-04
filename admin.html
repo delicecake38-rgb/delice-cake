@@ -485,29 +485,49 @@
         }
         
         // Charger les commandes depuis Supabase
-        async function chargerCommandes() {
-            try {
-                const { data: commandes, error } = await clientSupabase
-                    .from('commandes')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+async function chargerCommandes() {
+    try {
+        console.log('🔄 Chargement des commandes depuis Supabase...');
+        
+        const { data: commandes, error } = await clientSupabase
+            .from('commandes')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) {
+            console.error('Erreur chargement commandes:', error);
+            
+            // Essayer un autre nom de table
+            const { data: commandes2, error: error2 } = await clientSupabase
+                .from('Commandes')  // avec majuscule
+                .select('*')
+                .order('created_at', { ascending: false });
                 
-                if (error) throw error;
-                
-                afficherCommandes(commandes || []);
-                mettreAJourStats(commandes || []);
-                
-            } catch (error) {
-                console.error('Erreur chargement commandes:', error);
-                document.getElementById('commandes-body').innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);">
-                            <i class="fas fa-exclamation-triangle"></i> Erreur de chargement
-                        </td>
-                    </tr>
-                `;
+            if (error2) {
+                throw error2;
             }
+            
+            afficherCommandes(commandes2 || []);
+            mettreAJourStats(commandes2 || []);
+            return;
         }
+        
+        console.log('📦 Commandes récupérées:', commandes);
+        
+        afficherCommandes(commandes || []);
+        mettreAJourStats(commandes || []);
+        
+    } catch (error) {
+        console.error('Erreur chargement commandes:', error);
+        document.getElementById('commandes-body').innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);">
+                    <i class="fas fa-exclamation-triangle"></i> Erreur: ${error.message}
+                </td>
+            </tr>
+        `;
+    }
+}
         
         // Afficher les commandes dans le tableau
         function afficherCommandes(commandes) {
