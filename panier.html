@@ -1306,6 +1306,7 @@ function envoyerEmailCommandeQR(commande) {
         }
 // ---- ENREGISTRER COMMANDE DANS SUPABASE ----
 // ---- ENREGISTRER COMMANDE DANS SUPABASE ----
+// ---- ENREGISTRER COMMANDE DANS SUPABASE ----
 async function enregistrerCommandeSupabase(commande) {
     try {
         console.log('📤 Début enregistrement Supabase...', commande);
@@ -1350,6 +1351,38 @@ async function enregistrerCommandeSupabase(commande) {
         
     } catch (error) {
         console.error('❌ Exception:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Fonction de secours avec API REST
+async function enregistrerCommandeREST(commandeData) {
+    try {
+        const supabaseUrl = 'https://ypxvnxddzgaopjdhclzj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlweHZueGRkemdhb3BqZGhjbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODk1OTUsImV4cCI6MjA3Nzk2NTU5NX0.bMhlMjgbxjCZRUbXn0-WoZZaeSOySSAoEPzmL9UwpCo';
+        
+        const response = await fetch(`${supabaseUrl}/rest/v1/commandes`, {
+            method: 'POST',
+            headers: {
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(commandeData)
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status} - ${JSON.stringify(data)}`);
+        }
+        
+        console.log('✅ Succès REST API:', data);
+        return { success: true, data: data[0] };
+        
+    } catch (error) {
+        console.error('❌ Erreur REST:', error);
         return { success: false, error: error.message };
     }
 }
